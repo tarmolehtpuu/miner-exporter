@@ -1,0 +1,23 @@
+package ee.moo.miner.exporter.miner.bitaxe;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class BitaxeInfo {
+
+    @JsonProperty
+    private Double power;
+
+    @JsonProperty
+    private Double voltage;
+
+    @JsonProperty
+    private Double current;
+}
