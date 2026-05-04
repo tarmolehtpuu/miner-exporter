@@ -2,29 +2,27 @@ package ee.moo.miner.exporter.miner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.miner.bitaxe.Bitaxe;
+import ee.moo.miner.exporter.miner.nano3.Nano3;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.client.HttpClient;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
-import java.time.Duration;
-
 
 @RequiredArgsConstructor
 public class MinerFactory {
-
-    private static final Duration CONNECT_TIMEOUT = Duration.ofMillis(2000);
-    private static final Duration READ_TIMEOUT = Duration.ofMillis(2000);
 
     private final HttpClient httpClient;
 
     private final ObjectMapper objectMapper;
 
-    @SuppressWarnings({"EnhancedSwitchMigration", "SwitchStatementWithTooFewBranches"})
+    @SuppressWarnings({"EnhancedSwitchMigration"})
     public Miner create(MinerConfig config) {
         switch (config.getType()) {
             case BITAXE:
                 return createBitaxe(config);
+            case NANO3:
+                return createNano3(config);
             default:
                 throw new MinerException("Unsupported miner type: %s", config.getType());
         }
@@ -32,8 +30,8 @@ public class MinerFactory {
 
     private Miner createBitaxe(MinerConfig config) {
         var rf = new JettyClientHttpRequestFactory(httpClient);
-        rf.setConnectTimeout(CONNECT_TIMEOUT);
-        rf.setReadTimeout(READ_TIMEOUT);
+        rf.setConnectTimeout(config.getConnectTimeout());
+        rf.setReadTimeout(config.getReadTimeout());
 
         var client = RestClient.builder()
             .requestFactory(rf)
@@ -41,5 +39,9 @@ public class MinerFactory {
             .build();
 
         return new Bitaxe(config, client, objectMapper);
+    }
+
+    private Miner createNano3(MinerConfig config) {
+        return new Nano3(config, objectMapper);
     }
 }

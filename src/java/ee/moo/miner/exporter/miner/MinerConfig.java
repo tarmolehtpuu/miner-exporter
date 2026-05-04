@@ -3,6 +3,7 @@ package ee.moo.miner.exporter.miner;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,18 @@ public class MinerConfig {
     private String host;
 
     private int port;
+
+    public Duration getConnectTimeout() {
+        return Duration.ofMillis(2000);
+    }
+
+    public Duration getReadTimeout() {
+        return Duration.ofMillis(2000);
+    }
+
+    public int getMaxReadBufferSize() {
+        return 65535;
+    }
 
     public static List<MinerConfig> createFromEnvironment() {
         return createFromEnvironment(System.getenv());
