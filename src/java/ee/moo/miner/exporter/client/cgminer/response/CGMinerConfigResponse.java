@@ -1,38 +1,36 @@
 package ee.moo.miner.exporter.client.cgminer.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerConfig;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerStatus;
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerSummary;
-import lombok.Getter;
 
 import java.util.List;
 
-public class CGMinerSummaryResponse implements CGMinerResponse {
+public class CGMinerConfigResponse implements CGMinerResponse {
 
     @JsonProperty
-    @Getter
     private Integer id;
 
     @JsonProperty("STATUS")
     private List<CGMinerStatus> status;
 
-    @JsonProperty("SUMMARY")
-    private List<CGMinerSummary> summary;
+    @JsonProperty("CONFIG")
+    private List<CGMinerConfig> config;
 
     @Override
     public CGMinerStatus getStatus() {
         return status.isEmpty() ? null : status.getFirst();
     }
 
-    public CGMinerSummary getSummary() {
+    public CGMinerConfig getConfig() {
         if (isError()) {
             return null;
         }
 
-        if (summary.isEmpty()) {
+        if (config.isEmpty()) {
             return null;
         }
 
-        return summary.getFirst();
+        return config.getFirst();
     }
 }

@@ -1,12 +1,16 @@
 package ee.moo.miner.exporter.client.cgminer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerConfig;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerSummary;
 import ee.moo.miner.exporter.client.cgminer.request.CGMinerCommand;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerVersion;
+import ee.moo.miner.exporter.client.cgminer.response.CGMinerConfigResponse;
 import ee.moo.miner.exporter.client.cgminer.response.CGMinerSummaryResponse;
 import ee.moo.miner.exporter.client.cgminer.response.CGMinerVersionResponse;
-import ee.moo.miner.exporter.client.common.ClientException;
+import ee.moo.miner.exporter.client.ClientException;
 import lombok.Setter;
 
 import java.io.IOException;
@@ -65,8 +69,7 @@ public class CGMinerClient {
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=version): %s", response.getError());
             }
-
-            return response.toVersion();
+            return response.getVersion();
 
         } catch (IOException e) {
             throw new ClientException(e.getMessage(), e);
@@ -77,16 +80,27 @@ public class CGMinerClient {
         try {
             var response = objectMapper.readValue(execute("summary"), CGMinerSummaryResponse.class);
             if (response.isError()) {
-                throw new ClientException("CGM Error (cmd=summary): %s", response.getError());
+                throw new ClientException("CGMiner Error (cmd=summary): %s", response.getError());
             }
-
-            return response.toSummary();
+            return response.getSummary();
 
         } catch (IOException e) {
             throw new ClientException(e.getMessage(), e);
         }
     }
 
+    public CGMinerConfig getConfig() {
+        try {
+            var response = objectMapper.readValue(execute("config"), CGMinerConfigResponse.class);
+            if (response.isError()) {
+                throw new ClientException("CGMiner Error (cmd=config): %s", response.getError());
+            }
+            return response.getConfig();
+
+        } catch (IOException e) {
+            throw new ClientException(e.getMessage(), e);
+        }
+    }
 
     private String read(Socket socket) throws IOException {
         var in = new InputStreamReader(socket.getInputStream());

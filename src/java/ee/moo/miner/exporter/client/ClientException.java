@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.client.common;
+package ee.moo.miner.exporter.client;
 
 public class ClientException extends RuntimeException {
 

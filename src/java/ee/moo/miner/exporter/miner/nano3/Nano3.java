@@ -5,11 +5,8 @@ import ee.moo.miner.exporter.client.cgminer.CGMinerClient;
 import ee.moo.miner.exporter.metrics.Metrics;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
 import lombok.RequiredArgsConstructor;
-
-import java.io.IOException;
 
 @RequiredArgsConstructor
 public class Nano3 implements Miner {
@@ -41,6 +38,9 @@ public class Nano3 implements Miner {
 
         var summary = client.getSummary();
         System.out.println(summary);
+
+        var config = client.getConfig();
+        System.out.println(config);
 
         return new Nano3Metrics();
     }
