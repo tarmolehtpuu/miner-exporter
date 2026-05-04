@@ -1,8 +1,8 @@
-package ee.moo.miner.exporter.client.response;
+package ee.moo.miner.exporter.client.cgminer.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ee.moo.miner.exporter.client.model.CGMinerStatus;
-import ee.moo.miner.exporter.client.model.CGMinerVersion;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerStatus;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerVersion;
 import lombok.Data;
 
 import java.util.List;

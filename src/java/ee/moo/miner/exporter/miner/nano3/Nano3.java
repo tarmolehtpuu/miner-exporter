@@ -1,13 +1,12 @@
 package ee.moo.miner.exporter.miner.nano3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.client.CGMinerConnection;
+import ee.moo.miner.exporter.client.cgminer.CGMinerClient;
 import ee.moo.miner.exporter.metrics.Metrics;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -31,27 +30,17 @@ public class Nano3 implements Miner {
 
     @Override
     public Metrics getMetrics() {
-        var connection = new CGMinerConnection(config.getHost(), config.getPort());
+        var client = new CGMinerClient(config.getHost(), config.getPort());
 
-        connection.setObjectMapper(objectMapper);
-        connection.setConnectTimeout(config.getConnectTimeout());
-        connection.setReadTimeout(config.getReadTimeout());
+        client.setObjectMapper(objectMapper);
+        client.setConnectTimeout(config.getConnectTimeout());
+        client.setReadTimeout(config.getReadTimeout());
 
-        try {
-            connection.connect();
+        var version = client.getVersion();
+        System.out.println(version);
 
-            var version = connection.getVersion();
-            System.out.println(version);
-
-        } catch (IOException e1) {
-            try {
-                connection.close();
-            } catch (Exception e2) {
-                // ignored
-            }
-
-            throw new MinerException(e1.getMessage(), e1);
-        }
+        var summary = client.getSummary();
+        System.out.println(summary);
 
         return new Nano3Metrics();
     }

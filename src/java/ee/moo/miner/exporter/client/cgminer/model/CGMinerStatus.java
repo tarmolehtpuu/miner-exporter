@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.client.model;
+package ee.moo.miner.exporter.client.cgminer.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
