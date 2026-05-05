@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerConfig;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerPool;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerSummary;
 import ee.moo.miner.exporter.client.cgminer.request.CGMinerCommand;
 import ee.moo.miner.exporter.client.cgminer.model.CGMinerVersion;
 import ee.moo.miner.exporter.client.cgminer.response.CGMinerConfigResponse;
+import ee.moo.miner.exporter.client.cgminer.response.CGMinerPoolsResponse;
 import ee.moo.miner.exporter.client.cgminer.response.CGMinerSummaryResponse;
 import ee.moo.miner.exporter.client.cgminer.response.CGMinerVersionResponse;
 import ee.moo.miner.exporter.client.ClientException;
@@ -19,6 +21,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Duration;
+import java.util.List;
 
 public class CGMinerClient {
 
@@ -96,6 +99,19 @@ public class CGMinerClient {
                 throw new ClientException("CGMiner Error (cmd=config): %s", response.getError());
             }
             return response.getConfig();
+
+        } catch (IOException e) {
+            throw new ClientException(e.getMessage(), e);
+        }
+    }
+
+    public List<CGMinerPool> getPools() {
+        try {
+            var response = objectMapper.readValue(execute("pools"), CGMinerPoolsResponse.class);
+            if (response.isError()) {
+                throw new ClientException("CGMiner Error (cmd=pools): %s", response.getError());
+            }
+            return response.getPools();
 
         } catch (IOException e) {
             throw new ClientException(e.getMessage(), e);

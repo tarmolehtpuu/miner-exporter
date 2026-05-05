@@ -42,6 +42,11 @@ public class Nano3 implements Miner {
         var config = client.getConfig();
         System.out.println(config);
 
+        var pools = client.getPools();
+        for (var pool : pools) {
+            System.out.println(pool);
+        }
+
         return new Nano3Metrics();
     }
 }
