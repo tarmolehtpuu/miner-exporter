@@ -1,7 +1,9 @@
 package ee.moo.miner.exporter.client.cgminer.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import util.json.YesNoBooleanDeserializer;
 
 import java.time.Instant;
 
@@ -24,7 +26,8 @@ public class CGMinerPool {
     private Integer quota;
 
     @JsonProperty("Long Poll")
-    private String longPoll;
+    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
+    private boolean longPoll;
 
     @JsonProperty("Getworks")
     private Integer getWorks;
@@ -89,7 +92,7 @@ public class CGMinerPool {
     @JsonProperty("Has Vmask")
     private Boolean hasVmask;
 
-    @JsonProperty("has GBT")
+    @JsonProperty("Has GBT")
     private Boolean hasGbt;
 
     @JsonProperty("Best Share")
@@ -107,7 +110,7 @@ public class CGMinerPool {
     @JsonProperty("Current Block Height")
     private Integer currentBlockHeight;
 
-    @JsonProperty("Current Block Width")
+    @JsonProperty("Current Block Version")
     private Integer currentBlockVersion;
 
 

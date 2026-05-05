@@ -1,17 +1,9 @@
 package ee.moo.miner.exporter.client.cgminer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerConfig;
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerPool;
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerSummary;
+import ee.moo.miner.exporter.client.cgminer.model.*;
 import ee.moo.miner.exporter.client.cgminer.request.CGMinerCommand;
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerVersion;
-import ee.moo.miner.exporter.client.cgminer.response.CGMinerConfigResponse;
-import ee.moo.miner.exporter.client.cgminer.response.CGMinerPoolsResponse;
-import ee.moo.miner.exporter.client.cgminer.response.CGMinerSummaryResponse;
-import ee.moo.miner.exporter.client.cgminer.response.CGMinerVersionResponse;
+import ee.moo.miner.exporter.client.cgminer.response.*;
 import ee.moo.miner.exporter.client.ClientException;
 import lombok.Setter;
 
@@ -112,6 +104,19 @@ public class CGMinerClient {
                 throw new ClientException("CGMiner Error (cmd=pools): %s", response.getError());
             }
             return response.getPools();
+
+        } catch (IOException e) {
+            throw new ClientException(e.getMessage(), e);
+        }
+    }
+
+    public List<CGMinerDevice> getDevices() {
+        try {
+            var response = objectMapper.readValue(execute("devs"), CGMinerDevsResponse.class);
+            if (response.isError()) {
+                throw new ClientException("CGMiner Error (cmd=devs): %s", response.getError());
+            }
+            return response.getDevices();
 
         } catch (IOException e) {
             throw new ClientException(e.getMessage(), e);
