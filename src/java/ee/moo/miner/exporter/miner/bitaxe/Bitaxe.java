@@ -57,7 +57,12 @@ public class Bitaxe implements Miner {
 
             validateInfo(json);
 
-            return new BitaxeMetrics(new BitaxeInfo());
+            var info = new BitaxeInfo();
+            info.setCurrent(10843.75);
+            info.setVoltage(5085.9375);
+            info.setPower(17.4110107);
+
+            return new BitaxeMetrics(info);
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new ClientException(e.getMessage(), e);

@@ -1,12 +1,19 @@
 package ee.moo.miner.exporter;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import ee.moo.miner.exporter.handler.DefaultHandler;
+import org.eclipse.jetty.server.*;
 
-@SpringBootApplication
 public class MinerExporterApplication {
 
-	static void main(String[] args) {
-		SpringApplication.run(MinerExporterApplication.class, args);
-	}
+    static void main() throws Exception {
+        var server = new Server();
+
+        var connector = new ServerConnector(server);
+        connector.setPort(8080);
+
+        server.addConnector(connector);
+        server.setDefaultHandler(new DefaultHandler());
+        server.start();
+        server.join();
+    }
 }

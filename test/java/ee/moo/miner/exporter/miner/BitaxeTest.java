@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.common.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
@@ -15,12 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 public class BitaxeTest extends IntegrationTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private Miner miner;
 
@@ -32,9 +26,9 @@ public class BitaxeTest extends IntegrationTest {
             var config = new MinerConfig();
             config.setId("miner01");
             config.setType(MinerType.BITAXE);
-            config.setUri(new URI("tcp://127.0.0.1:8082"));
+            config.setUri(new URI("http://127.0.0.1:8082"));
 
-            miner = config.getType().create(config, objectMapper);
+            miner = config.getType().create(config, new ObjectMapper());
         } catch (URISyntaxException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -42,8 +36,8 @@ public class BitaxeTest extends IntegrationTest {
 
     @Test
     public void testGetMetrics() throws IOException {
-        var json = new ClassPathResource("/miner/bitaxe/info.json")
-            .getContentAsString(StandardCharsets.UTF_8);
+        var json = resource("/miner/bitaxe/info.json");
+        System.out.println(json);
 
         wiremock.stubFor(get(urlEqualTo("/api/system/info")).willReturn(okJson(json)));
 

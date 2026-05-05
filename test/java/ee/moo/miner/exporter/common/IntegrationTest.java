@@ -10,15 +10,12 @@ import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles(profiles = {"test"})
-@ExtendWith(SpringExtension.class)
+import static java.nio.charset.StandardCharsets.*;
+
 public class IntegrationTest {
 
     protected static WireMockServer wiremock = new WireMockServer(8082);
@@ -36,6 +33,20 @@ public class IntegrationTest {
     @AfterAll
     public static void afterAll() {
         wiremock.stop();
+    }
+
+    public String resource(String name) {
+        try (var is = getClass().getResourceAsStream(name)) {
+            if (is == null) {
+                throw new RuntimeException(String.format(
+                    "Unable to load class path resource: %s",
+                    name
+                ));
+            }
+            return new String(is.readAllBytes(), UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     protected LoggedRequest getWiremockRequest(RequestPatternBuilder pattern) {

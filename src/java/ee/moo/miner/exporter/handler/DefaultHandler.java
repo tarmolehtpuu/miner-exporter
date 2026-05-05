@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.config;
+package ee.moo.miner.exporter.handler;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +7,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +19,15 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
-
-@Configuration
 @Slf4j
-public class ExporterConfiguration {
+public class DefaultHandler extends Handler.Abstract {
 
-    @Bean
-    public ObjectMapper objectMapper() {
+    @Override
+    public boolean handle(Request request, Response response, Callback callback) throws Exception {
+        return false;
+    }
+
+    private ObjectMapper createObjectMapper() {
         return JsonMapper.builder()
             .addModule(new JavaTimeModule())
             .defaultPropertyInclusion(
@@ -34,12 +38,12 @@ public class ExporterConfiguration {
             .build();
     }
 
-    @Bean
-    public List<Miner> miners(ObjectMapper objectMapper) {
+    public List<Miner> createMiners() {
+        var mapper = createObjectMapper();
         var miners = new ArrayList<Miner>();
 
         for (var config : MinerConfig.createFromEnvironment()) {
-            var miner = config.getType().create(config, objectMapper);
+            var miner = config.getType().create(config, mapper);
 
             log.info(
                 "Adding miner: id='{}', type={}, uri='{}'",
@@ -58,3 +62,4 @@ public class ExporterConfiguration {
         return miners;
     }
 }
+
