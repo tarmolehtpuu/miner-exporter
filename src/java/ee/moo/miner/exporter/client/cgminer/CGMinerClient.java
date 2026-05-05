@@ -123,6 +123,19 @@ public class CGMinerClient {
         }
     }
 
+    public List<CGMinerStats> getStats() {
+        try {
+            var response = objectMapper.readValue(execute("stats"), CGMinerStatsResponse.class);
+            if (response.isError()) {
+                throw new ClientException("CGMiner Error (cmd=stats): %s", response.getError());
+            }
+            return response.getStats();
+
+        } catch (IOException e) {
+            throw new ClientException(e.getMessage(), e);
+        }
+    }
+
     private String read(Socket socket) throws IOException {
         var in = new InputStreamReader(socket.getInputStream());
         var sb = new StringBuilder();

@@ -52,6 +52,11 @@ public class Nano3 implements Miner {
             System.out.println(device);
         }
 
+        var stats = client.getStats();
+        for (var s : stats) {
+            System.out.println(s);
+        }
+
         return new Nano3Metrics();
     }
 }
