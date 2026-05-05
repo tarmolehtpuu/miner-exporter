@@ -1,5 +1,6 @@
 package ee.moo.miner.exporter.miner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.common.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,24 +13,31 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
 public class BitaxeTest extends IntegrationTest {
 
     @Autowired
-    private MinerFactory minerFactory;
+    private ObjectMapper objectMapper;
 
     private Miner miner;
 
     @BeforeEach
     public void beforeEach() {
         super.beforeEach();
-        var config = new MinerConfig();
-        config.setId("miner01");
-        config.setType(MinerType.BITAXE);
-        config.setUrl("tcp://127.0.0.1:8082");
 
-        miner = minerFactory.create(config);
+        try {
+            var config = new MinerConfig();
+            config.setId("miner01");
+            config.setType(MinerType.BITAXE);
+            config.setUri(new URI("tcp://127.0.0.1:8082"));
+
+            miner = config.getType().create(config, objectMapper);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     @Test

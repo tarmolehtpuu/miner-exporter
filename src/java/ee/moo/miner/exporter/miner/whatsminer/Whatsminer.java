@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.miner.avalon;
+package ee.moo.miner.exporter.miner.whatsminer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
@@ -8,7 +8,7 @@ import ee.moo.miner.exporter.miner.MinerType;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AvalonNano3 implements Miner {
+public class Whatsminer implements Miner {
 
     private final MinerConfig config;
 
@@ -21,11 +21,11 @@ public class AvalonNano3 implements Miner {
 
     @Override
     public MinerType getType() {
-        return MinerType.NANO3;
+        return MinerType.WHATSMINER;
     }
 
     @Override
     public Metrics getMetrics() {
-        return new AvalonNano3Metrics();
+        return new WhatsminerMetrics();
     }
 }

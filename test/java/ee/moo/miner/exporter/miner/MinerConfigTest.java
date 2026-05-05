@@ -15,12 +15,10 @@ public class MinerConfigTest extends UnitTest {
         var env = Map.of(
             "MINER_0_ID", "miner01",
             "MINER_0_TYPE", "BITAXE",
-            "MINER_0_HOST", "127.0.0.1",
-            "MINER_0_PORT", "1234",
+            "MINER_0_URI", "http://127.0.0.1",
             "MINER_1_ID", "miner02",
-            "MINER_1_TYPE", "BITAXE",
-            "MINER_1_HOST", "127.0.0.1",
-            "MINER_1_PORT", "1235"
+            "MINER_1_TYPE", "AVALON",
+            "MINER_1_URI", "tcp://127.0.0.1:1235"
         );
 
         var cfg = MinerConfig.createFromEnvironment(env);
@@ -35,12 +33,9 @@ public class MinerConfigTest extends UnitTest {
         assertEquals("miner02", m2.getId());
 
         assertEquals(MinerType.BITAXE, m1.getType());
-        assertEquals(MinerType.BITAXE, m2.getType());
+        assertEquals(MinerType.AVALON, m2.getType());
 
-        assertEquals("127.0.0.1", m1.getHost());
-        assertEquals("127.0.0.1", m2.getHost());
-
-        assertEquals(1234, m1.getPort());
-        assertEquals(1235, m2.getPort());
+        assertEquals("http://127.0.0.1", m1.getUri().toString());
+        assertEquals("tcp://127.0.0.1:1235", m2.getUri().toString());
     }
 }
