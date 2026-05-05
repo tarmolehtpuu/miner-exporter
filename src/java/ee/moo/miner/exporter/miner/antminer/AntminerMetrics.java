@@ -1,8 +1,8 @@
-package ee.moo.miner.exporter.miner.nano3;
+package ee.moo.miner.exporter.miner.antminer;
 
 import ee.moo.miner.exporter.metrics.Metrics;
 
-public class Nano3Metrics implements Metrics {
+public class AntminerMetrics implements Metrics {
 
     @Override
     public Double getVoltage() {

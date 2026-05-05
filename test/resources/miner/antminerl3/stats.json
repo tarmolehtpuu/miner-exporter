@@ -1,0 +1,72 @@
+{
+  "STATUS": [
+    {
+      "STATUS": "S",
+      "When": 1777989810,
+      "Code": 70,
+      "Msg": "CGMiner stats",
+      "Description": "cgminer 4.9.0"
+    }
+  ],
+  "STATS": [
+    {
+      "CGMiner": "4.9.0",
+      "Miner": "1.0.1.4",
+      "CompileTime": "Wed Jul 10 14:34:16 CST 2019",
+      "Type": "Antminer L3+"
+    },
+    {
+      "STATS": 0,
+      "ID": "L30",
+      "Elapsed": 28851,
+      "Calls": 0,
+      "Wait": 0.000000,
+      "Max": 0.000000,
+      "Min": 99999999.000000,
+      "GHS 5s": "384.84",
+      "GHS av": 374.29,
+      "miner_count": 4,
+      "frequency": "384",
+      "fan_num": 2,
+      "fan1": 5130,
+      "fan2": 4470,
+      "temp_num": 4,
+      "temp1": 50,
+      "temp2": 48,
+      "temp3": 0,
+      "temp4": 49,
+      "temp2_1": 59,
+      "temp2_2": 60,
+      "temp2_3": 0,
+      "temp2_4": 56,
+      "temp31": 0,
+      "temp32": 0,
+      "temp33": 0,
+      "temp34": 0,
+      "temp4_1": 0,
+      "temp4_2": 0,
+      "temp4_3": 0,
+      "temp4_4": 0,
+      "temp_max": 50,
+      "Device Hardware%": 0.0000,
+      "no_matching_work": 17,
+      "chain_acn1": 72,
+      "chain_acn2": 72,
+      "chain_acn3": 0,
+      "chain_acn4": 72,
+      "chain_acs1": " oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo",
+      "chain_acs2": " oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo",
+      "chain_acs3": "",
+      "chain_acs4": " oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo oooooooo",
+      "chain_hw1": 0,
+      "chain_hw2": 11,
+      "chain_hw3": 0,
+      "chain_hw4": 6,
+      "chain_rate1": "133.20",
+      "chain_rate2": "122.13",
+      "chain_rate3": "0.00",
+      "chain_rate4": "129.51"
+    }
+  ],
+  "id": 1
+}

@@ -1,36 +1,23 @@
 package ee.moo.miner.exporter.client.cgminer.response;
 
-import ee.moo.miner.exporter.client.cgminer.model.CGMinerStatus;
+import ee.moo.miner.exporter.client.cgminer.model.CGMinerMeta;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public interface CGMinerResponse {
+import java.util.List;
+import java.util.Map;
 
-    CGMinerStatus getStatus();
+@RequiredArgsConstructor
+@Data
+public class CGMinerResponse {
 
-    default boolean isError() {
-        if (getStatus() == null) {
-            return true;
-        }
+    private final CGMinerMeta meta;
+    
+    public final List<Map<String, Object>> items;
 
-        if (getStatus().getStatus() == null) {
-            return true;
-        }
-
-        return !getStatus().getStatus().equals("S");
+    public Map<String, Object> getItem() {
+        return items.getFirst();
     }
 
-    default String getError() {
-        if (!isError()) {
-            return null;
-        }
-
-        if (getStatus() == null) {
-            return "Unknown error";
-        }
-
-        if (getStatus().getMessage() == null) {
-            return "Unknown error";
-        }
-
-        return getStatus().getMessage();
-    }
 }

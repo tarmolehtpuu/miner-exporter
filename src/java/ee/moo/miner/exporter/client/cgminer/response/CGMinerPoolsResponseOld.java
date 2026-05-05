@@ -7,7 +7,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class CGMinerPoolsResponse implements CGMinerResponse {
+public class CGMinerPoolsResponseOld implements CGMinerResponseOld {
 
     @JsonProperty
     @Getter

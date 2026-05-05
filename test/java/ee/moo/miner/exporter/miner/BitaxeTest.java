@@ -24,14 +24,12 @@ public class BitaxeTest extends IntegrationTest {
     @BeforeEach
     public void beforeEach() {
         super.beforeEach();
-        miner = minerFactory.create(
-            MinerConfig.builder()
-                .id("miner01")
-                .type(MinerType.BITAXE)
-                .host("127.0.0.1")
-                .port(8082)
-                .build()
-        );
+        var config = new MinerConfig();
+        config.setId("miner01");
+        config.setType(MinerType.BITAXE);
+        config.setUrl("tcp://127.0.0.1:8082");
+
+        miner = minerFactory.create(config);
     }
 
     @Test

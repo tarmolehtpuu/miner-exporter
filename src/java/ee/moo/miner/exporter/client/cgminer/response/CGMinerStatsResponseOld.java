@@ -10,7 +10,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CGMinerStatsResponse implements CGMinerResponse {
+public class CGMinerStatsResponseOld implements CGMinerResponseOld {
 
     @JsonProperty
     @Getter

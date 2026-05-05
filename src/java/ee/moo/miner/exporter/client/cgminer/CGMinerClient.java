@@ -60,7 +60,7 @@ public class CGMinerClient {
 
     public CGMinerVersion getVersion() {
         try {
-            var response = objectMapper.readValue(execute("version"), CGMinerVersionResponse.class);
+            var response = objectMapper.readValue(execute("version"), CGMinerVersionResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=version): %s", response.getError());
             }
@@ -73,7 +73,7 @@ public class CGMinerClient {
 
     public CGMinerSummary getSummary() {
         try {
-            var response = objectMapper.readValue(execute("summary"), CGMinerSummaryResponse.class);
+            var response = objectMapper.readValue(execute("summary"), CGMinerSummaryResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=summary): %s", response.getError());
             }
@@ -86,7 +86,7 @@ public class CGMinerClient {
 
     public CGMinerConfig getConfig() {
         try {
-            var response = objectMapper.readValue(execute("config"), CGMinerConfigResponse.class);
+            var response = objectMapper.readValue(execute("config"), CGMinerConfigResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=config): %s", response.getError());
             }
@@ -99,7 +99,7 @@ public class CGMinerClient {
 
     public List<CGMinerPool> getPools() {
         try {
-            var response = objectMapper.readValue(execute("pools"), CGMinerPoolsResponse.class);
+            var response = objectMapper.readValue(execute("pools"), CGMinerPoolsResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=pools): %s", response.getError());
             }
@@ -112,7 +112,7 @@ public class CGMinerClient {
 
     public List<CGMinerDevice> getDevices() {
         try {
-            var response = objectMapper.readValue(execute("devs"), CGMinerDevsResponse.class);
+            var response = objectMapper.readValue(execute("devs"), CGMinerDevsResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=devs): %s", response.getError());
             }
@@ -125,7 +125,7 @@ public class CGMinerClient {
 
     public List<CGMinerStats> getStats() {
         try {
-            var response = objectMapper.readValue(execute("stats"), CGMinerStatsResponse.class);
+            var response = objectMapper.readValue(execute("stats"), CGMinerStatsResponseOld.class);
             if (response.isError()) {
                 throw new ClientException("CGMiner Error (cmd=stats): %s", response.getError());
             }
