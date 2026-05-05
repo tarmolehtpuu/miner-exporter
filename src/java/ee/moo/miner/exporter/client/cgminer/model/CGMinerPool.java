@@ -3,7 +3,7 @@ package ee.moo.miner.exporter.client.cgminer.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-import util.json.YesNoBooleanDeserializer;
+import ee.moo.miner.exporter.util.json.YesNoBooleanDeserializer;
 
 import java.time.Instant;
 

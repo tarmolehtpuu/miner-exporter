@@ -2,13 +2,12 @@ package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.client.ClientException;
 import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.Authentication;
 import org.eclipse.jetty.client.BasicAuthentication;
 import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
-import util.StringUtil;
+import ee.moo.miner.exporter.util.StringUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -58,7 +57,6 @@ public class MinerConfig {
             if (!uri.toString().startsWith("http://") && !uri.toString().startsWith("https://")) {
                 throw new ClientException("AuthMode.%s is only supported for http|https URL-s (miner=%s)", auth, id);
             }
-
 
             if (StringUtil.isEmpty(username)) {
                 throw new ClientException("Miner username is required for AuthMode.%s (miner=%s)", auth, id);

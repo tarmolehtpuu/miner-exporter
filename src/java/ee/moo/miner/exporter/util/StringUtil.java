@@ -1,4 +1,4 @@
-package util;
+package ee.moo.miner.exporter.util;
 
 public class StringUtil {
 
