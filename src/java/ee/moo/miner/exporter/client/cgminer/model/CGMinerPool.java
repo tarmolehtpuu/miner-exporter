@@ -3,7 +3,6 @@ package ee.moo.miner.exporter.client.cgminer.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-import ee.moo.miner.exporter.util.json.YesNoBooleanDeserializer;
 
 import java.time.Instant;
 
@@ -26,8 +25,7 @@ public class CGMinerPool {
     private Integer quota;
 
     @JsonProperty("Long Poll")
-    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
-    private boolean longPoll;
+    private String longPoll;
 
     @JsonProperty("Getworks")
     private Integer getWorks;

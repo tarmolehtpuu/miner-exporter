@@ -3,7 +3,6 @@ package ee.moo.miner.exporter.client.cgminer.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
-import ee.moo.miner.exporter.util.json.YesNoBooleanDeserializer;
 
 import java.time.Instant;
 
@@ -20,8 +19,7 @@ public class CGMinerDevice {
     private Integer id;
 
     @JsonProperty("Enabled")
-    @JsonDeserialize(using = YesNoBooleanDeserializer.class)
-    private Boolean enabled;
+    private String enabled;
 
     @JsonProperty("Status")
     private String status;
