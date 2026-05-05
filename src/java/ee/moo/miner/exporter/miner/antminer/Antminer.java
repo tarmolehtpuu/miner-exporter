@@ -11,9 +11,6 @@ import ee.moo.miner.exporter.miner.antminer.model.AntMinerPool;
 import ee.moo.miner.exporter.miner.antminer.model.AntMinerStats;
 import ee.moo.miner.exporter.miner.antminer.model.AntMinerSummary;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.jetty.client.Authentication;
-import org.eclipse.jetty.client.BasicAuthentication;
-import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 

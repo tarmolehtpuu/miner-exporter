@@ -1,7 +1,6 @@
 package ee.moo.miner.exporter.client.cgminer.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 
 import java.time.Instant;
