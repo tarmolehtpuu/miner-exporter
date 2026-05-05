@@ -33,7 +33,13 @@ public class Antminer implements Miner {
 
     private final ObjectMapper objectMapper;
 
-    private HttpClient client;
+    private final HttpClient client;
+
+    public Antminer(MinerConfig config, ObjectMapper objectMapper) {
+        this.config = config;
+        this.client = config.createHttpClient();
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public MinerConfig getConfig() {
@@ -59,8 +65,6 @@ public class Antminer implements Miner {
     }
 
     private AntMinerSummary getSummary() {
-        var client = getClient();
-
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri().toString()))
                 .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
@@ -89,7 +93,6 @@ public class Antminer implements Miner {
     }
 
     private List<AntMinerPool> getPools() {
-        var client = getClient();
         var result = new ArrayList<AntMinerPool>();
 
         try {
@@ -153,50 +156,5 @@ public class Antminer implements Miner {
     }
 
     private void validateStats(JsonNode json) {
-
-    }
-
-    private HttpClient getClient() {
-        if (client == null) {
-            try {
-                client = new HttpClient();
-
-                client.setConnectTimeout(config.getConnectTimeout().toMillis());
-                client.setResponseBufferSize(config.getReadBufferSize());
-                client.start();
-
-                var base = config.getUri().toString();
-                if (!base.endsWith("/")) {
-                    base = String.format("%s/", base);
-                }
-
-                if (config.getAuth() == MinerConfig.AuthMode.BASIC) {
-                    client
-                        .getAuthenticationStore()
-                        .addAuthentication(new BasicAuthentication(
-                            new URI(base),
-                            Authentication.ANY_REALM,
-                            config.getUsername(),
-                            config.getPassword()
-                        ));
-                }
-
-                if (config.getAuth() == MinerConfig.AuthMode.DIGEST) {
-                    client
-                        .getAuthenticationStore()
-                        .addAuthentication(new DigestAuthentication(
-                            new URI(base),
-                            Authentication.ANY_REALM,
-                            config.getUsername(),
-                            config.getPassword()
-                        ));
-                }
-
-            } catch (Exception e) {
-                throw new MinerException(e.getMessage(), e);
-            }
-        }
-
-        return client;
     }
 }
