@@ -1,14 +1,45 @@
 package ee.moo.miner.exporter.metrics;
 
-public interface Metrics {
+import ee.moo.miner.exporter.miner.MinerType;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
+import lombok.Builder;
+import lombok.Data;
 
-    Double getVoltage();
+import java.io.IOException;
+import java.io.StringWriter;
 
-    Double getCurrent();
+@Data
+@Builder
+public class Metrics {
 
-    Double getPower();
+    private String miner;
 
-    default String export() {
-        return new MetricsExporter(this).toString();
+    private MinerType type;
+
+    private Integer uptime;
+
+    private Integer accepted;
+
+    private Integer rejected;
+
+    private Double hashrate;
+
+    private Double temperature;
+
+    public String export() {
+        CollectorRegistry registry = new CollectorRegistry();
+
+        new MetricsCollector(this)
+            .register(registry);
+
+        var writer = new StringWriter();
+        try {
+            TextFormat.write004(writer, registry.metricFamilySamples());
+        } catch (IOException e) {
+            throw new MetricsException(e.getMessage(), e);
+        }
+
+        return writer.toString();
     }
 }

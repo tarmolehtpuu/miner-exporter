@@ -2,10 +2,10 @@ package ee.moo.miner.exporter.miner.bitaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.client.ClientException;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.metrics.Metrics;
 import ee.moo.miner.exporter.miner.MinerConfig;
+import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -48,27 +48,31 @@ public class Bitaxe implements Miner {
                 .send();
 
             if (response.getStatus() != 200) {
-                throw new ClientException("Unexpected http status code: %s (miner=%s, cmd=info)", response.getStatus(), config.getId());
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=info)", response.getStatus(), config.getId());
             }
 
             System.out.println(response.getContentAsString());
 
             var json = objectMapper.readTree(response.getContent());
 
-            validateInfo(json);
+            validate(json);
 
-            var info = new BitaxeInfo();
-            info.setCurrent(10843.75);
-            info.setVoltage(5085.9375);
-            info.setPower(17.4110107);
-
-            return new BitaxeMetrics(info);
+            return Metrics.builder()
+                .miner(getId())
+                .type(getType())
+                .uptime(json.get("uptimeSeconds").asInt())
+                .accepted(json.get("sharesAccepted").asInt())
+                .rejected(json.get("sharesRejected").asInt())
+                .hashrate(json.get("hashRate").asDouble())
+                .temperature(json.get("temp").asDouble())
+                .build();
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
-            throw new ClientException(e.getMessage(), e);
+            throw new MinerException(e.getMessage(), e);
         }
     }
 
-    private void validateInfo(JsonNode json) {
+    private void validate(JsonNode json) {
+        // FIXME
     }
 }

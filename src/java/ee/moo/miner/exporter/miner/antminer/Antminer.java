@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import ee.moo.miner.exporter.client.ClientException;
 import ee.moo.miner.exporter.metrics.Metrics;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.antminer.model.AntMinerPool;
@@ -58,7 +57,15 @@ public class Antminer implements Miner {
             System.out.println(pool);
         }
 
-        return new AntminerMetrics();
+        return Metrics.builder()
+            .miner(getId())
+            .type(getType())
+            .uptime(4)
+            .accepted(1)
+            .rejected(2)
+            .hashrate(3.5)
+            .temperature(1.2)
+            .build();
     }
 
     private AntMinerSummary getSummary() {
@@ -69,7 +76,7 @@ public class Antminer implements Miner {
                 .send();
 
             if (response.getStatus() != 200) {
-                throw new ClientException("Unexpected http status code: %s (miner=%s, cmd=summary)", response.getStatus(), config.getId());
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=summary)", response.getStatus(), config.getId());
             }
 
             var json = objectMapper.readTree(response.getContent());
@@ -99,7 +106,7 @@ public class Antminer implements Miner {
                 .send();
 
             if (response.getStatus() != 200) {
-                throw new ClientException("Unexpected http status code: %s (miner=%s, cmd=pools)", response.getStatus(), config.getId());
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=pools)", response.getStatus(), config.getId());
             }
 
             System.out.println(response.getContentAsString());

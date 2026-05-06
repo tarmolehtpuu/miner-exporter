@@ -1,6 +1,6 @@
 package ee.moo.miner.exporter.miner;
 
-import ee.moo.miner.exporter.client.ClientException;
+import ee.moo.miner.exporter.client.CGMinerTcpClient;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.Authentication;
@@ -46,24 +46,24 @@ public class MinerConfig {
 
     public void validate() {
         if (StringUtil.isEmpty(id)) {
-            throw new ClientException("Miner ID is required");
+            throw new MinerException("Miner ID is required");
         }
 
         if (StringUtil.isEmpty(uri.toString())) {
-            throw new ClientException("Miner URL is required (miner=%s)", id);
+            throw new MinerException("Miner URL is required (miner=%s)", id);
         }
 
         if (auth == AuthMode.BASIC || auth == AuthMode.DIGEST) {
             if (!uri.toString().startsWith("http://") && !uri.toString().startsWith("https://")) {
-                throw new ClientException("AuthMode.%s is only supported for http|https URL-s (miner=%s)", auth, id);
+                throw new MinerException("AuthMode.%s is only supported for http|https URL-s (miner=%s)", auth, id);
             }
 
             if (StringUtil.isEmpty(username)) {
-                throw new ClientException("Miner username is required for AuthMode.%s (miner=%s)", auth, id);
+                throw new MinerException("Miner username is required for AuthMode.%s (miner=%s)", auth, id);
             }
 
             if (StringUtil.isEmpty(password)) {
-                throw new ClientException("Password is required for AuthMode.%s (miner=%s)", auth, id);
+                throw new MinerException("Password is required for AuthMode.%s (miner=%s)", auth, id);
             }
         }
 
@@ -72,10 +72,29 @@ public class MinerConfig {
         }
     }
 
+    public CGMinerTcpClient createTcpClient() {
+        var base = uri.toString();
+        if (!base.startsWith("tcp://")) {
+            throw new MinerException("Unable to create TCP client for URI=%s (miner=%s)", uri, id);
+        }
+
+        if (auth != AuthMode.NONE) {
+            throw new MinerException("Authentication mode (auth=%s) not supported for TCP client (miner=%s)", auth, id);
+        }
+
+        var client = new CGMinerTcpClient(uri.getHost(), uri.getPort());
+
+        client.setConnectTimeout(connectTimeout);
+        client.setReadTimeout(readTimeout);
+        client.setReadBufferSize(readBufferSize);
+
+        return client;
+    }
+
     public HttpClient createHttpClient() {
         var base = uri.toString();
         if (!base.startsWith("http://") && !base.startsWith("https://")) {
-            throw new ClientException("Unable to create http client for URI=%s (miner=%s)", uri, id);
+            throw new MinerException("Unable to create http client for URI=%s (miner=%s)", uri, id);
         }
 
         if (!base.endsWith("/")) {
@@ -191,7 +210,7 @@ public class MinerConfig {
         try {
             return new URI(env.get(String.format("MINER_%d_URI", n)));
         } catch (URISyntaxException e) {
-            throw new ClientException(e.getMessage(), e);
+            throw new MinerException(e.getMessage(), e);
         }
     }
 

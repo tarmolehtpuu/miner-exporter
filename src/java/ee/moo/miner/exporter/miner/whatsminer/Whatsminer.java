@@ -26,6 +26,14 @@ public class Whatsminer implements Miner {
 
     @Override
     public Metrics getMetrics() {
-        return new WhatsminerMetrics();
+        return Metrics.builder()
+            .miner(getId())
+            .type(getType())
+            .uptime(1)
+            .accepted(2)
+            .rejected(3)
+            .hashrate(1.5)
+            .temperature(4.0)
+            .build();
     }
 }
