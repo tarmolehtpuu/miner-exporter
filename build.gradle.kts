@@ -83,3 +83,26 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.jar {
+    archiveBaseName.set(project.name)
+    archiveVersion.set(project.version.toString())
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    entryCompression = ZipEntryCompression.DEFLATED
+
+    from(sourceSets.main.get().output)
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
+        exclude("META-INF/*.SF")
+        exclude("META-INF/*.DSA")
+        exclude("META-INF/*.RSA")
+    }
+
+    manifest {
+        attributes(
+            "Implementation-Title" to project.name,
+            "Implementation-Version" to project.version,
+            "Main-Class" to "ee.moo.miner.exporter.MinerExporterApplication",
+            "Multi-Release" to "true",
+        )
+    }
+}
