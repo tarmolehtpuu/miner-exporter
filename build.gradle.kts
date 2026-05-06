@@ -95,6 +95,14 @@ tasks.jar {
         exclude("META-INF/*.SF")
         exclude("META-INF/*.DSA")
         exclude("META-INF/*.RSA")
+        exclude("META-INF/LICENSE")
+        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/*-LICENSE")
+        exclude("META-INF/INDEX.LIST")
+        exclude("META-INF/NOTICE")
+        exclude("META-INF/maven/")
+        exclude("META-INF/native-image/")
+        exclude("META-INF/versions/")
     }
 
     manifest {
