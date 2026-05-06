@@ -2,10 +2,14 @@ package ee.moo.miner.exporter.miner.whatsminer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
+import ee.moo.miner.exporter.metrics.MetricsTemperature;
+import ee.moo.miner.exporter.metrics.MetricsTemperatureType;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerType;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class Whatsminer implements Miner {
@@ -26,6 +30,12 @@ public class Whatsminer implements Miner {
 
     @Override
     public Metrics getMetrics() {
+        var temp = MetricsTemperature.builder()
+            .no(1)
+            .type(MetricsTemperatureType.CHIP)
+            .value(4.0)
+            .build();
+
         return Metrics.builder()
             .miner(getId())
             .type(getType())
@@ -33,7 +43,7 @@ public class Whatsminer implements Miner {
             .accepted(2)
             .rejected(3)
             .hashrate(1.5)
-            .temperature(4.0)
+            .temperature(List.of(temp))
             .build();
     }
 }

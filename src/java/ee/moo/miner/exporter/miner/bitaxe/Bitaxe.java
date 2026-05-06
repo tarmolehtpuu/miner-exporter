@@ -2,8 +2,8 @@ package ee.moo.miner.exporter.miner.bitaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.moo.miner.exporter.metrics.*;
 import ee.moo.miner.exporter.miner.Miner;
-import ee.moo.miner.exporter.metrics.Metrics;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
@@ -11,11 +11,15 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class Bitaxe implements Miner {
+
+    private final static int MAX_FAN_RPM = 7000;
 
     private final MinerConfig config;
 
@@ -57,19 +61,69 @@ public class Bitaxe implements Miner {
 
             validate(json);
 
+            var temp = MetricsTemperature.builder()
+                .no(1)
+                .type(MetricsTemperatureType.CHIP)
+                .value(json.get("temp").asDouble())
+                .build();
+
+            var fan = MetricsFan.builder()
+                .no(1)
+                .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
+                .build();
+
             return Metrics.builder()
                 .miner(getId())
                 .type(getType())
                 .uptime(json.get("uptimeSeconds").asInt())
                 .accepted(json.get("sharesAccepted").asInt())
                 .rejected(json.get("sharesRejected").asInt())
+                .found(json.get("blockFound").asInt())
                 .hashrate(json.get("hashRate").asDouble())
-                .temperature(json.get("temp").asDouble())
+                .temperature(List.of(temp))
+                .fan(List.of(fan))
+                .pool(getPool(json))
                 .build();
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new MinerException(e.getMessage(), e);
         }
+    }
+
+    public List<MetricsPool> getPool(JsonNode json) {
+        var primary = json.get("isUsingFallbackStratum").asInt() == 0;
+
+        var pool1 = MetricsPool.builder()
+            .no(0)
+            .uri(String.format(
+                "stratum+tcp://%s:%d",
+                json.get("stratumURL").asText(),
+                json.get("stratumPort").asInt()
+            ))
+            .user(json.get("stratumUser").asText())
+            .priority(primary ? 0 : 1)
+            .alive(primary && json.get("hashRate").asDouble() > 0)
+            .active(primary)
+            .accepted(0)
+            .rejected(0)
+            .build();
+
+        var pool2 = MetricsPool.builder()
+            .no(1)
+            .uri(String.format(
+                "stratum+tcp://%s:%d",
+                json.get("fallbackStratumURL").asText(),
+                json.get("fallbackStratumPort").asInt()
+            ))
+            .user(json.get("fallbackStratumUser").asText())
+            .priority(primary ? 1 : 0)
+            .alive(!primary && json.get("hashRate").asDouble() > 0)
+            .active(!primary)
+            .accepted(0)
+            .rejected(0)
+            .build();
+
+        return List.of(pool1, pool2);
     }
 
     private void validate(JsonNode json) {
