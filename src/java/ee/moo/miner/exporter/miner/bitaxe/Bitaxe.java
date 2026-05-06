@@ -11,7 +11,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -61,11 +60,17 @@ public class Bitaxe implements Miner {
 
             validate(json);
 
-            var temp = MetricsTemperature.builder()
+            var temp1 = MetricsTemperature.builder()
                 .no(1)
                 .type(MetricsTemperatureType.CHIP)
                 .value(json.get("temp").asDouble())
                 .build();
+            var temp2 = MetricsTemperature.builder()
+                .no(2)
+                .type(MetricsTemperatureType.PCB)
+                .value(json.get("vrTemp").asDouble())
+                .build();
+
 
             var fan = MetricsFan.builder()
                 .no(1)
@@ -80,7 +85,7 @@ public class Bitaxe implements Miner {
                 .rejected(json.get("sharesRejected").asInt())
                 .found(json.get("blockFound").asInt())
                 .hashrate(json.get("hashRate").asDouble())
-                .temperature(List.of(temp))
+                .temperature(List.of(temp1, temp2))
                 .fan(List.of(fan))
                 .pool(getPool(json))
                 .build();

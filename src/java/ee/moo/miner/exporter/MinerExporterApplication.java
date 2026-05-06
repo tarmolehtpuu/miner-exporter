@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ee.moo.miner.exporter.api.*;
+import ee.moo.miner.exporter.api.DefaultController;
+import ee.moo.miner.exporter.api.HealthzController;
+import ee.moo.miner.exporter.api.MetricsController;
+import ee.moo.miner.exporter.api.ReadyzController;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +44,7 @@ public class MinerExporterApplication {
     private static ObjectMapper createObjectMapper() {
         return JsonMapper.builder()
             .addModule(new JavaTimeModule())
-            .defaultPropertyInclusion(
-                JsonInclude.Value.construct(NON_ABSENT, NON_ABSENT)
-            )
+            .defaultPropertyInclusion(JsonInclude.Value.construct(NON_ABSENT, NON_ABSENT))
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(WRITE_DATES_AS_TIMESTAMPS)
             .build();

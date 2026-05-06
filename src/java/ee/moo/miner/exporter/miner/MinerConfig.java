@@ -1,13 +1,13 @@
 package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.client.CGMinerTcpClient;
+import ee.moo.miner.exporter.util.StringUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.Authentication;
 import org.eclipse.jetty.client.BasicAuthentication;
 import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
-import ee.moo.miner.exporter.util.StringUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class IntegrationTest {
 
