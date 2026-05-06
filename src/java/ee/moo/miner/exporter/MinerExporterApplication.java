@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ee.moo.miner.exporter.handler.DefaultHandler;
-import ee.moo.miner.exporter.metrics.MetricsController;
+import ee.moo.miner.exporter.api.*;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,11 @@ public class MinerExporterApplication {
         connector.setPort(8080);
 
         server.addConnector(connector);
-        server.setDefaultHandler(new DefaultHandler(new MetricsController(miners)));
+        server.setDefaultHandler(new DefaultController(List.of(
+            new HealthzController(),
+            new ReadyzController(),
+            new MetricsController(miners)
+        )));
         server.start();
         server.join();
     }
