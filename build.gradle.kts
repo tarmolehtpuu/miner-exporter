@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
 }
 
 group = "ee.moo"
@@ -80,8 +81,17 @@ sourceSets {
     }
 }
 
+tasks.jacocoTestReport {
+    dependsOn(tasks.withType<Test>())
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jar {
