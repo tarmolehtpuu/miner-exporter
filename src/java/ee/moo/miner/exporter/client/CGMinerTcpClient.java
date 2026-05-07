@@ -1,5 +1,6 @@
 package ee.moo.miner.exporter.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,9 +10,12 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.Duration;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class CGMinerTcpClient {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final String host;
     private final int port;
@@ -32,7 +36,7 @@ public class CGMinerTcpClient {
             socket.setSoTimeout(readTimeout.toMillisPart());
 
             var out = new PrintWriter(socket.getOutputStream());
-            out.write(String.format("{\"command\": \"%s\"}", command));
+            out.write(objectMapper.writeValueAsString(Map.of("command", command)));
             out.flush();
 
             var in = new InputStreamReader(socket.getInputStream());

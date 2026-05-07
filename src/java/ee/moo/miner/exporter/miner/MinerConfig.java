@@ -185,7 +185,6 @@ public class MinerConfig {
         return configs;
     }
 
-
     private static boolean hasConfig(Map<String, String> env, int n) {
         return hasId(env, n) && hasType(env, n) && hasUri(env, n);
     }

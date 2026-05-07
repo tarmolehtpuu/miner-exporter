@@ -57,8 +57,6 @@ public class Application {
         server.join();
     }
 
-    public
-
     static void main() throws Exception {
         new Application(System.getenv(), 8080).start();
     }
