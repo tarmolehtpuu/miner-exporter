@@ -7,6 +7,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -17,18 +19,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MetricsTest extends IntegrationTest {
 
-    public static Stream<TestConfig> configProvider() {
-        var miner01 = new TestConfig("miner01", MinerType.BITAXE)
+    public static Stream<TestConfig> configProvider() throws URISyntaxException {
+        var miner01 = new TestConfig("miner01", MinerType.BITAXE, new URI(wiremockUri()))
             .response("/bitaxe/metrics.txt")
             .wiremock("/api/system/info", "/bitaxe/info.json");
 
-        var miner02 = new TestConfig("miner02", MinerType.AVALON)
+        var miner02 = new TestConfig("miner02", MinerType.AVALON, new URI(cgminerUri()))
             .response("/avalon/metrics.txt")
             .cgminer("pools", "/avalon/pools.json")
             .cgminer("stats", "/avalon/stats.json")
             .cgminer("summary", "/avalon/summary.json");
 
-        var miner03 = new TestConfig("miner03", MinerType.ANTMINER)
+        var miner03 = new TestConfig("miner03", MinerType.ANTMINER, new URI(wiremockUri()))
             .response("/antminer/metrics.txt")
             .wiremock("/cgi-bin/miner_pools.cgi", "/antminer/pools.json")
             .wiremock("/cgi-bin/miner_stats.cgi", "/antminer/stats.json")
@@ -44,6 +46,14 @@ public class MetricsTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource("configProvider")
     public void testMiners(TestConfig config) throws Exception {
+        var env = Map.of(
+            "MINER_ID", config.getMiner(),
+            "MINER_TYPE", config.getType().toString(),
+            "MINER_URI", config.getUri().toString()
+        );
+
+        startApplication(env, APPLICATION_HOST, APPLICATION_PORT);
+
         for (var path : config.getWiremockPaths()) {
             wiremock.stubFor(get(urlEqualTo(path)).willReturn(okJson(config.getWiremockReply(path))));
         }
@@ -52,9 +62,7 @@ public class MetricsTest extends IntegrationTest {
             cgminer.stub(cmd, config.getCgminerReply(cmd));
         }
 
-        var response = http
-            .newRequest(applicationUri(String.format("/metrics/%s", config.getMiner())))
-            .send();
+        var response = http.newRequest(applicationUri("/metrics")).send();
 
         assertEquals(200, response.getStatus());
         assertEquals("text/plain; version=0.0.4; charset=utf-8", response.getHeaders().get("Content-Type"));
@@ -82,7 +90,11 @@ public class MetricsTest extends IntegrationTest {
         @Getter
         private final String miner;
 
+        @Getter
         private final MinerType type;
+
+        @Getter
+        private final URI uri;
 
         private final Map<String, String> wiremock = new HashMap<>();
 
@@ -91,9 +103,10 @@ public class MetricsTest extends IntegrationTest {
         @Getter
         private String response;
 
-        public TestConfig(String miner, MinerType type) {
+        public TestConfig(String miner, MinerType type, URI uri) {
             this.miner = miner;
             this.type = type;
+            this.uri = uri;
         }
 
         public TestConfig wiremock(String path, String file) {

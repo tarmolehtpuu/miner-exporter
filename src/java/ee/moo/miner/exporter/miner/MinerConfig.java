@@ -9,8 +9,6 @@ import org.eclipse.jetty.client.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +39,39 @@ public class MinerConfig {
     private Duration readTimeout = Duration.ofMillis(2000);
 
     private int readBufferSize = 8192;
+
+    public MinerConfig(Map<String, String> env) throws URISyntaxException {
+        this.id = env.get("MINER_ID");
+        this.type = MinerType.valueOf(env.get("MINER_TYPE"));
+        this.uri = new URI(env.get("MINER_URI"));
+
+        if (env.containsKey("MINER_AUTH")) {
+            this.auth = AuthMode.valueOf(env.get("MINER_AUTH"));
+        }
+
+        if (env.containsKey("MINER_USERNAME")) {
+            this.username = env.get("MINER_USERNAME");
+        }
+
+        if (env.containsKey("MINER_PASSWORD")) {
+            this.password = env.get("MINER_PASSWORD");
+        }
+
+        if (env.containsKey("MINER_CONNECT_TIMEOUT")) {
+            this.connectTimeout = Duration.parse(env.get("MINER_CONNECT_TIMEOUT"));
+        }
+
+        if (env.containsKey("MINER_READ_TIMEOUT")) {
+            this.readTimeout = Duration.parse(env.get("MINER_READ_TIMEOUT"));
+        }
+
+        if (env.containsKey("MINER_READ_BUFFER_SIZE")) {
+            this.readBufferSize = Integer.parseInt(env.get("MINER_READ_BUFFER_SIZE"));
+        }
+
+        // FIXME
+        this.validate();
+    }
 
     public void validate() {
         if (StringUtil.isEmpty(id)) {
@@ -139,129 +170,5 @@ public class MinerConfig {
         } catch (Exception e) {
             throw new MinerException(e.getMessage(), e);
         }
-    }
-
-    public static List<MinerConfig> createFromEnvironment() {
-        return createFromEnvironment(System.getenv());
-    }
-
-    public static List<MinerConfig> createFromEnvironment(Map<String, String> env) {
-        var configs = new ArrayList<MinerConfig>();
-
-        for (int i = 0; hasConfig(env, i); i++) {
-            var config = new MinerConfig();
-            config.setId(getId(env, i));
-            config.setType(getType(env, i));
-            config.setUri(getUri(env, i));
-
-            if (hasAuth(env, i)) {
-                config.setAuth(getAuth(env, i));
-            }
-
-            if (hasUsername(env, i)) {
-                config.setUsername(getUsername(env, i));
-            }
-
-            if (hasPassword(env, i)) {
-                config.setPassword(getPassword(env, i));
-            }
-
-            if (hasConnectTimeout(env, i)) {
-                config.setConnectTimeout(getConnectTimeout(env, i));
-            }
-
-            if (hasReadTimeout(env, i)) {
-                config.setReadTimeout(getReadTimeout(env, i));
-            }
-
-            if (hasReadBufferSize(env, i)) {
-                config.setReadBufferSize(getReadBufferSize(env, i));
-            }
-
-            config.validate();
-            configs.add(config);
-        }
-
-        return configs;
-    }
-
-    private static boolean hasConfig(Map<String, String> env, int n) {
-        return hasId(env, n) && hasType(env, n) && hasUri(env, n);
-    }
-
-    private static boolean hasId(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_ID", n));
-    }
-
-    private static String getId(Map<String, String> env, int n) {
-        return env.get(String.format("MINER_%d_ID", n));
-    }
-
-    private static boolean hasType(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_TYPE", n));
-    }
-
-    private static MinerType getType(Map<String, String> env, int n) {
-        return MinerType.valueOf(env.get(String.format("MINER_%d_TYPE", n)));
-    }
-
-    private static boolean hasUri(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_URI", n));
-    }
-
-    private static URI getUri(Map<String, String> env, int n) {
-        try {
-            return new URI(env.get(String.format("MINER_%d_URI", n)));
-        } catch (URISyntaxException e) {
-            throw new MinerException(e.getMessage(), e);
-        }
-    }
-
-    private static boolean hasAuth(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_AUTH", n));
-    }
-
-    private static AuthMode getAuth(Map<String, String> env, int n) {
-        return AuthMode.valueOf(env.get(String.format("MINER_%d_AUTH", n)));
-    }
-
-    private static boolean hasUsername(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_USERNAME", n));
-    }
-
-    private static String getUsername(Map<String, String> env, int n) {
-        return env.get(String.format("MINER_%d_USERNAME", n));
-    }
-
-    private static boolean hasPassword(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_PASSWORD", n));
-    }
-
-    private static String getPassword(Map<String, String> env, int n) {
-        return env.get(String.format("MINER_%d_PASSWORD", n));
-    }
-
-    private static boolean hasConnectTimeout(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_CONNECT_TIMEOUT", n));
-    }
-
-    private static Duration getConnectTimeout(Map<String, String> env, int n) {
-        return Duration.parse(env.get(String.format("MINER_%d_CONNECT_TIMEOUT", n)));
-    }
-
-    private static boolean hasReadTimeout(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_READ_TIMEOUT", n));
-    }
-
-    private static Duration getReadTimeout(Map<String, String> env, int n) {
-        return Duration.parse(env.get(String.format("MINER_%d_READ_TIMEOUT", n)));
-    }
-
-    private static boolean hasReadBufferSize(Map<String, String> env, int n) {
-        return env.containsKey(String.format("MINER_%d_READ_BUFFER_SIZE", n));
-    }
-
-    private static int getReadBufferSize(Map<String, String> env, int n) {
-        return Integer.parseInt(env.get(String.format("MINER_%d_READ_BUFFER_SIZE", n)));
     }
 }

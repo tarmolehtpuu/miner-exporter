@@ -10,6 +10,8 @@ public class ReadyzTest extends IntegrationTest {
 
     @Test
     public void testReadyz() throws Exception {
+        startApplication(APPLICATION_HOST, APPLICATION_PORT);
+
         var response = http
             .newRequest(applicationUri("/readyz"))
             .send();

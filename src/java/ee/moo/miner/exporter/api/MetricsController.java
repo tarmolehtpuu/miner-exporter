@@ -9,7 +9,6 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -17,7 +16,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Slf4j
 public class MetricsController implements Controller {
 
-    private final List<Miner> miners;
+    private final Miner miner;
 
     @Override
     public boolean matches(Request request) {
@@ -25,40 +24,11 @@ public class MetricsController implements Controller {
             return false;
         }
 
-        var path = request.getHttpURI().getPath();
-        if (!path.startsWith("/metrics/")) {
-            return false;
-        }
-
-        var count = path.chars()
-            .filter(c -> c == '/')
-            .count();
-
-        if (count != 2) {
-            log.warn("Ignoring invalid metrics path: {}", path);
-            return false;
-        }
-
-        var miner = miners.stream()
-            .filter(m -> StringUtil.equals(m.getId(), getId(path)))
-            .findFirst()
-            .orElse(null);
-
-        if (miner == null) {
-            log.warn("Miner not found (id={})", getId(path));
-            return false;
-        }
-
-        return true;
+        return StringUtil.equals("/metrics", request.getHttpURI().getPath());
     }
 
     @Override
     public void handle(Request request, Response response, Callback callback) {
-        var miner = miners.stream()
-            .filter(m -> StringUtil.equals(m.getId(), getId(request.getHttpURI().getPath())))
-            .findFirst()
-            .orElseThrow();
-
         var bytes = miner
             .getMetrics()
             .export()
@@ -67,9 +37,5 @@ public class MetricsController implements Controller {
         response.setStatus(200);
         response.getHeaders().put("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
         response.write(true, ByteBuffer.wrap(bytes), callback);
-    }
-
-    private String getId(String path) {
-        return path.substring(path.lastIndexOf("/") + 1);
     }
 }

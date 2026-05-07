@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HealthzTest extends IntegrationTest {
 
     @Test
-    public void testHealthz() throws ExecutionException, InterruptedException, TimeoutException {
+    public void testHealthz() throws Exception {
+        startApplication(APPLICATION_HOST, APPLICATION_PORT);
+
         var response = http.newRequest(applicationUri("/healthz")).send();
 
         assertEquals(200, response.getStatus());

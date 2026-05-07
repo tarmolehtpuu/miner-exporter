@@ -59,27 +59,16 @@ public abstract class IntegrationTest {
     public void afterEach() throws Exception {
         http.stop();
         http = null;
+
+        if (application != null) {
+            application.stop();
+        }
     }
 
     @BeforeAll
     public static void beforeAll() throws Exception {
         wiremock = new WireMockServer(WIREMOCK_PORT);
         wiremock.start();
-
-        var env = Map.of(
-            "MINER_0_ID", "miner01",
-            "MINER_0_TYPE", "BITAXE",
-            "MINER_0_URI", wiremockUri(),
-            "MINER_1_ID", "miner02",
-            "MINER_1_TYPE", "AVALON",
-            "MINER_1_URI", cgminerUri(),
-            "MINER_2_ID", "miner03",
-            "MINER_2_TYPE", "ANTMINER",
-            "MINER_2_URI", wiremockUri()
-        );
-
-        application = new Application(env, APPLICATION_PORT);
-        application.start();
 
         cgminer = new FakeCGMiner(CGMINER_PORT);
         cgminer.start();
@@ -90,6 +79,16 @@ public abstract class IntegrationTest {
         wiremock.stop();
         application.stop();
         cgminer.stop();
+    }
+
+    public static void startApplication(String host, int port) throws Exception {
+        application = new Application(Map.of(), host, port);
+        application.start();
+    }
+
+    public static void startApplication(Map<String, String> env, String host, int port) throws Exception {
+        application = new Application(env, host, port);
+        application.start();
     }
 
     public static String resource(String path) throws IOException {
