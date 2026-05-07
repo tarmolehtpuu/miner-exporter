@@ -4,10 +4,7 @@ import ee.moo.miner.exporter.client.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.client.Authentication;
-import org.eclipse.jetty.client.BasicAuthentication;
-import org.eclipse.jetty.client.DigestAuthentication;
-import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +12,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Data
 @Slf4j
@@ -105,6 +103,12 @@ public class MinerConfig {
             var client = new HttpClient();
 
             client.setConnectTimeout(connectTimeout.toMillis());
+            client.getRequestListeners().addListener(new Request.Listener() {
+                @Override
+                public void onQueued(Request request) {
+                    request.timeout(readTimeout.toMillis(), TimeUnit.MILLISECONDS);
+                }
+            });
             client.setResponseBufferSize(readBufferSize);
             client.start();
 

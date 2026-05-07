@@ -16,20 +16,32 @@ import org.eclipse.jetty.server.ServerConnector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Slf4j
-public class MinerExporterApplication {
+public class Application {
 
-    static void main() throws Exception {
-        var miners = createMiners();
-        var server = new Server();
+    private final Map<String, String> env;
+
+    private final int port;
+
+    private final Server server;
+
+    public Application(Map<String, String> env, int port) {
+        this.env = env;
+        this.port = port;
+        this.server = new Server();
+    }
+
+    public void start() throws Exception {
+        var miners = createMiners(env);
 
         var connector = new ServerConnector(server);
-        connector.setPort(8080);
+        connector.setPort(port);
 
         server.addConnector(connector);
         server.setDefaultHandler(new DefaultController(List.of(
@@ -38,7 +50,17 @@ public class MinerExporterApplication {
             new MetricsController(miners)
         )));
         server.start();
+    }
+
+    public void stop() throws Exception {
+        server.stop();
         server.join();
+    }
+
+    public
+
+    static void main() throws Exception {
+        new Application(System.getenv(), 8080).start();
     }
 
     private static ObjectMapper createObjectMapper() {
@@ -50,11 +72,11 @@ public class MinerExporterApplication {
             .build();
     }
 
-    private static List<Miner> createMiners() {
+    private static List<Miner> createMiners(Map<String, String> env) {
         var mapper = createObjectMapper();
         var miners = new ArrayList<Miner>();
 
-        for (var config : MinerConfig.createFromEnvironment()) {
+        for (var config : MinerConfig.createFromEnvironment(env)) {
             var miner = config.getType().create(config, mapper);
 
             log.info(

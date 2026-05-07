@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @RequiredArgsConstructor
@@ -71,7 +70,6 @@ public class Antminer implements Miner {
     private JsonNode getSummary() {
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri()))
-                .timeout(config.getReadTimeout().toMillisPart(), TimeUnit.MILLISECONDS)
                 .method(HttpMethod.GET)
                 .send();
 
@@ -96,7 +94,6 @@ public class Antminer implements Miner {
     private JsonNode getStats() {
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_stats.cgi", config.getUri()))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .method(HttpMethod.GET)
                 .send();
 

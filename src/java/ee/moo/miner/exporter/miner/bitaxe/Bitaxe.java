@@ -13,7 +13,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class Bitaxe implements Miner {
@@ -46,7 +45,6 @@ public class Bitaxe implements Miner {
     public Metrics getMetrics() {
         try {
             var response = client.newRequest(String.format("%s/api/system/info", config.getUri()))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .method(HttpMethod.GET)
                 .send();
 
