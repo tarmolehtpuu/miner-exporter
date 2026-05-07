@@ -21,20 +21,20 @@ public class MetricsTest extends IntegrationTest {
 
     public static Stream<TestConfig> configProvider() throws URISyntaxException {
         var miner01 = new TestConfig("miner01", MinerType.BITAXE, new URI(wiremockUri()))
-            .response("/bitaxe/metrics.txt")
-            .wiremock("/api/system/info", "/bitaxe/info.json");
+            .response("/miner01/metrics.txt")
+            .wiremock("/api/system/info", "/miner01/info.json");
 
         var miner02 = new TestConfig("miner02", MinerType.AVALON, new URI(cgminerUri()))
-            .response("/avalon/metrics.txt")
-            .cgminer("pools", "/avalon/pools.json")
-            .cgminer("stats", "/avalon/stats.json")
-            .cgminer("summary", "/avalon/summary.json");
+            .response("/miner02/metrics.txt")
+            .cgminer("pools", "/miner02/pools.json")
+            .cgminer("stats", "/miner02/stats.json")
+            .cgminer("summary", "/miner02/summary.json");
 
         var miner03 = new TestConfig("miner03", MinerType.ANTMINER, new URI(wiremockUri()))
-            .response("/antminer/metrics.txt")
-            .wiremock("/cgi-bin/miner_pools.cgi", "/antminer/pools.json")
-            .wiremock("/cgi-bin/miner_stats.cgi", "/antminer/stats.json")
-            .wiremock("/cgi-bin/miner_summary.cgi", "/antminer/summary.json");
+            .response("/miner03/metrics.txt")
+            .wiremock("/cgi-bin/miner_pools.cgi", "/miner03/pools.json")
+            .wiremock("/cgi-bin/miner_stats.cgi", "/miner03/stats.json")
+            .wiremock("/cgi-bin/miner_summary.cgi", "/miner03/summary.json");
 
         return Stream.of(
             miner01,
