@@ -1,7 +1,8 @@
 package ee.moo.miner.exporter.controller;
 
-import ee.moo.miner.exporter.common.IntegrationTest;
+import ee.moo.miner.exporter.IntegrationTest;
 import ee.moo.miner.exporter.miner.MinerType;
+import lombok.Getter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -20,7 +21,12 @@ public class MetricsTest extends IntegrationTest {
         return Stream.of(
             new TestConfig("miner01", MinerType.BITAXE)
                 .response("/bitaxe/response.txt")
-                .wiremock("/api/system/info", "/bitaxe/info.json")
+                .wiremock("/api/system/info", "/bitaxe/info.json"),
+            new TestConfig("miner02", MinerType.AVALON)
+                .response("/avalon/response.txt")
+                .cgminer("pools", "/avalon/pools.json")
+                .cgminer("stats", "/avalon/stats.json")
+                .cgminer("summary", "/avalon/summary.json")
         );
     }
 
@@ -29,6 +35,10 @@ public class MetricsTest extends IntegrationTest {
     public void testMiners(TestConfig config) throws Exception {
         for (var path : config.getWiremockPaths()) {
             wiremock.stubFor(get(urlEqualTo(path)).willReturn(okJson(config.getWiremockReply(path))));
+        }
+
+        for (var cmd : config.getCgminerCommands()) {
+            cgminer.stub(cmd, config.getCgminerReply(cmd));
         }
 
         var response = http
@@ -58,21 +68,21 @@ public class MetricsTest extends IntegrationTest {
 
     public static class TestConfig {
 
+        @Getter
         private final String miner;
 
         private final MinerType type;
 
         private final Map<String, String> wiremock = new HashMap<>();
 
+        private final Map<String, String> cgminer = new HashMap<>();
+
+        @Getter
         private String response;
 
         public TestConfig(String miner, MinerType type) {
             this.miner = miner;
             this.type = type;
-        }
-
-        public String getMiner() {
-            return miner;
         }
 
         public TestConfig wiremock(String path, String file) {
@@ -93,6 +103,24 @@ public class MetricsTest extends IntegrationTest {
             return wiremock.get(path);
         }
 
+        public TestConfig cgminer(String command, String file) {
+            try {
+                cgminer.put(command, IntegrationTest.resource(file));
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+
+            return this;
+        }
+
+        public Set<String> getCgminerCommands() {
+            return cgminer.keySet();
+        }
+
+        public String getCgminerReply(String command) {
+            return cgminer.get(command);
+        }
+
         public TestConfig response(String file) {
             try {
                 response = IntegrationTest.resource(file);
@@ -101,10 +129,6 @@ public class MetricsTest extends IntegrationTest {
             }
 
             return this;
-        }
-
-        public String getResponse() {
-            return response;
         }
 
         @Override

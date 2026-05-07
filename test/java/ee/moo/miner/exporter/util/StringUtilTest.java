@@ -1,12 +1,11 @@
 package ee.moo.miner.exporter.util;
 
-import ee.moo.miner.exporter.common.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StringUtilTest extends UnitTest {
+public class StringUtilTest {
 
     @Test
     public void testEquals() {

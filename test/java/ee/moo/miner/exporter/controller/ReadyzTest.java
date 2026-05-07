@@ -1,6 +1,6 @@
 package ee.moo.miner.exporter.controller;
 
-import ee.moo.miner.exporter.common.IntegrationTest;
+import ee.moo.miner.exporter.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

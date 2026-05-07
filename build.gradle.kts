@@ -1,5 +1,3 @@
-import org.gradle.util.Path.path
-import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
 plugins {
@@ -49,13 +47,13 @@ dependencies {
     implementation("ch.qos.logback:logback-core:$logbackVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
+    // prometheus
+    implementation("io.prometheus:simpleclient:${prometheusVersion}")
+    implementation("io.prometheus:simpleclient_common:${prometheusVersion}")
+
     // lombok
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-
-    // prometheus
-    implementation("io.prometheus:simpleclient:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     // test
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -63,6 +61,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
     testImplementation("org.junit.platform:junit-platform-launcher:${junitVersion}")
     testImplementation("org.wiremock:wiremock-standalone:${wiremockVersion}")
+
+    // lombok
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 sourceSets {
