@@ -3,9 +3,6 @@ package ee.moo.miner.exporter.controller;
 import ee.moo.miner.exporter.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HealthzTest extends IntegrationTest {

@@ -1,5 +1,3 @@
-import java.security.MessageDigest
-
 plugins {
     java
     jacoco
@@ -128,22 +126,5 @@ tasks.jar {
             "Implementation-Version" to project.version,
             "Main-Class" to "ee.moo.miner.exporter.Application",
         )
-    }
-
-    doLast {
-        var bytes = MessageDigest
-            .getInstance("SHA-256")
-            .digest(archiveFile.get().asFile.readBytes())
-
-        var sb = StringBuilder()
-        for (byte in bytes) {
-            sb.append(String.format("%02x", byte))
-        }
-
-        sb.append("  ")
-        sb.append(archiveFileName.get())
-        sb.append("\n")
-
-        File("build/libs/${archiveBaseName.get()}-${archiveVersion.get()}.sha256").writeText(sb.toString())
     }
 }

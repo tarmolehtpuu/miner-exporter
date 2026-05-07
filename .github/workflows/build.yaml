@@ -73,8 +73,7 @@ jobs:
               --repo tarmolehtpuu/miner-exporter \
               --title miner-exporter-${VERSION} \
               --generate-notes \
-              miner-exporter-${VERSION}.jar \
-              miner-exporter-${VERSION}.sha256
+              miner-exporter-${VERSION}.jar
           fi
         working-directory: build/libs
         env:
