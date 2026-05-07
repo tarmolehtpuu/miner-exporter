@@ -62,11 +62,6 @@ jobs:
             **/build/reports/tests/test
             **/build/reports/jacoco/test/html
 
-      - name: Check release
-        run: |
-          echo "Hello"
-          echo "FIXME"
-
       - name: Create release
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
@@ -83,4 +78,3 @@ jobs:
         working-directory: build/libs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            
