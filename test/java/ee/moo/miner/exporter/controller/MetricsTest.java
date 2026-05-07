@@ -18,15 +18,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MetricsTest extends IntegrationTest {
 
     public static Stream<TestConfig> configProvider() {
+        var miner01 = new TestConfig("miner01", MinerType.BITAXE)
+            .response("/bitaxe/metrics.txt")
+            .wiremock("/api/system/info", "/bitaxe/info.json");
+
+        var miner02 = new TestConfig("miner02", MinerType.AVALON)
+            .response("/avalon/metrics.txt")
+            .cgminer("pools", "/avalon/pools.json")
+            .cgminer("stats", "/avalon/stats.json")
+            .cgminer("summary", "/avalon/summary.json");
+
+        var miner03 = new TestConfig("miner03", MinerType.ANTMINER)
+            .response("/antminer/metrics.txt")
+            .wiremock("/cgi-bin/miner_pools.cgi", "/antminer/pools.json")
+            .wiremock("/cgi-bin/miner_stats.cgi", "/antminer/stats.json")
+            .wiremock("/cgi-bin/miner_summary.cgi", "/antminer/summary.json");
+
         return Stream.of(
-            new TestConfig("miner01", MinerType.BITAXE)
-                .response("/bitaxe/response.txt")
-                .wiremock("/api/system/info", "/bitaxe/info.json"),
-            new TestConfig("miner02", MinerType.AVALON)
-                .response("/avalon/response.txt")
-                .cgminer("pools", "/avalon/pools.json")
-                .cgminer("stats", "/avalon/stats.json")
-                .cgminer("summary", "/avalon/summary.json")
+            miner01,
+            miner02,
+            miner03
         );
     }
 

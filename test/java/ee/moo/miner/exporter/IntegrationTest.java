@@ -72,7 +72,10 @@ public abstract class IntegrationTest {
             "MINER_0_URI", wiremockUri(),
             "MINER_1_ID", "miner02",
             "MINER_1_TYPE", "AVALON",
-            "MINER_1_URI", cgminerUri()
+            "MINER_1_URI", cgminerUri(),
+            "MINER_2_ID", "miner03",
+            "MINER_2_TYPE", "ANTMINER",
+            "MINER_2_URI", wiremockUri()
         );
 
         application = new Application(env, APPLICATION_PORT);

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsFan;
-import ee.moo.miner.exporter.metrics.MetricsTemperature;
-import ee.moo.miner.exporter.metrics.MetricsTemperatureType;
+import ee.moo.miner.exporter.metrics.*;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -64,6 +61,8 @@ public class Antminer implements Miner {
             .hashrate(summary.get("GHS 5s").asDouble())
             .temperature(getTemperature(stats))
             .fan(getFan(stats))
+            .pool(getPool())
+            .found(summary.get("Found Blocks").asInt())
             .build();
     }
 
@@ -162,6 +161,46 @@ public class Antminer implements Miner {
         return result;
     }
 
+    private List<MetricsPool> getPool() {
+        var result = new ArrayList<MetricsPool>();
+
+        try {
+            var response = client.newRequest(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri()))
+                .method(HttpMethod.GET)
+                .send();
+
+            if (response.getStatus() != 200) {
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
+            }
+
+            var json = objectMapper.readTree(response.getContent());
+
+            System.out.println(json);
+
+            validateHeader(json);
+            validatePools(json);
+
+            for (var pool : json.get("POOLS")) {
+                result.add(MetricsPool.builder()
+                    .no(pool.get("POOL").asInt())
+                    .uri(pool.get("URL").asText())
+                    .user(pool.get("User").asText())
+                    .priority(pool.get("Priority").asInt())
+                    .alive(pool.get("Status").asText().toLowerCase().contains("alive"))
+                    .active(pool.get("Priority").asInt() == 0)
+                    .accepted(pool.get("Accepted").asInt())
+                    .rejected(pool.get("Rejected").asInt())
+                    .build()
+                );
+            }
+
+        } catch (IOException | ExecutionException | TimeoutException | InterruptedException e) {
+            throw new MinerException(e.getMessage(), e);
+        }
+
+        return result;
+    }
+
     private void validateHeader(JsonNode json) {
     }
 
@@ -180,5 +219,9 @@ public class Antminer implements Miner {
     }
 
     private void validateStats(JsonNode json) {
+    }
+
+    private void validatePools(JsonNode json) {
+
     }
 }
