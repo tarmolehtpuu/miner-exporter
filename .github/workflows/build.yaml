@@ -70,12 +70,16 @@ jobs:
       - name: Create release
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
-          gh release create v${VERSION} \
-            --repo tarmolehtpuu/miner-exporter \
-            --title miner-exporter-${VERSION} \
-            --generate-notes \
-            miner-exporter-${VERSION}.jar \
-            miner-exporter-${VERSION}.sha256
+          if gh release view v${VERSION}; then
+            echo "Release v${VERSION} exists, skipping..."
+          else
+            gh release create v${VERSION} \
+              --repo tarmolehtpuu/miner-exporter \
+              --title miner-exporter-${VERSION} \
+              --generate-notes \
+              miner-exporter-${VERSION}.jar \
+              miner-exporter-${VERSION}.sha256
+          fi
         working-directory: build/libs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
