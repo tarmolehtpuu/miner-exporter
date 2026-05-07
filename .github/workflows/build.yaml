@@ -57,3 +57,21 @@ jobs:
           path: |
             **/build/reports/tests/test
             **/build/reports/jacoco/test/html
+
+      - name: Check release
+        run: |
+          echo "Hello"
+
+      - name: Create release
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          gh release create v${VERSION} \
+            --repo tarmolehtpuu/miner-exporter \
+            --title miner-exporter-${VERSION} \
+            --generate-notes \
+            miner-exporter-${VERSION}.jar \
+            miner-exporter-${VERSION}.sha256
+        working-directory: build/libs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
