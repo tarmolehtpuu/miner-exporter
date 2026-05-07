@@ -82,7 +82,6 @@ public class MetricsTest extends IntegrationTest {
         for (int i = 0; i < lines1.size(); i++) {
             assertEquals(lines1.get(i), lines2.get(i));
         }
-
     }
 
     public static class TestConfig {
