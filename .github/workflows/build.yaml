@@ -28,7 +28,7 @@ jobs:
           distribution: ${{ env.JAVA_DIST }}
           architecture: ${{ env.JAVA_ARCH }}
 
-      - name: Build and test
+      - name: Build
         run: ./gradlew check jar
 
       - name: Test Report
