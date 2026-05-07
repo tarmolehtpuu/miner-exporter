@@ -77,7 +77,6 @@ public abstract class IntegrationTest {
     @AfterAll
     public static void afterAll() throws Exception {
         wiremock.stop();
-        application.stop();
         cgminer.stop();
     }
 
