@@ -21,6 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Read VERSION
+        run: |
+          echo "VERSION=$(cat VERSION | xargs)" >> $GITHUB_ENV
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -61,6 +65,7 @@ jobs:
       - name: Check release
         run: |
           echo "Hello"
+          echo "FIXME"
 
       - name: Create release
         if: ${{ github.ref == 'refs/heads/master' }}
