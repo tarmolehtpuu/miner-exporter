@@ -8,6 +8,7 @@ env:
   JAVA_ARCH: x64
 
 permissions:
+  contents: read
   checks: write
   pull-requests: write
 
