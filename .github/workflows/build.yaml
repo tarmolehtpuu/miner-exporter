@@ -66,6 +66,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
           if gh release view v${VERSION}; then
+            echo ""
             echo "Release v${VERSION} exists, skipping..."
           else
             gh release create v${VERSION} \
