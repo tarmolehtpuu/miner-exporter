@@ -1,10 +1,14 @@
+import org.gradle.util.Path.path
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+
 plugins {
     java
     jacoco
 }
 
 group = "ee.moo"
-version = "0.0.1"
+version = rootProject.file("VERSION").readText().trim()
 
 java {
     toolchain {
@@ -120,8 +124,24 @@ tasks.jar {
         attributes(
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
-            "Main-Class" to "ee.moo.miner.exporter.MinerExporterApplication",
-            "Multi-Release" to "true",
+            "Main-Class" to "ee.moo.miner.exporter.Application",
         )
+    }
+
+    doLast {
+        var bytes = MessageDigest
+            .getInstance("SHA-256")
+            .digest(archiveFile.get().asFile.readBytes())
+
+        var sb = StringBuilder()
+        for (byte in bytes) {
+            sb.append(String.format("%02x", byte))
+        }
+
+        sb.append("  ")
+        sb.append(archiveFileName.get())
+        sb.append("\n")
+
+        File("build/libs/${archiveBaseName.get()}-${archiveVersion.get()}.sha256").writeText(sb.toString())
     }
 }
