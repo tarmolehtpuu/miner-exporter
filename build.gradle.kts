@@ -20,12 +20,6 @@ configurations {
     }
 }
 
-configurations.all {
-    exclude(group = "io.prometheus", module = "simpleclient_tracer_otel")
-    exclude(group = "io.prometheus", module = "simpleclient_tracer_otel_agent")
-    exclude(group = "io.prometheus", module = "simpleclient_tracer_common")
-}
-
 repositories {
     mavenCentral()
 }
@@ -49,10 +43,6 @@ dependencies {
     // lombok
     compileOnly("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
-
-    // prometheus
-    implementation("io.prometheus:simpleclient:0.16.0")
-    implementation("io.prometheus:simpleclient_common:0.16.0")
 
     // ******************* TEST ******************* //
 

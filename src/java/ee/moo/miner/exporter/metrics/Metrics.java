@@ -17,13 +17,9 @@
 package ee.moo.miner.exporter.metrics;
 
 import ee.moo.miner.exporter.miner.MinerType;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
 
 @Data
@@ -51,18 +47,11 @@ public class Metrics {
     private List<MetricsPool> pool;
 
     public String export() {
-        CollectorRegistry registry = new CollectorRegistry();
+        var labels = List.of(
+            new MetricsExporter.Label("miner", this.getMiner()),
+            new MetricsExporter.Label("miner_type", this.getType())
+        );
 
-        new MetricsCollector(this)
-            .register(registry);
-
-        var writer = new StringWriter();
-        try {
-            TextFormat.write004(writer, registry.metricFamilySamples());
-        } catch (IOException e) {
-            throw new MetricsException(e.getMessage(), e);
-        }
-
-        return writer.toString();
+        return new MetricsExporter(this, labels).export();
     }
 }

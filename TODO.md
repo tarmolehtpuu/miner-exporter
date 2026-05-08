@@ -2,4 +2,4 @@
 2. JSON validation
 3. more tests
 4. grafana dashboard (JSON?)
-5. find proper prom jars
+5. check records
