@@ -1,3 +1,5 @@
+import java.util.jar.Manifest
+
 plugins {
     java
     jacoco
@@ -16,6 +18,12 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+}
+
+configurations.all {
+    exclude(group = "io.prometheus", module = "simpleclient_tracer_otel")
+    exclude(group = "io.prometheus", module = "simpleclient_tracer_otel_agent")
+    exclude(group = "io.prometheus", module = "simpleclient_tracer_common")
 }
 
 repositories {
@@ -95,37 +103,116 @@ tasks.withType<Test> {
     finalizedBy(tasks.jacocoTestReport)
 }
 
+tasks.register("copyright") {
+    description = "Generates LICENSE and NOTICE files for 3rd party dependencies"
+
+    val out = layout.buildDirectory.dir("generated")
+
+    inputs.files(configurations.runtimeClasspath)
+    outputs.dir(out)
+
+    doLast {
+        val modules = configurations.runtimeClasspath.get()
+            .resolvedConfiguration
+            .resolvedArtifacts
+            .associate { it.file.absolutePath to it.name }
+
+        configurations.runtimeClasspath.get().files.forEach { jar ->
+            val module = modules[jar.absolutePath] ?: jar.nameWithoutExtension
+
+            zipTree(jar).matching {
+                include("META-INF/LICENSE")
+                include("META-INF/LICENSE.txt")
+            }.forEach { file ->
+                file.copyTo(out.get().file("licenses/LICENSE.$module").asFile, overwrite = true)
+            }
+
+            zipTree(jar).matching {
+                include("META-INF/NOTICE")
+                include("META-INF/NOTICE.txt")
+            }.forEach { file ->
+                file.copyTo(out.get().file("notices/NOTICE.$module").asFile, overwrite = true)
+            }
+
+            zipTree(jar).filter { it.name == "MANIFEST.MF" }.forEach { m ->
+                val manifest = Manifest(m.inputStream())
+
+                val file1 = out.get().file("licenses/LICENSE.$module").asFile
+                val file2 = out.get().file("notices/NOTICE.$module").asFile
+
+                if (!file1.exists()) {
+                    val text = manifest.mainAttributes.getValue("Bundle-License")
+                    if (text != null) {
+                        file1.createNewFile()
+                        file1.writeText("License URL: $text\n")
+                    }
+                }
+
+                if (!file2.exists()) {
+                    val text = manifest.mainAttributes.getValue("Bundle-Copyright")
+                    if (text != null) {
+                        file2.createNewFile()
+                        file2.writeText("$text\n")
+                    }
+                }
+            }
+        }
+    }
+}
+
 tasks.jar {
+    dependsOn("copyright")
+
     archiveBaseName.set("app")
     archiveVersion.set("")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     entryCompression = ZipEntryCompression.DEFLATED
 
-    from(project.rootDir) {
-        include("LICENSE")
-        into("META-INF")
+    // 3rd party LICENSE files
+    from("build/generated/licenses") {
+        into("META-INF/licenses")
     }
-    from(sourceSets.main.get().output)
+
+    // 3rd party NOTICE files
+    from("build/generated/notices") {
+        into("META-INF/notices")
+    }
+
+    // 3rd party jars (fat JAR)
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
         exclude("META-INF/*.SF")
         exclude("META-INF/*.DSA")
         exclude("META-INF/*.RSA")
         exclude("META-INF/LICENSE")
-        exclude("META-INF/LICENSE.txt")
+        exclude("META-INF/LICENSE.*")
         exclude("META-INF/*-LICENSE")
         exclude("META-INF/INDEX.LIST")
         exclude("META-INF/NOTICE")
         exclude("META-INF/maven/")
         exclude("META-INF/native-image/")
         exclude("META-INF/versions/")
+        exclude("module-info.class")
     }
+
+    // project LICENSE and NOTICE
+    from(project.rootDir) {
+        include("LICENSE")
+        include("NOTICE")
+        into("META-INF")
+    }
+
+    // project src
+    from(sourceSets.main.get().output)
 
     manifest {
         attributes(
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
             "Main-Class" to "ee.moo.miner.exporter.Application",
+            "Bundle-Copyright" to "Copyright 2026 Tarmo Lehtpuu",
+            "Bundle-License" to "http://www.apache.org/licenses/LICENSE-2.0"
         )
     }
 }
+

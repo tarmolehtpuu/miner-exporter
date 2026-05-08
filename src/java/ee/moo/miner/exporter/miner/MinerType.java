@@ -16,7 +16,6 @@
  */
 package ee.moo.miner.exporter.miner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.miner.antminer.Antminer;
 import ee.moo.miner.exporter.miner.avalon.Avalon;
 import ee.moo.miner.exporter.miner.bitaxe.Bitaxe;
