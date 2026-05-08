@@ -22,8 +22,8 @@ import lombok.Data;
 @Data
 @Builder
 public class MetricsTemperature {
-    
-    private Integer no;
+
+    private Integer id;
 
     private Type type;
 

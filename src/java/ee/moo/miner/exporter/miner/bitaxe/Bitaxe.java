@@ -78,19 +78,19 @@ public class Bitaxe implements Miner {
             validate(json);
 
             var temp1 = MetricsTemperature.builder()
-                .no(1)
+                .id(1)
                 .type(MetricsTemperature.Type.CHIP)
                 .value(json.get("temp").asDouble())
                 .build();
             var temp2 = MetricsTemperature.builder()
-                .no(2)
+                .id(2)
                 .type(MetricsTemperature.Type.PCB)
                 .value(json.get("vrTemp").asDouble())
                 .build();
 
 
             var fan = MetricsFan.builder()
-                .no(1)
+                .id(1)
                 .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
                 .build();
 
@@ -116,7 +116,7 @@ public class Bitaxe implements Miner {
         var primary = json.get("isUsingFallbackStratum").asInt() == 0;
 
         var pool1 = MetricsPool.builder()
-            .no(0)
+            .id(0)
             .uri(String.format(
                 "stratum+tcp://%s:%d",
                 json.get("stratumURL").asText(),
@@ -131,7 +131,7 @@ public class Bitaxe implements Miner {
             .build();
 
         var pool2 = MetricsPool.builder()
-            .no(1)
+            .id(1)
             .uri(String.format(
                 "stratum+tcp://%s:%d",
                 json.get("fallbackStratumURL").asText(),

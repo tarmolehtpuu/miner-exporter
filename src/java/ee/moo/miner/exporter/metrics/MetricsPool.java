@@ -23,7 +23,7 @@ import lombok.Data;
 @Builder
 public class MetricsPool {
 
-    private Integer no;
+    private Integer id;
 
     private String uri;
 

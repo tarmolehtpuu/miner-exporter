@@ -113,7 +113,7 @@ public class Avalon implements Miner {
         if (matcher1.find()) {
             result.add(
                 MetricsTemperature.builder()
-                    .no(1)
+                    .id(1)
                     .type(MetricsTemperature.Type.CHIP)
                     .value(Double.parseDouble(matcher1.group(1)))
                     .build()
@@ -124,7 +124,7 @@ public class Avalon implements Miner {
         if (matcher2.find()) {
             result.add(
                 MetricsTemperature.builder()
-                    .no(1)
+                    .id(1)
                     .type(MetricsTemperature.Type.PCB)
                     .value(Double.parseDouble(matcher2.group(1)))
                     .build()
@@ -140,7 +140,7 @@ public class Avalon implements Miner {
 
         if (matcher.find()) {
             return List.of(MetricsFan.builder()
-                .no(1)
+                .id(1)
                 .value((int) Double.parseDouble(matcher.group(1)))
                 .build()
             );
@@ -163,7 +163,7 @@ public class Avalon implements Miner {
 
             for (var pool : json.get("POOLS")) {
                 result.add(MetricsPool.builder()
-                    .no(pool.get("POOL").asInt())
+                    .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())
                     .priority(pool.get("Priority").asInt())

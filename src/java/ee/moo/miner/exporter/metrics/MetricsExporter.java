@@ -84,19 +84,19 @@ public class MetricsExporter {
 
         for (var temp : metrics.getTemperature()) {
             var vars = List.of(
-                new Label("board", temp.getNo()),
+                new Label("board", temp.getId()),
                 new Label("temperature_type", temp.getType().toString())
             );
             write(sb, MINER_TEMPERATURE, vars, temp.getValue());
         }
 
         for (var fan : metrics.getFan()) {
-            write(sb, MINER_FAN_RPM, new Label("fan", fan.getNo()), fan.getValue());
+            write(sb, MINER_FAN_RPM, new Label("fan", fan.getId()), fan.getValue());
         }
 
         for (var pool : metrics.getPool()) {
             var vars = List.of(
-                new Label("pool", pool.getNo()),
+                new Label("pool", pool.getId()),
                 new Label("pool_priority", pool.getPriority()),
                 new Label("pool_uri", pool.getUri()),
                 new Label("pool_user", pool.getUser())
@@ -105,7 +105,7 @@ public class MetricsExporter {
         }
         for (var pool : metrics.getPool()) {
             var vars = List.of(
-                new Label("pool", pool.getNo()),
+                new Label("pool", pool.getId()),
                 new Label("pool_priority", pool.getPriority()),
                 new Label("pool_uri", pool.getUri()),
                 new Label("pool_user", pool.getUser())
@@ -114,7 +114,7 @@ public class MetricsExporter {
         }
         for (var pool : metrics.getPool()) {
             var vars = List.of(
-                new Label("pool", pool.getNo()),
+                new Label("pool", pool.getId()),
                 new Label("pool_priority", pool.getPriority()),
                 new Label("pool_uri", pool.getUri()),
                 new Label("pool_user", pool.getUser())
@@ -123,7 +123,7 @@ public class MetricsExporter {
         }
         for (var pool : metrics.getPool()) {
             var vars = List.of(
-                new Label("pool", pool.getNo()),
+                new Label("pool", pool.getId()),
                 new Label("pool_priority", pool.getPriority()),
                 new Label("pool_uri", pool.getUri()),
                 new Label("pool_user", pool.getUser())

@@ -143,7 +143,7 @@ public class Antminer implements Miner {
             if (temp1 > 0) {
                 result.add(
                     MetricsTemperature.builder()
-                        .no(i)
+                        .id(i)
                         .type(MetricsTemperature.Type.PCB)
                         .value(temp1)
                         .build()
@@ -153,7 +153,7 @@ public class Antminer implements Miner {
             if (temp2 > 0) {
                 result.add(
                     MetricsTemperature.builder()
-                        .no(i)
+                        .id(i)
                         .type(MetricsTemperature.Type.CHIP)
                         .value(temp2)
                         .build()
@@ -170,7 +170,7 @@ public class Antminer implements Miner {
         for (int i = 1; i <= json.get("fan_num").asInt(); i++) {
             result.add(
                 MetricsFan.builder()
-                    .no(i)
+                    .id(i)
                     .value(json.get(String.format("fan%d", i)).asInt())
                     .build()
             );
@@ -201,7 +201,7 @@ public class Antminer implements Miner {
 
             for (var pool : json.get("POOLS")) {
                 result.add(MetricsPool.builder()
-                    .no(pool.get("POOL").asInt())
+                    .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())
                     .priority(pool.get("Priority").asInt())

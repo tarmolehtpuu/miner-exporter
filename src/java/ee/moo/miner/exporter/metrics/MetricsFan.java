@@ -23,7 +23,7 @@ import lombok.Data;
 @Builder
 public class MetricsFan {
 
-    private Integer no;
+    private Integer id;
 
     private Integer value;
 }
