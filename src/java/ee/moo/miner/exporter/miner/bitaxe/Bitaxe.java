@@ -18,7 +18,7 @@ package ee.moo.miner.exporter.miner.bitaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.metrics.Metrics;
+import ee.moo.miner.exporter.miner.MinerMetrics;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -58,7 +58,7 @@ public class Bitaxe implements Miner {
     }
 
     @Override
-    public Metrics getMetrics() {
+    public MinerMetrics getMetrics() {
         try {
             var response = client.newRequest(String.format("%s/api/system/info", config.getUri()))
                 .method(HttpMethod.GET)
@@ -72,24 +72,24 @@ public class Bitaxe implements Miner {
 
             validate(json);
 
-            var temp1 = Metrics.Temperature.builder()
+            var temp1 = MinerMetrics.Temperature.builder()
                 .id(1)
-                .type(Metrics.Temperature.Type.CHIP)
+                .type(MinerMetrics.Temperature.Type.CHIP)
                 .value(json.get("temp").asDouble())
                 .build();
-            var temp2 = Metrics.Temperature.builder()
+            var temp2 = MinerMetrics.Temperature.builder()
                 .id(2)
-                .type(Metrics.Temperature.Type.PCB)
+                .type(MinerMetrics.Temperature.Type.PCB)
                 .value(json.get("vrTemp").asDouble())
                 .build();
 
 
-            var fan = Metrics.Fan.builder()
+            var fan = MinerMetrics.Fan.builder()
                 .id(1)
                 .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
                 .build();
 
-            var metrics = new Metrics();
+            var metrics = new MinerMetrics();
             metrics.setMiner(getId());
             metrics.setType(getType());
             metrics.setUptime(json.get("uptimeSeconds").asInt());
@@ -108,10 +108,10 @@ public class Bitaxe implements Miner {
         }
     }
 
-    public List<Metrics.Pool> getPools(JsonNode json) {
+    public List<MinerMetrics.Pool> getPools(JsonNode json) {
         var primary = json.get("isUsingFallbackStratum").asInt() == 0;
 
-        var pool1 = Metrics.Pool.builder()
+        var pool1 = MinerMetrics.Pool.builder()
             .id(0)
             .uri(String.format(
                 "stratum+tcp://%s:%d",
@@ -126,7 +126,7 @@ public class Bitaxe implements Miner {
             .rejected(0)
             .build();
 
-        var pool2 = Metrics.Pool.builder()
+        var pool2 = MinerMetrics.Pool.builder()
             .id(1)
             .uri(String.format(
                 "stratum+tcp://%s:%d",

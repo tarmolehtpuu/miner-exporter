@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import ee.moo.miner.exporter.metrics.Metrics;
+import ee.moo.miner.exporter.miner.MinerMetrics;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -61,11 +61,11 @@ public class Antminer implements Miner {
     }
 
     @Override
-    public Metrics getMetrics() {
+    public MinerMetrics getMetrics() {
         var summary = getSummary();
         var stats = getStats();
 
-        var metrics = new Metrics();
+        var metrics = new MinerMetrics();
         metrics.setMiner(getId());
         metrics.setType(getType());
         metrics.setUptime(summary.get("Elapsed").asInt());
@@ -126,8 +126,8 @@ public class Antminer implements Miner {
         }
     }
 
-    private List<Metrics.Temperature> getTemperatures(JsonNode json) {
-        var result = new ArrayList<Metrics.Temperature>();
+    private List<MinerMetrics.Temperature> getTemperatures(JsonNode json) {
+        var result = new ArrayList<MinerMetrics.Temperature>();
 
         for (var i = 1; i <= json.get("temp_num").asInt(); i++) {
             var temp1 = json.get(String.format("temp%s", i)).asDouble();
@@ -135,9 +135,9 @@ public class Antminer implements Miner {
 
             if (temp1 > 0) {
                 result.add(
-                    Metrics.Temperature.builder()
+                    MinerMetrics.Temperature.builder()
                         .id(i)
-                        .type(Metrics.Temperature.Type.PCB)
+                        .type(MinerMetrics.Temperature.Type.PCB)
                         .value(temp1)
                         .build()
                 );
@@ -145,9 +145,9 @@ public class Antminer implements Miner {
 
             if (temp2 > 0) {
                 result.add(
-                    Metrics.Temperature.builder()
+                    MinerMetrics.Temperature.builder()
                         .id(i)
-                        .type(Metrics.Temperature.Type.CHIP)
+                        .type(MinerMetrics.Temperature.Type.CHIP)
                         .value(temp2)
                         .build()
                 );
@@ -157,12 +157,12 @@ public class Antminer implements Miner {
         return result;
     }
 
-    private List<Metrics.Fan> getFans(JsonNode json) {
-        var result = new ArrayList<Metrics.Fan>();
+    private List<MinerMetrics.Fan> getFans(JsonNode json) {
+        var result = new ArrayList<MinerMetrics.Fan>();
 
         for (int i = 1; i <= json.get("fan_num").asInt(); i++) {
             result.add(
-                Metrics.Fan.builder()
+                MinerMetrics.Fan.builder()
                     .id(i)
                     .value(json.get(String.format("fan%d", i)).asInt())
                     .build()
@@ -173,8 +173,8 @@ public class Antminer implements Miner {
         return result;
     }
 
-    private List<Metrics.Pool> getPools() {
-        var result = new ArrayList<Metrics.Pool>();
+    private List<MinerMetrics.Pool> getPools() {
+        var result = new ArrayList<MinerMetrics.Pool>();
 
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri()))
@@ -191,7 +191,7 @@ public class Antminer implements Miner {
             validatePools(json);
 
             for (var pool : json.get("POOLS")) {
-                result.add(Metrics.Pool.builder()
+                result.add(MinerMetrics.Pool.builder()
                     .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())

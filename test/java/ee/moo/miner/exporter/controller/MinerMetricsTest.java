@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MetricsTest extends IntegrationTest {
+public class MinerMetricsTest extends IntegrationTest {
 
     public static Stream<TestConfig> configProvider() throws URISyntaxException {
         var miner01 = new TestConfig("miner01", MinerType.BITAXE, wiremockUri())

@@ -18,7 +18,7 @@ package ee.moo.miner.exporter.miner.avalon;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.metrics.Metrics;
+import ee.moo.miner.exporter.miner.MinerMetrics;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -51,11 +51,11 @@ public class Avalon implements Miner {
     }
 
     @Override
-    public Metrics getMetrics() {
+    public MinerMetrics getMetrics() {
         var summary = getSummary();
         var stats = getStats();
 
-        var metrics = new Metrics();
+        var metrics = new MinerMetrics();
         metrics.setMiner(getId());
         metrics.setType(getType());
         metrics.setUptime(summary.get("Elapsed").asInt());
@@ -100,8 +100,8 @@ public class Avalon implements Miner {
         }
     }
 
-    private List<Metrics.Temperature> getTemperatures(JsonNode stats) {
-        var result = new ArrayList<Metrics.Temperature>();
+    private List<MinerMetrics.Temperature> getTemperatures(JsonNode stats) {
+        var result = new ArrayList<MinerMetrics.Temperature>();
 
         var pattern1 = Pattern.compile("Temp\\[([\\d.]+)]");
         var pattern2 = Pattern.compile("OTemp\\[([\\d.]+)]");
@@ -109,9 +109,9 @@ public class Avalon implements Miner {
         var matcher1 = pattern1.matcher(stats.get("MM ID0").asText());
         if (matcher1.find()) {
             result.add(
-                Metrics.Temperature.builder()
+                MinerMetrics.Temperature.builder()
                     .id(1)
-                    .type(Metrics.Temperature.Type.CHIP)
+                    .type(MinerMetrics.Temperature.Type.CHIP)
                     .value(Double.parseDouble(matcher1.group(1)))
                     .build()
             );
@@ -120,9 +120,9 @@ public class Avalon implements Miner {
         var matcher2 = pattern2.matcher(stats.get("MM ID0").asText());
         if (matcher2.find()) {
             result.add(
-                Metrics.Temperature.builder()
+                MinerMetrics.Temperature.builder()
                     .id(1)
-                    .type(Metrics.Temperature.Type.PCB)
+                    .type(MinerMetrics.Temperature.Type.PCB)
                     .value(Double.parseDouble(matcher2.group(1)))
                     .build()
             );
@@ -131,12 +131,12 @@ public class Avalon implements Miner {
         return result;
     }
 
-    private List<Metrics.Fan> getFans(JsonNode stats) {
+    private List<MinerMetrics.Fan> getFans(JsonNode stats) {
         var pattern = Pattern.compile("Fan1\\[([\\d.]+)]");
         var matcher = pattern.matcher(stats.get("MM ID0").asText());
 
         if (matcher.find()) {
-            return List.of(Metrics.Fan.builder()
+            return List.of(MinerMetrics.Fan.builder()
                 .id(1)
                 .value((int) Double.parseDouble(matcher.group(1)))
                 .build()
@@ -146,8 +146,8 @@ public class Avalon implements Miner {
         return List.of();
     }
 
-    private List<Metrics.Pool> getPools() {
-        var result = new ArrayList<Metrics.Pool>();
+    private List<MinerMetrics.Pool> getPools() {
+        var result = new ArrayList<MinerMetrics.Pool>();
         var client = config.createTcpClient();
 
         try {
@@ -157,7 +157,7 @@ public class Avalon implements Miner {
             validatePools(json);
 
             for (var pool : json.get("POOLS")) {
-                result.add(Metrics.Pool.builder()
+                result.add(MinerMetrics.Pool.builder()
                     .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())

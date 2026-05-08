@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.metrics.model;
+package ee.moo.miner.exporter.prometheus;
 
 public record Label(String name, String value) {
 

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import ee.moo.miner.exporter.client.CGMinerTcpClient;
+import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
