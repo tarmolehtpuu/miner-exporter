@@ -16,6 +16,7 @@
  */
 package ee.moo.miner.exporter.metrics;
 
+import ee.moo.miner.exporter.metrics.model.Label;
 import ee.moo.miner.exporter.miner.MinerType;
 import lombok.Builder;
 import lombok.Data;
@@ -55,8 +56,8 @@ public class Metrics {
 
     public String export() {
         var labels = List.of(
-            new MetricsExporter.Label("miner", this.getMiner()),
-            new MetricsExporter.Label("miner_type", this.getType())
+            new Label("miner", this.getMiner()),
+            new Label("miner_type", this.getType())
         );
 
         return new MetricsExporter(this, labels).export();
@@ -69,6 +70,10 @@ public class Metrics {
         private Integer id;
 
         private Integer value;
+
+        public List<Label> getVars() {
+            return List.of(new Label("fan", id));
+        }
     }
 
     @Data
@@ -90,6 +95,15 @@ public class Metrics {
         private Integer accepted;
 
         private Integer rejected;
+
+        public List<Label> getVars() {
+            return List.of(
+                new Label("pool", getId()),
+                new Label("pool_priority", getPriority()),
+                new Label("pool_uri", getUri()),
+                new Label("pool_user", getUser())
+            );
+        }
     }
 
     @Data
@@ -101,6 +115,13 @@ public class Metrics {
         private Type type;
 
         private Double value;
+
+        public List<Label> getVars() {
+            return List.of(
+                new Label("board", getId()),
+                new Label("temperature_type", getType())
+            );
+        }
 
         public enum Type {
             CHIP,
