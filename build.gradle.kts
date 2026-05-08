@@ -96,18 +96,19 @@ tasks.withType<Test> {
 tasks.register("copyright") {
     description = "Generates LICENSE and NOTICE files for 3rd party dependencies"
 
+    val cp = configurations.runtimeClasspath.get()
     val out = layout.buildDirectory.dir("generated")
 
-    inputs.files(configurations.runtimeClasspath)
+    inputs.files(cp)
     outputs.dir(out)
 
     doLast {
-        val modules = configurations.runtimeClasspath.get()
+        val modules = cp
             .resolvedConfiguration
             .resolvedArtifacts
             .associate { it.file.absolutePath to it.name }
 
-        configurations.runtimeClasspath.get().files.forEach { jar ->
+        cp.files.forEach { jar ->
             val module = modules[jar.absolutePath] ?: jar.nameWithoutExtension
 
             zipTree(jar).matching {
