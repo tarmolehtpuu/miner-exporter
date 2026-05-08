@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -127,8 +126,8 @@ public class Antminer implements Miner {
         }
     }
 
-    private List<MetricsTemperature> getTemperatures(JsonNode json) {
-        var result = new ArrayList<MetricsTemperature>();
+    private List<Metrics.Temperature> getTemperatures(JsonNode json) {
+        var result = new ArrayList<Metrics.Temperature>();
 
         for (var i = 1; i <= json.get("temp_num").asInt(); i++) {
             var temp1 = json.get(String.format("temp%s", i)).asDouble();
@@ -136,9 +135,9 @@ public class Antminer implements Miner {
 
             if (temp1 > 0) {
                 result.add(
-                    MetricsTemperature.builder()
+                    Metrics.Temperature.builder()
                         .id(i)
-                        .type(MetricsTemperature.Type.PCB)
+                        .type(Metrics.Temperature.Type.PCB)
                         .value(temp1)
                         .build()
                 );
@@ -146,9 +145,9 @@ public class Antminer implements Miner {
 
             if (temp2 > 0) {
                 result.add(
-                    MetricsTemperature.builder()
+                    Metrics.Temperature.builder()
                         .id(i)
-                        .type(MetricsTemperature.Type.CHIP)
+                        .type(Metrics.Temperature.Type.CHIP)
                         .value(temp2)
                         .build()
                 );

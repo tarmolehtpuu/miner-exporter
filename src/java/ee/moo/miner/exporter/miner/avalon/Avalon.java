@@ -19,7 +19,6 @@ package ee.moo.miner.exporter.miner.avalon;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -101,8 +100,8 @@ public class Avalon implements Miner {
         }
     }
 
-    private List<MetricsTemperature> getTemperatures(JsonNode stats) {
-        var result = new ArrayList<MetricsTemperature>();
+    private List<Metrics.Temperature> getTemperatures(JsonNode stats) {
+        var result = new ArrayList<Metrics.Temperature>();
 
         var pattern1 = Pattern.compile("Temp\\[([\\d.]+)]");
         var pattern2 = Pattern.compile("OTemp\\[([\\d.]+)]");
@@ -110,9 +109,9 @@ public class Avalon implements Miner {
         var matcher1 = pattern1.matcher(stats.get("MM ID0").asText());
         if (matcher1.find()) {
             result.add(
-                MetricsTemperature.builder()
+                Metrics.Temperature.builder()
                     .id(1)
-                    .type(MetricsTemperature.Type.CHIP)
+                    .type(Metrics.Temperature.Type.CHIP)
                     .value(Double.parseDouble(matcher1.group(1)))
                     .build()
             );
@@ -121,9 +120,9 @@ public class Avalon implements Miner {
         var matcher2 = pattern2.matcher(stats.get("MM ID0").asText());
         if (matcher2.find()) {
             result.add(
-                MetricsTemperature.builder()
+                Metrics.Temperature.builder()
                     .id(1)
-                    .type(MetricsTemperature.Type.PCB)
+                    .type(Metrics.Temperature.Type.PCB)
                     .value(Double.parseDouble(matcher2.group(1)))
                     .build()
             );

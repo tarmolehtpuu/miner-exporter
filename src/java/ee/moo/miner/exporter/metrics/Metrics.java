@@ -39,7 +39,7 @@ public class Metrics {
 
     private Double hashrate;
 
-    private List<MetricsTemperature> temperatures;
+    private List<Temperature> temperatures;
 
     private List<Fan> fans;
 
@@ -90,5 +90,21 @@ public class Metrics {
         private Integer accepted;
 
         private Integer rejected;
+    }
+
+    @Data
+    @Builder
+    public static class Temperature {
+
+        private Integer id;
+
+        private Type type;
+
+        private Double value;
+
+        public enum Type {
+            CHIP,
+            PCB,
+        }
     }
 }

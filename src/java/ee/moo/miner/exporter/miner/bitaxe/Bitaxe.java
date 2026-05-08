@@ -19,7 +19,6 @@ package ee.moo.miner.exporter.miner.bitaxe;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -73,14 +72,14 @@ public class Bitaxe implements Miner {
 
             validate(json);
 
-            var temp1 = MetricsTemperature.builder()
+            var temp1 = Metrics.Temperature.builder()
                 .id(1)
-                .type(MetricsTemperature.Type.CHIP)
+                .type(Metrics.Temperature.Type.CHIP)
                 .value(json.get("temp").asDouble())
                 .build();
-            var temp2 = MetricsTemperature.builder()
+            var temp2 = Metrics.Temperature.builder()
                 .id(2)
-                .type(MetricsTemperature.Type.PCB)
+                .type(Metrics.Temperature.Type.PCB)
                 .value(json.get("vrTemp").asDouble())
                 .build();
 
