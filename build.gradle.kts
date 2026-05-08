@@ -22,47 +22,44 @@ repositories {
     mavenCentral()
 }
 
-val jacksonVersion: String by project
-val jettyVersion: String by project
-val logbackVersion: String by project
-val lombokVersion: String by project
-val prometheusVersion: String by project
-
-val junitVersion: String by project
-val wiremockVersion: String by project
-
 dependencies {
+    // ************* JAVA ******************* //
+
     // jackson
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.3")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.1.3")
 
     // jetty
-    implementation("org.eclipse.jetty:jetty-client:$jettyVersion")
-    implementation("org.eclipse.jetty:jetty-server:$jettyVersion")
+    implementation("org.eclipse.jetty:jetty-client:12.1.8")
+    implementation("org.eclipse.jetty:jetty-server:12.1.8")
 
     // logback
-    implementation("ch.qos.logback:logback-core:$logbackVersion")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("ch.qos.logback:logback-core:1.5.32")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
+
+    // lombok
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
 
     // prometheus
-    implementation("io.prometheus:simpleclient:${prometheusVersion}")
-    implementation("io.prometheus:simpleclient_common:${prometheusVersion}")
+    implementation("io.prometheus:simpleclient:0.16.0")
+    implementation("io.prometheus:simpleclient_common:0.16.0")
+
+    // ************* TEST ******************* //
+
+    // junit
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:6.0.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.3")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.0.3")
 
     // lombok
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:1.18.46")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
-    // test
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-    testImplementation("org.junit.platform:junit-platform-launcher:${junitVersion}")
-    testImplementation("org.wiremock:wiremock-standalone:${wiremockVersion}")
-
-    // lombok
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    // wiremock
+    testImplementation("org.wiremock:wiremock-standalone:3.13.2")
 }
 
 sourceSets {
