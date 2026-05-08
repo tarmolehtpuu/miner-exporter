@@ -99,8 +99,8 @@ tasks.withType<Test> {
 }
 
 tasks.jar {
-    archiveBaseName.set(project.name)
-    archiveVersion.set(project.version.toString())
+    archiveBaseName.set("app")
+    archiveVersion.set("")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     entryCompression = ZipEntryCompression.DEFLATED
