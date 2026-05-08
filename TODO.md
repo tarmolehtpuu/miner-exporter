@@ -4,3 +4,4 @@
 4. grafana dashboard (JSON?)
 5. check records
 6. HashrateUtil test
+7. allow configuring logs via ENV somehow (maybe logback file location)
