@@ -1,3 +1,19 @@
+/*
+   miner-exporter - Prometheus exporter for cryptocurrency miners
+   Copyright 2026 Tarmo Lehtpuu
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ee.moo.miner.exporter.controller;
 
 import ee.moo.miner.exporter.IntegrationTest;
@@ -20,17 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MetricsTest extends IntegrationTest {
 
     public static Stream<TestConfig> configProvider() throws URISyntaxException {
-        var miner01 = new TestConfig("miner01", MinerType.BITAXE, new URI(wiremockUri()))
+        var miner01 = new TestConfig("miner01", MinerType.BITAXE, wiremockUri())
             .response("/miner01/metrics.txt")
             .wiremock("/api/system/info", "/miner01/info.json");
 
-        var miner02 = new TestConfig("miner02", MinerType.AVALON, new URI(cgminerUri()))
+        var miner02 = new TestConfig("miner02", MinerType.AVALON, cgminerUri())
             .response("/miner02/metrics.txt")
             .cgminer("pools", "/miner02/pools.json")
             .cgminer("stats", "/miner02/stats.json")
             .cgminer("summary", "/miner02/summary.json");
 
-        var miner03 = new TestConfig("miner03", MinerType.ANTMINER, new URI(wiremockUri()))
+        var miner03 = new TestConfig("miner03", MinerType.ANTMINER, wiremockUri())
             .response("/miner03/metrics.txt")
             .wiremock("/cgi-bin/miner_pools.cgi", "/miner03/pools.json")
             .wiremock("/cgi-bin/miner_stats.cgi", "/miner03/stats.json")

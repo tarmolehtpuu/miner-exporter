@@ -1,8 +1,27 @@
+/*
+   miner-exporter - Prometheus exporter for cryptocurrency miners
+   Copyright 2026 Tarmo Lehtpuu
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ee.moo.miner.exporter.miner.bitaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.metrics.*;
+import ee.moo.miner.exporter.metrics.Metrics;
+import ee.moo.miner.exporter.metrics.MetricsFan;
+import ee.moo.miner.exporter.metrics.MetricsPool;
+import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
@@ -25,10 +44,10 @@ public class Bitaxe implements Miner {
 
     private final HttpClient client;
 
-    public Bitaxe(MinerConfig config, ObjectMapper objectMapper) {
+    public Bitaxe(MinerConfig config) {
         this.config = config;
         this.client = config.createHttpClient();
-        this.objectMapper = objectMapper;
+        this.objectMapper = config.createObjectMapper();
     }
 
     @Override
@@ -60,12 +79,12 @@ public class Bitaxe implements Miner {
 
             var temp1 = MetricsTemperature.builder()
                 .no(1)
-                .type(MetricsTemperatureType.CHIP)
+                .type(MetricsTemperature.Type.CHIP)
                 .value(json.get("temp").asDouble())
                 .build();
             var temp2 = MetricsTemperature.builder()
                 .no(2)
-                .type(MetricsTemperatureType.PCB)
+                .type(MetricsTemperature.Type.PCB)
                 .value(json.get("vrTemp").asDouble())
                 .build();
 

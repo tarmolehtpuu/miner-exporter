@@ -102,6 +102,10 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     entryCompression = ZipEntryCompression.DEFLATED
 
+    from(project.rootDir) {
+        include("LICENSE")
+        into("META-INF")
+    }
     from(sourceSets.main.get().output)
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
         exclude("META-INF/*.SF")

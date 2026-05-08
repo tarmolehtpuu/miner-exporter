@@ -1,3 +1,19 @@
+/*
+   miner-exporter - Prometheus exporter for cryptocurrency miners
+   Copyright 2026 Tarmo Lehtpuu
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ee.moo.miner.exporter;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -13,6 +29,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,33 +55,6 @@ public abstract class IntegrationTest {
     protected static FakeCGMiner cgminer;
 
     protected static HttpClient http;
-
-    @BeforeEach
-    public void beforeEach() throws Exception {
-        wiremock.resetAll();
-        cgminer.resetAll();
-
-        http = new HttpClient();
-        http.setConnectTimeout(2000);
-        http.setResponseBufferSize(8192);
-        http.getRequestListeners().addListener(new Request.Listener() {
-            @Override
-            public void onQueued(Request request) {
-                request.timeout(2000, TimeUnit.MILLISECONDS);
-            }
-        });
-        http.start();
-    }
-
-    @AfterEach
-    public void afterEach() throws Exception {
-        http.stop();
-        http = null;
-
-        if (application != null) {
-            application.stop();
-        }
-    }
 
     @BeforeAll
     public static void beforeAll() throws Exception {
@@ -102,19 +93,46 @@ public abstract class IntegrationTest {
         }
     }
 
-    public static String wiremockUri() {
-        return String.format("http://%s:%d", WIREMOCK_HOST, WIREMOCK_PORT);
+    public static URI wiremockUri() throws URISyntaxException {
+        return new URI(String.format("http://%s:%d", WIREMOCK_HOST, WIREMOCK_PORT));
     }
 
-    public static String wiremockUri(String path) {
-        return String.format("http://%s:%d%s", WIREMOCK_HOST, WIREMOCK_PORT, path);
+    public static URI wiremockUri(String path) throws URISyntaxException {
+        return new URI(String.format("http://%s:%d%s", WIREMOCK_HOST, WIREMOCK_PORT, path));
     }
 
-    public static String applicationUri(String path) {
-        return String.format("http://%s:%d%s", APPLICATION_HOST, APPLICATION_PORT, path);
+    public static URI applicationUri(String path) throws URISyntaxException {
+        return new URI(String.format("http://%s:%d%s", APPLICATION_HOST, APPLICATION_PORT, path));
     }
 
-    public static String cgminerUri() {
-        return String.format("tcp://%s:%d", CGMINER_HOST, CGMINER_PORT);
+    public static URI cgminerUri() throws URISyntaxException {
+        return new URI(String.format("tcp://%s:%d", CGMINER_HOST, CGMINER_PORT));
+    }
+
+    @BeforeEach
+    public void beforeEach() throws Exception {
+        wiremock.resetAll();
+        cgminer.resetAll();
+
+        http = new HttpClient();
+        http.setConnectTimeout(2000);
+        http.setResponseBufferSize(8192);
+        http.getRequestListeners().addListener(new Request.Listener() {
+            @Override
+            public void onQueued(Request request) {
+                request.timeout(2000, TimeUnit.MILLISECONDS);
+            }
+        });
+        http.start();
+    }
+
+    @AfterEach
+    public void afterEach() throws Exception {
+        http.stop();
+        http = null;
+
+        if (application != null) {
+            application.stop();
+        }
     }
 }

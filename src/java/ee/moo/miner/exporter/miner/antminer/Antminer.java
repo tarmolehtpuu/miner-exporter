@@ -1,3 +1,19 @@
+/*
+   miner-exporter - Prometheus exporter for cryptocurrency miners
+   Copyright 2026 Tarmo Lehtpuu
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ee.moo.miner.exporter.miner.antminer;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -28,10 +44,10 @@ public class Antminer implements Miner {
 
     private final HttpClient client;
 
-    public Antminer(MinerConfig config, ObjectMapper objectMapper) {
+    public Antminer(MinerConfig config) {
         this.config = config;
         this.client = config.createHttpClient();
-        this.objectMapper = objectMapper;
+        this.objectMapper = config.createObjectMapper();
     }
 
     @Override
@@ -125,7 +141,7 @@ public class Antminer implements Miner {
                 result.add(
                     MetricsTemperature.builder()
                         .no(i)
-                        .type(MetricsTemperatureType.PCB)
+                        .type(MetricsTemperature.Type.PCB)
                         .value(temp1)
                         .build()
                 );
@@ -135,7 +151,7 @@ public class Antminer implements Miner {
                 result.add(
                     MetricsTemperature.builder()
                         .no(i)
-                        .type(MetricsTemperatureType.CHIP)
+                        .type(MetricsTemperature.Type.CHIP)
                         .value(temp2)
                         .build()
                 );

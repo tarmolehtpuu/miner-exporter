@@ -1,9 +1,21 @@
+/*
+   miner-exporter - Prometheus exporter for cryptocurrency miners
+   Copyright 2026 Tarmo Lehtpuu
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package ee.moo.miner.exporter;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ee.moo.miner.exporter.api.*;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
@@ -14,10 +26,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import java.util.Optional;
 
 @Slf4j
 public class Application {
@@ -37,30 +46,6 @@ public class Application {
         this.server = new Server();
     }
 
-    public void start() throws Exception {
-        var connector = new ServerConnector(server);
-        connector.setHost(host);
-        connector.setPort(port);
-
-        var controllers = new ArrayList<Controller>();
-        controllers.add(new HealthzController());
-        controllers.add(new ReadyzController());
-
-        var miner = miner(env);
-        if (miner != null) {
-            controllers.add(new MetricsController(miner));
-        }
-
-        server.addConnector(connector);
-        server.setDefaultHandler(new DefaultController(controllers));
-        server.start();
-    }
-
-    public void stop() throws Exception {
-        server.stop();
-        server.join();
-    }
-
     static void main() throws Exception {
         var env = System.getenv();
         var host = env.getOrDefault("LISTEN_HOST", "0.0.0.0");
@@ -71,24 +56,38 @@ public class Application {
         new Application(env, host, port).start();
     }
 
-    private static Miner miner(Map<String, String> env) throws URISyntaxException {
+    private static Optional<Miner> miner(Map<String, String> env) throws URISyntaxException {
         if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
             log.warn("No miners configured, skipping metrics");
-            return null;
+            return Optional.empty();
         }
 
         var config = new MinerConfig(env);
-        return config
+        return Optional.of(config
             .getType()
-            .create(config, objectMapper());
+            .create(config)
+        );
     }
 
-    private static ObjectMapper objectMapper() {
-        return JsonMapper.builder()
-            .addModule(new JavaTimeModule())
-            .defaultPropertyInclusion(JsonInclude.Value.construct(NON_ABSENT, NON_ABSENT))
-            .disable(FAIL_ON_UNKNOWN_PROPERTIES)
-            .disable(WRITE_DATES_AS_TIMESTAMPS)
-            .build();
+    public void start() throws Exception {
+        var connector = new ServerConnector(server);
+        connector.setHost(host);
+        connector.setPort(port);
+
+        var controllers = new ArrayList<Controller>();
+        controllers.add(new HealthzController());
+        controllers.add(new ReadyzController());
+
+        var miner = miner(env);
+        miner.ifPresent(m -> controllers.add(new MetricsController(m)));
+
+        server.addConnector(connector);
+        server.setDefaultHandler(new DefaultController(controllers));
+        server.start();
+    }
+
+    public void stop() throws Exception {
+        server.stop();
+        server.join();
     }
 }
