@@ -65,46 +65,41 @@ jobs:
       - name: Check Release
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
-          if gh releease view v${VERSION} > /dev/null 2&1; then
-            echo "RELEASE=false" >> $GITHUB_ENV
+          if gh release view v${VERSION} > /dev/null 2>&1; then
+            echo "release=false" >> $GITHUB_OUTPUT
+            echo "Release v${VERSION} already exists. Skipping"
           else
-            echo "RELEASE=true" >> $GITHUB_ENV
+            echo "release=true" >> $GITHUB_OUTPUT
+            echo "Creating release: v${VERSION}"
           fi         
 
       - name: Login to registry
         uses: docker/login-action@v3
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' && steps.check_release.outputs.release == 'true' }}
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release Docker
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' && steps.check_release.outputs.release == 'true' }}
         run: |
-          if "$RELEASE"; then
-            docker build --tag $IMAGE_ID:$IMAGE_TAG .
-            docker pushj $IMAGE_ID:$IMAGE_TAG
-          else
-            echo "Release exists, skipping Docker"
-          fi
+          echo "Docker: $IMAGE_ID:$IMAGE_TAG"
+          docker build --tag $IMAGE_ID:$IMAGE_TAG .
+          docker push $IMAGE_ID:$IMAGE_TAG
         env:
           IMAGE_ID: ghcr.io/tarmolehtpuu/miner-exporter
           IMAGE_TAG: ${{ env.VERSION }}
 
       - name: Release JAR
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' && steps.check_release.outputs.release == 'true' }}
         run: |
-          if "$RELEASE"; then
-            mv build/libs/app.jar build/libs/miner-exporter-$VERSION.jar
-            gh release create v${VERSION} \
-              --repo tarmolehtpuu/miner-exporter \
-              --title miner-exporter-${VERSION} \
-              --generate-notes \
-              miner-exporter-$VERSION.jar
-          else
-            echo "Release exists, skipping JAR"
-          fi
+          mv app.jar miner-exporter-$VERSION.jar
+          gh release create v${VERSION} \
+            --repo tarmolehtpuu/miner-exporter \
+            --title miner-exporter-${VERSION} \
+            --generate-notes \
+            miner-exporter-$VERSION.jar
         working-directory: build/libs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
