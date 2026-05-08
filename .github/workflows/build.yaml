@@ -69,7 +69,7 @@ jobs:
             echo "RELEASE=false" >> $GITHUB_ENV
           else
             echo "RELEASE=true" >> $GITHUB_ENV
-          end         
+          fi         
 
       - name: Login to registry
         uses: docker/login-action@v3
