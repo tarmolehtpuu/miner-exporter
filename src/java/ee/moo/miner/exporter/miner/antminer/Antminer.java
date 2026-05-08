@@ -26,7 +26,6 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
-import ee.moo.miner.exporter.util.HashrateUtil;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -65,23 +64,21 @@ public class Antminer implements Miner {
     @Override
     public Metrics getMetrics() {
         var summary = getSummary();
-        System.out.println(summary);
-
         var stats = getStats();
-        System.out.println(stats);
 
-        return Metrics.builder()
-            .miner(getId())
-            .type(getType())
-            .uptime(summary.get("Elapsed").asInt())
-            .accepted(summary.get("Accepted").asInt())
-            .rejected(summary.get("Rejected").asInt())
-            .hashrate(HashrateUtil.ghs2ths(summary.get("GHS 5s").asDouble()))
-            .temperatures(getTemperatures(stats))
-            .fans(getFans(stats))
-            .pools(getPools())
-            .found(summary.get("Found Blocks").asInt())
-            .build();
+        var metrics = new Metrics();
+        metrics.setMiner(getId());
+        metrics.setType(getType());
+        metrics.setUptime(summary.get("Elapsed").asInt());
+        metrics.setAccepted(summary.get("Accepted").asInt());
+        metrics.setRejected(summary.get("Rejected").asInt());
+        metrics.setFound(summary.get("Found Blocks").asInt());
+        metrics.setHashrateGhs(summary.get("GHS 5s").asDouble());
+        metrics.setTemperatures(getTemperatures(stats));
+        metrics.setFans(getFans(stats));
+        metrics.setPools(getPools());
+
+        return metrics;
     }
 
     private JsonNode getSummary() {
@@ -117,8 +114,6 @@ public class Antminer implements Miner {
             if (response.getStatus() != 200) {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
             }
-
-            System.out.println(response.getContentAsString());
 
             var json = objectMapper.readTree(response.getContent());
 
@@ -192,8 +187,6 @@ public class Antminer implements Miner {
             }
 
             var json = objectMapper.readTree(response.getContent());
-
-            System.out.println(json);
 
             validateHeader(json);
             validatePools(json);

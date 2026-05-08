@@ -24,7 +24,6 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
-import ee.moo.miner.exporter.util.HashrateUtil;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -70,8 +69,6 @@ public class Bitaxe implements Miner {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=info)", response.getStatus(), config.getId());
             }
 
-            System.out.println(response.getContentAsString());
-
             var json = objectMapper.readTree(response.getContent());
 
             validate(json);
@@ -93,18 +90,19 @@ public class Bitaxe implements Miner {
                 .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
                 .build();
 
-            return Metrics.builder()
-                .miner(getId())
-                .type(getType())
-                .uptime(json.get("uptimeSeconds").asInt())
-                .accepted(json.get("sharesAccepted").asInt())
-                .rejected(json.get("sharesRejected").asInt())
-                .found(json.get("blockFound").asInt())
-                .hashrate(HashrateUtil.ghs2ths(json.get("hashRate").asDouble()))
-                .temperatures(List.of(temp1, temp2))
-                .fans(List.of(fan))
-                .pools(getPools(json))
-                .build();
+            var metrics = new Metrics();
+            metrics.setMiner(getId());
+            metrics.setType(getType());
+            metrics.setUptime(json.get("uptimeSeconds").asInt());
+            metrics.setAccepted(json.get("sharesAccepted").asInt());
+            metrics.setRejected(json.get("sharesRejected").asInt());
+            metrics.setFound(json.get("blockFound").asInt());
+            metrics.setHashrateGhs(json.get("hashRate").asDouble());
+            metrics.setTemperatures(List.of(temp1, temp2));
+            metrics.setFans(List.of(fan));
+            metrics.setPools(getPools(json));
+
+            return metrics;
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new MinerException(e.getMessage(), e);

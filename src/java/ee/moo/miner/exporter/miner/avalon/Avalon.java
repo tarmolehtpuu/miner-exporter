@@ -24,7 +24,6 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
-import ee.moo.miner.exporter.util.HashrateUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,18 +56,19 @@ public class Avalon implements Miner {
         var summary = getSummary();
         var stats = getStats();
 
-        return Metrics.builder()
-            .miner(getId())
-            .type(getType())
-            .uptime(summary.get("Elapsed").asInt())
-            .accepted(summary.get("Accepted").asInt())
-            .rejected(summary.get("Rejected").asInt())
-            .found(summary.get("Found Blocks").asInt())
-            .hashrate(HashrateUtil.mhs2ths(summary.get("MHS 5s").asDouble()))
-            .temperatures(getTemperatures(stats))
-            .fans(getFans(stats))
-            .pools(getPools())
-            .build();
+        var metrics = new Metrics();
+        metrics.setMiner(getId());
+        metrics.setType(getType());
+        metrics.setUptime(summary.get("Elapsed").asInt());
+        metrics.setAccepted(summary.get("Accepted").asInt());
+        metrics.setRejected(summary.get("Rejected").asInt());
+        metrics.setFound(summary.get("Found Blocks").asInt());
+        metrics.setHashrateMhs(summary.get("MHS 5s").asDouble());
+        metrics.setTemperatures(getTemperatures(stats));
+        metrics.setFans(getFans(stats));
+        metrics.setPools(getPools());
+
+        return metrics;
     }
 
     private JsonNode getSummary() {
@@ -92,7 +92,6 @@ public class Avalon implements Miner {
 
         try {
             var body = client.execute("stats");
-            System.out.println(body);
             var json = objectMapper.readTree(body);
 
             return json.get("STATS").get(0);
@@ -154,8 +153,6 @@ public class Avalon implements Miner {
 
         try {
             var json = objectMapper.readTree(client.execute("pools"));
-
-            System.out.println(json);
 
             validateHeader(json);
             validatePools(json);

@@ -23,7 +23,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Builder
 public class Metrics {
 
     private String miner;
@@ -45,6 +44,14 @@ public class Metrics {
     private List<Fan> fans;
 
     private List<Pool> pools;
+
+    public void setHashrateMhs(double hashrate) {
+        this.hashrate = Math.round(hashrate / 1_000_000.0 * 1000.0) / 1000.0;
+    }
+
+    public void setHashrateGhs(double hashrate) {
+        this.hashrate = Math.round(hashrate / 1000.0 * 1000.0) / 1000.0;
+    }
 
     public String export() {
         var labels = List.of(
