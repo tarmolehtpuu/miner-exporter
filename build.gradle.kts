@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    // ************* JAVA ******************* //
+    // ******************* JAVA ******************* //
 
     // jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
@@ -46,7 +46,7 @@ dependencies {
     implementation("io.prometheus:simpleclient:0.16.0")
     implementation("io.prometheus:simpleclient_common:0.16.0")
 
-    // ************* TEST ******************* //
+    // ******************* TEST ******************* //
 
     // junit
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
