@@ -24,6 +24,7 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
+import ee.moo.miner.exporter.util.HashrateUtil;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -99,7 +100,7 @@ public class Bitaxe implements Miner {
                 .accepted(json.get("sharesAccepted").asInt())
                 .rejected(json.get("sharesRejected").asInt())
                 .found(json.get("blockFound").asInt())
-                .hashrate(Math.round(json.get("hashRate").asDouble() / 1000.0 * 1000.0) / 1000.0)
+                .hashrate(HashrateUtil.ghs2ths(json.get("hashRate").asDouble()))
                 .temperatures(List.of(temp1, temp2))
                 .fans(List.of(fan))
                 .pools(getPools(json))

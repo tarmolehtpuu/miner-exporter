@@ -26,6 +26,7 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
+import ee.moo.miner.exporter.util.HashrateUtil;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -75,7 +76,7 @@ public class Antminer implements Miner {
             .uptime(summary.get("Elapsed").asInt())
             .accepted(summary.get("Accepted").asInt())
             .rejected(summary.get("Rejected").asInt())
-            .hashrate(Math.round(summary.get("GHS 5s").asDouble() / 1000.0 * 1000.0) / 1000.0)
+            .hashrate(HashrateUtil.ghs2ths(summary.get("GHS 5s").asDouble()))
             .temperatures(getTemperatures(stats))
             .fans(getFans(stats))
             .pools(getPools())

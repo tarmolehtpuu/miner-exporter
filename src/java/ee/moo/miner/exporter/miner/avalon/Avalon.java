@@ -24,6 +24,7 @@ import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.miner.MinerException;
 import ee.moo.miner.exporter.miner.MinerType;
+import ee.moo.miner.exporter.util.HashrateUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class Avalon implements Miner {
             .accepted(summary.get("Accepted").asInt())
             .rejected(summary.get("Rejected").asInt())
             .found(summary.get("Found Blocks").asInt())
-            .hashrate(Math.round(summary.get("MHS 5s").asDouble() / 1_000_000 * 1000.0) / 1000.0)
+            .hashrate(HashrateUtil.mhs2ths(summary.get("MHS 5s").asDouble()))
             .temperatures(getTemperatures(stats))
             .fans(getFans(stats))
             .pools(getPools())

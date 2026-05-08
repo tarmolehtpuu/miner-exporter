@@ -1,4 +1,6 @@
 1. JSON validation
-2. more tests
-3. grafana dashboard (JSON?)
-4. check records
+2. remote sout calls and maybe add few logs
+3. more tests
+4. grafana dashboard (JSON?)
+5. check records
+6. HashrateUtil test
