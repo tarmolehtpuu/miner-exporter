@@ -19,8 +19,6 @@ package ee.moo.miner.exporter.miner.avalon;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsFan;
-import ee.moo.miner.exporter.metrics.MetricsPool;
 import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
@@ -65,10 +63,10 @@ public class Avalon implements Miner {
             .accepted(summary.get("Accepted").asInt())
             .rejected(summary.get("Rejected").asInt())
             .found(summary.get("Found Blocks").asInt())
-            .hashrate(summary.get("MHS 5s").asDouble())
-            .temperature(getTemperature(stats))
-            .fan(getFan(stats))
-            .pool(getPool())
+            .hashrate(Math.round(summary.get("MHS 5s").asDouble() / 1_000_000 * 1000.0) / 1000.0)
+            .temperatures(getTemperatures(stats))
+            .fans(getFans(stats))
+            .pools(getPools())
             .build();
     }
 
@@ -103,7 +101,7 @@ public class Avalon implements Miner {
         }
     }
 
-    private List<MetricsTemperature> getTemperature(JsonNode stats) {
+    private List<MetricsTemperature> getTemperatures(JsonNode stats) {
         var result = new ArrayList<MetricsTemperature>();
 
         var pattern1 = Pattern.compile("Temp\\[([\\d.]+)]");
@@ -134,12 +132,12 @@ public class Avalon implements Miner {
         return result;
     }
 
-    private List<MetricsFan> getFan(JsonNode stats) {
+    private List<Metrics.Fan> getFans(JsonNode stats) {
         var pattern = Pattern.compile("Fan1\\[([\\d.]+)]");
         var matcher = pattern.matcher(stats.get("MM ID0").asText());
 
         if (matcher.find()) {
-            return List.of(MetricsFan.builder()
+            return List.of(Metrics.Fan.builder()
                 .id(1)
                 .value((int) Double.parseDouble(matcher.group(1)))
                 .build()
@@ -149,8 +147,8 @@ public class Avalon implements Miner {
         return List.of();
     }
 
-    private List<MetricsPool> getPool() {
-        var result = new ArrayList<MetricsPool>();
+    private List<Metrics.Pool> getPools() {
+        var result = new ArrayList<Metrics.Pool>();
         var client = config.createTcpClient();
 
         try {
@@ -162,7 +160,7 @@ public class Avalon implements Miner {
             validatePools(json);
 
             for (var pool : json.get("POOLS")) {
-                result.add(MetricsPool.builder()
+                result.add(Metrics.Pool.builder()
                     .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())

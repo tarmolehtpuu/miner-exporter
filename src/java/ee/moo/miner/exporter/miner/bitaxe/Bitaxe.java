@@ -19,8 +19,6 @@ package ee.moo.miner.exporter.miner.bitaxe;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsFan;
-import ee.moo.miner.exporter.metrics.MetricsPool;
 import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
@@ -89,7 +87,7 @@ public class Bitaxe implements Miner {
                 .build();
 
 
-            var fan = MetricsFan.builder()
+            var fan = Metrics.Fan.builder()
                 .id(1)
                 .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
                 .build();
@@ -101,10 +99,10 @@ public class Bitaxe implements Miner {
                 .accepted(json.get("sharesAccepted").asInt())
                 .rejected(json.get("sharesRejected").asInt())
                 .found(json.get("blockFound").asInt())
-                .hashrate(json.get("hashRate").asDouble())
-                .temperature(List.of(temp1, temp2))
-                .fan(List.of(fan))
-                .pool(getPool(json))
+                .hashrate(Math.round(json.get("hashRate").asDouble() / 1000.0 * 1000.0) / 1000.0)
+                .temperatures(List.of(temp1, temp2))
+                .fans(List.of(fan))
+                .pools(getPools(json))
                 .build();
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
@@ -112,10 +110,10 @@ public class Bitaxe implements Miner {
         }
     }
 
-    public List<MetricsPool> getPool(JsonNode json) {
+    public List<Metrics.Pool> getPools(JsonNode json) {
         var primary = json.get("isUsingFallbackStratum").asInt() == 0;
 
-        var pool1 = MetricsPool.builder()
+        var pool1 = Metrics.Pool.builder()
             .id(0)
             .uri(String.format(
                 "stratum+tcp://%s:%d",
@@ -130,7 +128,7 @@ public class Bitaxe implements Miner {
             .rejected(0)
             .build();
 
-        var pool2 = MetricsPool.builder()
+        var pool2 = Metrics.Pool.builder()
             .id(1)
             .uri(String.format(
                 "stratum+tcp://%s:%d",

@@ -12,7 +12,7 @@ miner_rejected_total{miner="miner01",miner_type="BITAXE"} 23.0
 miner_found_total{miner="miner01",miner_type="BITAXE"} 0.0
 # HELP miner_hashrate Current miner hashrate in TH/s
 # TYPE miner_hashrate gauge
-miner_hashrate{miner="miner01",miner_type="BITAXE"} 901.0700684
+miner_hashrate{miner="miner01",miner_type="BITAXE"} 0.901
 # HELP miner_temperature Current miner temperature in C
 # TYPE miner_temperature gauge
 miner_temperature{miner="miner01",miner_type="BITAXE",board="1",temperature_type="CHIP"} 60.75

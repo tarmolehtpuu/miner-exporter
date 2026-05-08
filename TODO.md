@@ -1,5 +1,4 @@
-1. hashrate normalization across miners
-2. JSON validation
-3. more tests
-4. grafana dashboard (JSON?)
-5. check records
+1. JSON validation
+2. more tests
+3. grafana dashboard (JSON?)
+4. check records

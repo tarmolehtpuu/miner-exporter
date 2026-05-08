@@ -40,11 +40,11 @@ public class Metrics {
 
     private Double hashrate;
 
-    private List<MetricsTemperature> temperature;
+    private List<MetricsTemperature> temperatures;
 
-    private List<MetricsFan> fan;
+    private List<Fan> fans;
 
-    private List<MetricsPool> pool;
+    private List<Pool> pools;
 
     public String export() {
         var labels = List.of(
@@ -53,5 +53,35 @@ public class Metrics {
         );
 
         return new MetricsExporter(this, labels).export();
+    }
+
+    @Data
+    @Builder
+    public static class Fan {
+
+        private Integer id;
+
+        private Integer value;
+    }
+
+    @Data
+    @Builder
+    public static class Pool {
+
+        private Integer id;
+
+        private String uri;
+
+        private String user;
+
+        private Integer priority;
+
+        private boolean alive;
+
+        private boolean active;
+
+        private Integer accepted;
+
+        private Integer rejected;
     }
 }

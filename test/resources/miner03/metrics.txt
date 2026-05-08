@@ -12,7 +12,7 @@ miner_rejected_total{miner="miner03",miner_type="ANTMINER"} 0.0
 miner_found_total{miner="miner03",miner_type="ANTMINER"} 0.0
 # HELP miner_hashrate Current miner hashrate in TH/s
 # TYPE miner_hashrate gauge
-miner_hashrate{miner="miner03",miner_type="ANTMINER"} 353.97
+miner_hashrate{miner="miner03",miner_type="ANTMINER"} 0.354
 # HELP miner_temperature Current miner temperature in C
 # TYPE miner_temperature gauge
 miner_temperature{miner="miner03",miner_type="ANTMINER",board="1",temperature_type="PCB"} 51.0

@@ -12,7 +12,7 @@ miner_rejected_total{miner="miner02",miner_type="AVALON"} 71.0
 miner_found_total{miner="miner02",miner_type="AVALON"} 0.0
 # HELP miner_hashrate Current miner hashrate in TH/s
 # TYPE miner_hashrate gauge
-miner_hashrate{miner="miner02",miner_type="AVALON"} 2549134.42
+miner_hashrate{miner="miner02",miner_type="AVALON"} 2.549
 # HELP miner_temperature Current miner temperature in C
 # TYPE miner_temperature gauge
 miner_temperature{miner="miner02",miner_type="AVALON",board="1",temperature_type="CHIP"} 60.0

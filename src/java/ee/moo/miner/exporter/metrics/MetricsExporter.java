@@ -68,11 +68,6 @@ public class MetricsExporter {
 
     private final List<Label> labels;
 
-    public MetricsExporter(Metrics metrics) {
-        this.metrics = metrics;
-        this.labels = List.of();
-    }
-
     public String export() {
         var sb = new StringBuilder();
 
@@ -82,56 +77,42 @@ public class MetricsExporter {
         write(sb, MINER_FOUND_TOTAL, metrics.getFound());
         write(sb, MINER_HASHRATE, metrics.getHashrate());
 
-        for (var temp : metrics.getTemperature()) {
+        for (var temperature : metrics.getTemperatures()) {
             var vars = List.of(
-                new Label("board", temp.getId()),
-                new Label("temperature_type", temp.getType().toString())
+                new Label("board", temperature.getId()),
+                new Label("temperature_type", temperature.getType().toString())
             );
-            write(sb, MINER_TEMPERATURE, vars, temp.getValue());
+            write(sb, MINER_TEMPERATURE, vars, temperature.getValue());
         }
 
-        for (var fan : metrics.getFan()) {
+        for (var fan : metrics.getFans()) {
             write(sb, MINER_FAN_RPM, new Label("fan", fan.getId()), fan.getValue());
         }
 
-        for (var pool : metrics.getPool()) {
-            var vars = List.of(
-                new Label("pool", pool.getId()),
-                new Label("pool_priority", pool.getPriority()),
-                new Label("pool_uri", pool.getUri()),
-                new Label("pool_user", pool.getUser())
-            );
-            write(sb, MINER_POOL_ALIVE, vars, pool.isAlive() ? 1 : 0);
+        for (var pool : metrics.getPools()) {
+            write(sb, MINER_POOL_ALIVE, pool, pool.isAlive() ? 1 : 0);
         }
-        for (var pool : metrics.getPool()) {
-            var vars = List.of(
-                new Label("pool", pool.getId()),
-                new Label("pool_priority", pool.getPriority()),
-                new Label("pool_uri", pool.getUri()),
-                new Label("pool_user", pool.getUser())
-            );
-            write(sb, MINER_POOL_ACTIVE, vars, pool.isActive() ? 1 : 0);
+        for (var pool : metrics.getPools()) {
+            write(sb, MINER_POOL_ACTIVE, pool, pool.isActive() ? 1 : 0);
         }
-        for (var pool : metrics.getPool()) {
-            var vars = List.of(
-                new Label("pool", pool.getId()),
-                new Label("pool_priority", pool.getPriority()),
-                new Label("pool_uri", pool.getUri()),
-                new Label("pool_user", pool.getUser())
-            );
-            write(sb, MINER_POOL_ACCEPTED_TOTAL, vars, pool.getAccepted());
+        for (var pool : metrics.getPools()) {
+            write(sb, MINER_POOL_ACCEPTED_TOTAL, pool, pool.getAccepted());
         }
-        for (var pool : metrics.getPool()) {
-            var vars = List.of(
-                new Label("pool", pool.getId()),
-                new Label("pool_priority", pool.getPriority()),
-                new Label("pool_uri", pool.getUri()),
-                new Label("pool_user", pool.getUser())
-            );
-            write(sb, MINER_POOL_REJECTED_TOTAL, vars, pool.getRejected());
+        for (var pool : metrics.getPools()) {
+            write(sb, MINER_POOL_REJECTED_TOTAL, pool, pool.getRejected());
         }
 
         return sb.toString();
+    }
+
+    private void write(StringBuilder sb, Header header, Metrics.Pool pool, double value) {
+        var vars = List.of(
+            new Label("pool", pool.getId()),
+            new Label("pool_priority", pool.getPriority()),
+            new Label("pool_uri", pool.getUri()),
+            new Label("pool_user", pool.getUser())
+        );
+        write(sb, header, vars, value);
     }
 
     @SuppressWarnings("SameParameterValue")

@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import ee.moo.miner.exporter.metrics.Metrics;
-import ee.moo.miner.exporter.metrics.MetricsFan;
-import ee.moo.miner.exporter.metrics.MetricsPool;
 import ee.moo.miner.exporter.metrics.MetricsTemperature;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
@@ -77,10 +75,10 @@ public class Antminer implements Miner {
             .uptime(summary.get("Elapsed").asInt())
             .accepted(summary.get("Accepted").asInt())
             .rejected(summary.get("Rejected").asInt())
-            .hashrate(summary.get("GHS 5s").asDouble())
-            .temperature(getTemperature(stats))
-            .fan(getFan(stats))
-            .pool(getPool())
+            .hashrate(Math.round(summary.get("GHS 5s").asDouble() / 1000.0 * 1000.0) / 1000.0)
+            .temperatures(getTemperatures(stats))
+            .fans(getFans(stats))
+            .pools(getPools())
             .found(summary.get("Found Blocks").asInt())
             .build();
     }
@@ -133,7 +131,7 @@ public class Antminer implements Miner {
         }
     }
 
-    private List<MetricsTemperature> getTemperature(JsonNode json) {
+    private List<MetricsTemperature> getTemperatures(JsonNode json) {
         var result = new ArrayList<MetricsTemperature>();
 
         for (var i = 1; i <= json.get("temp_num").asInt(); i++) {
@@ -164,12 +162,12 @@ public class Antminer implements Miner {
         return result;
     }
 
-    private List<MetricsFan> getFan(JsonNode json) {
-        var result = new ArrayList<MetricsFan>();
+    private List<Metrics.Fan> getFans(JsonNode json) {
+        var result = new ArrayList<Metrics.Fan>();
 
         for (int i = 1; i <= json.get("fan_num").asInt(); i++) {
             result.add(
-                MetricsFan.builder()
+                Metrics.Fan.builder()
                     .id(i)
                     .value(json.get(String.format("fan%d", i)).asInt())
                     .build()
@@ -180,8 +178,8 @@ public class Antminer implements Miner {
         return result;
     }
 
-    private List<MetricsPool> getPool() {
-        var result = new ArrayList<MetricsPool>();
+    private List<Metrics.Pool> getPools() {
+        var result = new ArrayList<Metrics.Pool>();
 
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri()))
@@ -200,7 +198,7 @@ public class Antminer implements Miner {
             validatePools(json);
 
             for (var pool : json.get("POOLS")) {
-                result.add(MetricsPool.builder()
+                result.add(Metrics.Pool.builder()
                     .id(pool.get("POOL").asInt())
                     .uri(pool.get("URL").asText())
                     .user(pool.get("User").asText())
