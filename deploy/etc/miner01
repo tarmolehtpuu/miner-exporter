@@ -1,3 +1,4 @@
+# Example env file: /etc/default/miner-exporter/miner01
 MINER_ID=miner01
 MINER_TYPE=AVALON
 MINER_URI=tcp://10.10.10.41:4028
