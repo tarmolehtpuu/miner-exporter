@@ -37,6 +37,6 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: jar
+          name: miner-exporter-${{ inputs.version }}.jar
           path: build/libs/miner-exporter-${{ inputs.version }}.jar
           archive: false

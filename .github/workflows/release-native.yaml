@@ -42,7 +42,7 @@ jobs:
       - name: Download JAR
         uses: actions/download-artifact@v4
         with:
-          name: jar
+          name: miner-exporter-${{ inputs.version }}.jar
           path: build/libs
 
       - name: Check artifacts
