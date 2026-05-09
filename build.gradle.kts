@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
     // ******************* JAVA ******************* //
-    
+
     // ******************* TEST ******************* //
 
     // junit
@@ -72,98 +72,12 @@ tasks.withType<Test> {
     finalizedBy(tasks.jacocoTestReport)
 }
 
-tasks.register("copyright") {
-    description = "Generates LICENSE and NOTICE files for 3rd party dependencies"
-
-    val cp = configurations.runtimeClasspath.get()
-    val out = layout.buildDirectory.dir("generated")
-
-    inputs.files(cp)
-    outputs.dir(out)
-
-    doLast {
-        val modules = cp
-            .resolvedConfiguration
-            .resolvedArtifacts
-            .associate { it.file.absolutePath to it.name }
-
-        cp.files.forEach { jar ->
-            val module = modules[jar.absolutePath] ?: jar.nameWithoutExtension
-
-            zipTree(jar).matching {
-                include("META-INF/LICENSE")
-                include("META-INF/LICENSE.txt")
-            }.forEach { file ->
-                file.copyTo(out.get().file("licenses/LICENSE.$module").asFile, overwrite = true)
-            }
-
-            zipTree(jar).matching {
-                include("META-INF/NOTICE")
-                include("META-INF/NOTICE.txt")
-            }.forEach { file ->
-                file.copyTo(out.get().file("notices/NOTICE.$module").asFile, overwrite = true)
-            }
-
-            zipTree(jar).filter { it.name == "MANIFEST.MF" }.forEach { m ->
-                val manifest = Manifest(m.inputStream())
-
-                val file1 = out.get().file("licenses/LICENSE.$module").asFile
-                val file2 = out.get().file("notices/NOTICE.$module").asFile
-
-                if (!file1.exists()) {
-                    val text = manifest.mainAttributes.getValue("Bundle-License")
-                    if (text != null) {
-                        file1.createNewFile()
-                        file1.writeText("License URL: $text\n")
-                    }
-                }
-
-                if (!file2.exists()) {
-                    val text = manifest.mainAttributes.getValue("Bundle-Copyright")
-                    if (text != null) {
-                        file2.createNewFile()
-                        file2.writeText("$text\n")
-                    }
-                }
-            }
-        }
-    }
-}
-
 tasks.jar {
-    dependsOn("copyright")
-
     archiveBaseName.set("app")
     archiveVersion.set("")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     entryCompression = ZipEntryCompression.DEFLATED
-
-    // 3rd party LICENSE files
-    from("build/generated/licenses") {
-        into("META-INF/licenses")
-    }
-
-    // 3rd party NOTICE files
-    from("build/generated/notices") {
-        into("META-INF/notices")
-    }
-
-    // 3rd party jars (fat JAR)
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
-        exclude("META-INF/*.SF")
-        exclude("META-INF/*.DSA")
-        exclude("META-INF/*.RSA")
-        exclude("META-INF/LICENSE")
-        exclude("META-INF/LICENSE.*")
-        exclude("META-INF/*-LICENSE")
-        exclude("META-INF/INDEX.LIST")
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/maven/")
-        exclude("META-INF/native-image/")
-        exclude("META-INF/versions/")
-        exclude("module-info.class")
-    }
 
     // project LICENSE and NOTICE
     from(project.rootDir) {

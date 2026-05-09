@@ -1,0 +1,41 @@
+name: Build Release (JAR)
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version
+        type: string
+        required: true
+
+env:
+  JAVA_VERSION: 25
+  JAVA_DIST: zulu
+  JAVA_ARCH: x64
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DIST }}
+          architecture: ${{ env.JAVA_ARCH }}
+
+      - name: Build
+        run: ./gradlew check jar
+
+      - name: Build versioned JAR
+        run:
+          mv build/libs/app.jar build/libs/miner-exporter-${{ inputs.version }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: build/libs/miner-exporter-${{ inputs.version }}
