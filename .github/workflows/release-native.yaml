@@ -1,4 +1,4 @@
-name: Build Release (Native)
+name: Release (Native)
 on:
   workflow_call:
     inputs:

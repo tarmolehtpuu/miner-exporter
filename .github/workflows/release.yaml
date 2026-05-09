@@ -38,7 +38,7 @@ jobs:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-    uses: ./.github/workflows/release/jar.yaml
+    uses: ./.github/workflows/release-jar.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 
@@ -47,7 +47,7 @@ jobs:
     needs:
       - preflight
       - release-jar
-    uses: ./.github/workflows/release/native.yaml
+    uses: ./.github/workflows/release-native.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 
@@ -56,7 +56,7 @@ jobs:
     needs:
       - preflight
       - release-native
-    uses: ./.github/workflows/release/docker.yaml
+    uses: ./.github/workflows/release-docker.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 

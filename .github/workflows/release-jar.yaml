@@ -1,4 +1,4 @@
-name: Build Release (JAR)
+name: Release (JAR)
 on:
   workflow_call:
     inputs:
