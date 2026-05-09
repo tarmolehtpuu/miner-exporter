@@ -90,24 +90,25 @@ jobs:
 
       - name: Release
         run: |
-          echo "Preparing release..."
+          VERSION="${{ needs.preflight.outputs.version }}"
+          echo "Preparing release: $VERSION"
           ls -la .
           
-          mv app.jar miner-exporter-${{ inputs.version }}.jar
-          mv miner-exporter-linux-amd64 miner-exporter-${{ inputs.version }}-linux-amd64
+          mv app.jar miner-exporter-$VERSION.jar
+          mv miner-exporter-linux-amd64 miner-exporter-$VERSION-linux-amd64
           
-          tar -czvf miner-exporter-${{ inputs.version }}-linux-amd64.tar.gz miner-exporter-${{ inputs.version }}-linux-amd64
+          tar -czvf miner-exporter-$VERSION-linux-amd64.tar.gz miner-exporter-$VERSION-linux-amd64
           
           echo "Release prepared"
           ls -la
           
           echo "Releasing..."
-          gh release create v${{ inputs.version }} \
+          gh release create v$VERSION \
             --repo tarmolehtpuu/miner-exporter \
-            --title miner-exporter-${{ inputs.version }} \
+            --title miner-exporter-$VERSION \
             --generate-notes *.jar *.tar.gz
           
-          echo "Release ${{ inputs.version }} DONE"
+          echo "Release $VERSION - DONE"
         working-directory: release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
