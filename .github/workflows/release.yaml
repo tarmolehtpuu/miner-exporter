@@ -39,8 +39,6 @@ jobs:
     needs:
       - preflight
     uses: ./.github/workflows/release-jar.yaml
-    with:
-      version: ${{ needs.preflight.outputs.version }}
 
   release-native:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
@@ -48,20 +46,23 @@ jobs:
       - preflight
       - release-jar
     uses: ./.github/workflows/release-native.yaml
-    with:
-      version: ${{ needs.preflight.outputs.version }}
 
   release-docker:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
+      - release-jar
       - release-native
     uses: ./.github/workflows/release-docker.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 
   release:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
+      - preflight
+      - release-jar
+      - release-native
       - release-docker
     runs-on: ubuntu-latest
     steps:
@@ -82,3 +83,27 @@ jobs:
       - name: List artifacts
         run:
           ls -la release
+
+      - name: Release
+        run: |
+          echo "Preparing release..."
+          ls -la .
+          
+          mv app.jar miner-exporter-${{ inputs.version }}.jar
+          mv miner-exporter-linux-amd64 miner-exporter-${{ inputs.version }}-linux-amd64
+          
+          tar -czvf miner-exporter-${{ inputs.version }}-linux-amd64.tar.gz miner-exporter-${{ inputs.version }}-linux-amd64
+          
+          echo "Release prepared"
+          ls -la
+          
+          echo "Releasing..."
+          gh release create v${{ inputs.version }} \
+            --repo tarmolehtpuu/miner-exporter \
+            --title miner-exporter-${{ inputs.version }} \
+            --generate-notes *.jar *.tar.gz
+          
+          echo "Release ${{ inputs.version }} DONE"
+        working-directory: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

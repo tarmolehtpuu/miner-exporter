@@ -1,11 +1,6 @@
 name: Release (JAR)
 on:
   workflow_call:
-    inputs:
-      version:
-        description: Version
-        type: string
-        required: true
 
 env:
   JAVA_VERSION: 25
@@ -30,13 +25,9 @@ jobs:
       - name: Build
         run: ./gradlew check jar
 
-      - name: Build versioned JAR
-        run:
-          mv build/libs/app.jar build/libs/miner-exporter-${{ inputs.version }}.jar
-
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: miner-exporter-${{ inputs.version }}.jar
-          path: build/libs/miner-exporter-${{ inputs.version }}.jar
+          name: app.jar
+          path: build/libs/app.jar
           archive: false
