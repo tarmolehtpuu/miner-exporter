@@ -7,23 +7,23 @@ on:
 
 jobs:
   preflight:
-    uses: .github/workflows/release-001-preflight.yaml
+    uses: ./.github/workflows/release-001-preflight.yaml
 
   jar:
-    uses: .github/workflows/release-002-jar.yaml
+    uses: ./.github/workflows/release-002-jar.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
 
   native:
-    uses: .github/workflows/release-003-native.yaml
+    uses: ./.github/workflows/release-003-native.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
       - jar
 
   docker:
-    uses: .github/workflows/release-004-docker.yaml
+    uses: ./.github/workflows/release-004-docker.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
@@ -33,7 +33,7 @@ jobs:
       version: ${{ needs.preflight.outputs.version }}
 
   finalize:
-    uses: .github/workflows/release-005-finalize.yaml
+    uses: ./.github/workflows/release-005-finalize.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
