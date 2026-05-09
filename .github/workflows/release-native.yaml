@@ -40,10 +40,11 @@ jobs:
           mkdir -p build/bin
 
       - name: Download JAR
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: miner-exporter-${{ inputs.version }}.jar
           path: build/libs
+          skip-decompress: true
 
       - name: Check artifacts
         run: |
@@ -52,8 +53,9 @@ jobs:
 
       - name: Build
         run:
-          native-image -jar build/libs/miner-exporter-${{ inputs.version }}.jar \
-          build/bin/miner-exporter-${{ inputs.version }}-linux-amd64
+          native-image -jar \
+            build/libs/miner-exporter-${{ inputs.version }}.jar \
+            build/bin/miner-exporter-${{ inputs.version }}-linux-amd64
 
       - name: Upload
         uses: actions/upload-artifact@v7
