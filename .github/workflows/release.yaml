@@ -5,112 +5,41 @@ on:
     branches:
       - master
 
-permissions:
-  packages: write
-  contents: write
-
 jobs:
   preflight:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.check_version.outputs.version }}
-      cleared: ${{ steps.check_release.outputs.cleared }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+    uses: .github/workflows/release-preflight.yaml
 
-      - name: Check Version
-        id: check_version
-        run: |
-          echo "version=$(cat VERSION | xargs)" >> $GITHUB_OUTPUT
-
-      - name: Check Release
-        id: check_release
-        run: |
-          VERSION=${{ steps.check_version.outputs.version }}
-          if gh release view v${VERSION} > /dev/null 2>&1; then
-            echo "cleared=false" >> $GITHUB_OUTPUT
-            echo "Release v${VERSION} already exists. Skipping."
-          else
-            echo "cleared=true" >> $GITHUB_OUTPUT
-            echo "Creating release: v${VERSION}"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  release-jar:
+  jar:
+    uses: .github/workflows/release-jar.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-    uses: ./.github/workflows/release-jar.yaml
 
-  release-native:
+
+  native:
+    uses: .github/workflows/release-native.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-      - release-jar
-    uses: ./.github/workflows/release-native.yaml
+      - jar
 
-  release-docker:
-    if: ${{ needs.preflight.outputs.cleared == 'true' }}
-    needs:
-      - preflight
-      - release-jar
-      - release-native
+  docker:
     uses: ./.github/workflows/release-docker.yaml
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    needs:
+      - preflight
+      - jar
+      - native
     with:
       version: ${{ needs.preflight.outputs.version }}
 
-  release:
+  finalize:
+    uses: .github/workflows/release-finalize.yaml
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-      - release-jar
-      - release-native
-      - release-docker
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Create release directory
-        run: |
-          mkdir -p release
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v8
-        with:
-          merge-multiple: true
-          path: release
-
-      - name: List artifacts
-        run:
-          ls -la release
-
-      - name: Release
-        run: |
-          VERSION="${{ needs.preflight.outputs.version }}"
-          echo "Preparing release: $VERSION"
-          ls -la .
-          
-          mv app.jar miner-exporter-$VERSION.jar
-          mv miner-exporter-linux-amd64 miner-exporter-$VERSION-linux-amd64
-          
-          chmod +x miner-exporter-$VERSION-linux-amd64
-          
-          tar -czvf miner-exporter-$VERSION-linux-amd64.tar.gz miner-exporter-$VERSION-linux-amd64
-          
-          echo "Release prepared"
-          ls -la
-          
-          echo "Releasing..."
-          gh release create v$VERSION \
-            --repo tarmolehtpuu/miner-exporter \
-            --title miner-exporter-$VERSION \
-            --generate-notes *.jar *.tar.gz
-          
-          echo "Release $VERSION - DONE"
-        working-directory: release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - jar
+      - native
+      - docker
+    with:
+      version: ${{ needs.preflight.outputs.version }}
