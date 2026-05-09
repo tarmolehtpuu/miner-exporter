@@ -18,8 +18,8 @@ package ee.moo.miner.exporter.fake;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -31,9 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@RequiredArgsConstructor
-@Slf4j
 public class FakeCGMiner implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(FakeCGMiner.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,6 +44,10 @@ public class FakeCGMiner implements Runnable {
     private final int port;
 
     private ServerSocket server;
+
+    public FakeCGMiner(int port) {
+        this.port = port;
+    }
 
     public void start() {
         if (running.get()) {
@@ -70,7 +74,7 @@ public class FakeCGMiner implements Runnable {
             }
         }
 
-        log.info("Started {} on port {}", getClass().getSimpleName(), port);
+        logger.info("Started {} on port {}", getClass().getSimpleName(), port);
     }
 
     public void stop() {
@@ -112,7 +116,7 @@ public class FakeCGMiner implements Runnable {
                     // probably server.accept() timeout
                 } catch (Exception e) {
                     if (running.get()) {
-                        log.error("Client error: {}", e.getMessage(), e);
+                        logger.error("Client error: {}", e.getMessage(), e);
                     }
                 }
             }

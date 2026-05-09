@@ -17,9 +17,6 @@
 package ee.moo.miner.exporter.cgminer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,28 +26,23 @@ import java.net.Socket;
 import java.time.Duration;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class CGMinerTcpClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Getter
     private final String host;
-
-    @Getter
     private final int port;
 
-    @Getter
-    @Setter
     private Duration connectTimeout = Duration.ofSeconds(2);
 
-    @Getter
-    @Setter
     private Duration readTimeout = Duration.ofSeconds(2);
 
-    @Getter
-    @Setter
     private int readBufferSize = 8192;
+
+    public CGMinerTcpClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
 
     public String execute(String command) throws IOException {
         var socket = new Socket();
@@ -85,5 +77,37 @@ public class CGMinerTcpClient {
                 .replace("}{", "},{")
                 .replace("\0", "");
         }
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public Duration getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(Duration connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public Duration getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(Duration readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public int getReadBufferSize() {
+        return readBufferSize;
+    }
+
+    public void setReadBufferSize(int readBufferSize) {
+        this.readBufferSize = readBufferSize;
     }
 }

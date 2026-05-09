@@ -18,7 +18,6 @@ package ee.moo.miner.exporter.controller;
 
 import ee.moo.miner.exporter.IntegrationTest;
 import ee.moo.miner.exporter.miner.MinerType;
-import lombok.Getter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -63,7 +62,7 @@ public class MinerMetricsTest extends IntegrationTest {
     @MethodSource("configProvider")
     public void testMiners(TestConfig config) throws Exception {
         var env = Map.of(
-            "MINER_ID", config.getMiner(),
+            "MINER_ID", config.miner,
             "MINER_TYPE", config.getType().toString(),
             "MINER_URI", config.getUri().toString()
         );
@@ -93,9 +92,7 @@ public class MinerMetricsTest extends IntegrationTest {
             .lines()
             .toList();
 
-        System.out.println(lines2);
-
-        //assertEquals(lines1.size(), lines2.size());
+        assertEquals(lines1.size(), lines2.size());
 
         for (int i = 0; i < lines1.size(); i++) {
             assertEquals(lines1.get(i), lines2.get(i));
@@ -104,20 +101,16 @@ public class MinerMetricsTest extends IntegrationTest {
 
     public static class TestConfig {
 
-        @Getter
         private final String miner;
 
-        @Getter
         private final MinerType type;
 
-        @Getter
         private final URI uri;
 
         private final Map<String, String> wiremock = new HashMap<>();
 
         private final Map<String, String> cgminer = new HashMap<>();
 
-        @Getter
         private String response;
 
         public TestConfig(String miner, MinerType type, URI uri) {
@@ -170,6 +163,22 @@ public class MinerMetricsTest extends IntegrationTest {
             }
 
             return this;
+        }
+
+        public String getMiner() {
+            return miner;
+        }
+
+        public MinerType getType() {
+            return type;
+        }
+
+        public URI getUri() {
+            return uri;
+        }
+
+        public String getResponse() {
+            return response;
         }
 
         @Override

@@ -1,18 +1,19 @@
 package ee.moo.miner.exporter.prometheus;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class Exporter {
 
-    private final List<MetricWithSamples> items;
+    private final List<MetricWithSamples> metrics;
+
+    public Exporter(List<MetricWithSamples> metrics) {
+        this.metrics = new ArrayList<>(metrics);
+    }
 
     public String export() {
         var sb = new StringBuilder();
-        for (var item : items) {
+        for (var item : metrics) {
             write(sb, item.metric(), item.samples());
         }
         return sb.toString();

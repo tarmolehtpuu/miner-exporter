@@ -18,11 +18,8 @@ package ee.moo.miner.exporter.miner.bitaxe;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.miner.MinerMetrics;
-import ee.moo.miner.exporter.miner.Miner;
-import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.miner.MinerException;
-import ee.moo.miner.exporter.miner.MinerType;
+import ee.moo.miner.exporter.miner.*;
+import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -72,22 +69,10 @@ public class Bitaxe implements Miner {
 
             validate(json);
 
-            var temp1 = MinerMetrics.Temperature.builder()
-                .id(1)
-                .type(MinerMetrics.Temperature.Type.CHIP)
-                .value(json.get("temp").asDouble())
-                .build();
-            var temp2 = MinerMetrics.Temperature.builder()
-                .id(2)
-                .type(MinerMetrics.Temperature.Type.PCB)
-                .value(json.get("vrTemp").asDouble())
-                .build();
+            var temp1 = new MinerMetrics.Temperature(1, Type.CHIP, json.get("temp").asDouble());
+            var temp2 = new MinerMetrics.Temperature(2, Type.PCB, json.get("vrTemp").asDouble());
 
-
-            var fan = MinerMetrics.Fan.builder()
-                .id(1)
-                .value((int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)))
-                .build();
+            var fan = new MinerMetrics.Fan(1, (int) (MAX_FAN_RPM * (json.get("fanspeed").asDouble() / 100.0)));
 
             var metrics = new MinerMetrics();
             metrics.setMiner(getId());
@@ -111,35 +96,25 @@ public class Bitaxe implements Miner {
     public List<MinerMetrics.Pool> getPools(JsonNode json) {
         var primary = json.get("isUsingFallbackStratum").asInt() == 0;
 
-        var pool1 = MinerMetrics.Pool.builder()
-            .id(0)
-            .uri(String.format(
-                "stratum+tcp://%s:%d",
-                json.get("stratumURL").asText(),
-                json.get("stratumPort").asInt()
-            ))
-            .user(json.get("stratumUser").asText())
-            .priority(primary ? 0 : 1)
-            .alive(primary && json.get("hashRate").asDouble() > 0)
-            .active(primary)
-            .accepted(0)
-            .rejected(0)
-            .build();
+        var pool1 = new MinerMetrics.Pool();
+        pool1.setId(0);
+        pool1.setStratumUri(json.get("stratumURL").asText(), json.get("stratumPort").asInt());
+        pool1.setUser(json.get("stratumUser").asText());
+        pool1.setPriority(primary ? 0 : 1);
+        pool1.setAlive(primary && json.get("hashRate").asDouble() > 0);
+        pool1.setActive(primary);
+        pool1.setAccepted(0);
+        pool1.setRejected(0);
 
-        var pool2 = MinerMetrics.Pool.builder()
-            .id(1)
-            .uri(String.format(
-                "stratum+tcp://%s:%d",
-                json.get("fallbackStratumURL").asText(),
-                json.get("fallbackStratumPort").asInt()
-            ))
-            .user(json.get("fallbackStratumUser").asText())
-            .priority(primary ? 1 : 0)
-            .alive(!primary && json.get("hashRate").asDouble() > 0)
-            .active(!primary)
-            .accepted(0)
-            .rejected(0)
-            .build();
+        var pool2 = new MinerMetrics.Pool();
+        pool2.setId(1);
+        pool2.setStratumUri(json.get("fallbackStratumURL").asText(), json.get("fallbackStratumPort").asInt());
+        pool2.setUser(json.get("fallbackStratumUser").asText());
+        pool2.setPriority(primary ? 1 : 0);
+        pool2.setAlive(!primary && json.get("hashRate").asDouble() > 0);
+        pool2.setActive(!primary);
+        pool2.setAccepted(0);
+        pool2.setRejected(0);
 
         return List.of(pool1, pool2);
     }

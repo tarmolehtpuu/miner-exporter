@@ -17,8 +17,6 @@
 package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.prometheus.*;
-import lombok.Builder;
-import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +24,7 @@ import java.util.List;
 import static ee.moo.miner.exporter.prometheus.Metric.counter;
 import static ee.moo.miner.exporter.prometheus.Metric.gauge;
 
-@Data
 public class MinerMetrics {
-
 
     public final static Metric MINER_UPTIME_TOTAL = counter(
         "miner_uptime_total",
@@ -131,7 +127,7 @@ public class MinerMetrics {
             MINER_TEMPERATURE,
             getTemperatures()
                 .stream()
-                .map(t -> new Sample(labels, t.getVars(), t.getValue()))
+                .map(t -> new Sample(labels, t.getVars(), t.value()))
                 .toList()
         ));
 
@@ -139,7 +135,7 @@ public class MinerMetrics {
             MINER_FAN_RPM,
             getFans()
                 .stream()
-                .map(f -> new Sample(labels, f.getVars(), f.getValue()))
+                .map(f -> new Sample(labels, f.getVars(), f.value()))
                 .toList()
         ));
 
@@ -178,21 +174,93 @@ public class MinerMetrics {
         return new Exporter(items).export();
     }
 
-    @Data
-    @Builder
-    public static class Fan {
+    public String getMiner() {
+        return miner;
+    }
 
-        private Integer id;
+    public void setMiner(String miner) {
+        this.miner = miner;
+    }
 
-        private Integer value;
+    public MinerType getType() {
+        return type;
+    }
+
+    public void setType(MinerType type) {
+        this.type = type;
+    }
+
+    public Integer getUptime() {
+        return uptime;
+    }
+
+    public void setUptime(Integer uptime) {
+        this.uptime = uptime;
+    }
+
+    public Integer getAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(Integer accepted) {
+        this.accepted = accepted;
+    }
+
+    public Integer getRejected() {
+        return rejected;
+    }
+
+    public void setRejected(Integer rejected) {
+        this.rejected = rejected;
+    }
+
+    public Integer getFound() {
+        return found;
+    }
+
+    public void setFound(Integer found) {
+        this.found = found;
+    }
+
+    public Double getHashrate() {
+        return hashrate;
+    }
+
+    public void setHashrate(Double hashrate) {
+        this.hashrate = hashrate;
+    }
+
+    public List<Temperature> getTemperatures() {
+        return temperatures;
+    }
+
+    public void setTemperatures(List<Temperature> temperatures) {
+        this.temperatures = temperatures;
+    }
+
+    public List<Fan> getFans() {
+        return fans;
+    }
+
+    public void setFans(List<Fan> fans) {
+        this.fans = fans;
+    }
+
+    public List<Pool> getPools() {
+        return pools;
+    }
+
+    public void setPools(List<Pool> pools) {
+        this.pools = pools;
+    }
+
+    public record Fan(Integer id, Integer value) {
 
         public List<Label> getVars() {
             return List.of(new Label("fan", id));
         }
     }
 
-    @Data
-    @Builder
     public static class Pool {
 
         private Integer id;
@@ -219,28 +287,93 @@ public class MinerMetrics {
                 new Label("pool_user", getUser())
             );
         }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public String getUri() {
+            return uri;
+        }
+
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        public void setUri(String protocol, String host, int port) {
+            this.uri = String.format("%s://%s:%d", protocol, host, port);
+        }
+
+        public void setStratumUri(String host, int port) {
+            setUri("stratum+tcp", host, port);
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public void setUser(String user) {
+            this.user = user;
+        }
+
+        public Integer getPriority() {
+            return priority;
+        }
+
+        public void setPriority(Integer priority) {
+            this.priority = priority;
+        }
+
+        public boolean isAlive() {
+            return alive;
+        }
+
+        public void setAlive(boolean alive) {
+            this.alive = alive;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
+        }
+
+        public Integer getAccepted() {
+            return accepted;
+        }
+
+        public void setAccepted(Integer accepted) {
+            this.accepted = accepted;
+        }
+
+        public Integer getRejected() {
+            return rejected;
+        }
+
+        public void setRejected(Integer rejected) {
+            this.rejected = rejected;
+        }
     }
 
-    @Data
-    @Builder
-    public static class Temperature {
-
-        private Integer id;
-
-        private Type type;
-
-        private Double value;
+    public record Temperature(Integer id, Type type, Double value) {
 
         public List<Label> getVars() {
             return List.of(
-                new Label("board", getId()),
-                new Label("temperature_type", getType())
+                new Label("board", id),
+                new Label("temperature_type", type)
             );
         }
 
+
         public enum Type {
             CHIP,
-            PCB,
+            PCB
         }
     }
 }

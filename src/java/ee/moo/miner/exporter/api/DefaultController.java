@@ -17,21 +17,22 @@
 package ee.moo.miner.exporter.api;
 
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-@Slf4j
-@RequiredArgsConstructor
 public class DefaultController extends Handler.Abstract {
 
     private final List<Controller> controllers;
+
+    public DefaultController(List<Controller> controllers) {
+        this.controllers = new ArrayList<>(controllers);
+    }
 
     @Override
     public boolean handle(Request request, Response response, Callback callback) throws Exception {

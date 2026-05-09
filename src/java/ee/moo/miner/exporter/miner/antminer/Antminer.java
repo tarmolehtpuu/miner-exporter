@@ -20,12 +20,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import ee.moo.miner.exporter.miner.MinerMetrics;
-import ee.moo.miner.exporter.miner.Miner;
-import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.miner.MinerException;
-import ee.moo.miner.exporter.miner.MinerType;
-import lombok.RequiredArgsConstructor;
+import ee.moo.miner.exporter.miner.*;
+import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
@@ -35,7 +31,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-@RequiredArgsConstructor
 public class Antminer implements Miner {
 
     private final MinerConfig config;
@@ -134,23 +129,11 @@ public class Antminer implements Miner {
             var temp2 = json.get(String.format("temp2_%s", i)).asDouble();
 
             if (temp1 > 0) {
-                result.add(
-                    MinerMetrics.Temperature.builder()
-                        .id(i)
-                        .type(MinerMetrics.Temperature.Type.PCB)
-                        .value(temp1)
-                        .build()
-                );
+                result.add(new MinerMetrics.Temperature(i, Type.PCB, temp1));
             }
 
             if (temp2 > 0) {
-                result.add(
-                    MinerMetrics.Temperature.builder()
-                        .id(i)
-                        .type(MinerMetrics.Temperature.Type.CHIP)
-                        .value(temp2)
-                        .build()
-                );
+                result.add(new MinerMetrics.Temperature(i, Type.CHIP, temp2));
             }
         }
 
@@ -161,13 +144,7 @@ public class Antminer implements Miner {
         var result = new ArrayList<MinerMetrics.Fan>();
 
         for (int i = 1; i <= json.get("fan_num").asInt(); i++) {
-            result.add(
-                MinerMetrics.Fan.builder()
-                    .id(i)
-                    .value(json.get(String.format("fan%d", i)).asInt())
-                    .build()
-            );
-
+            result.add(new MinerMetrics.Fan(i, json.get(String.format("fan%d", i)).asInt()));
         }
 
         return result;
@@ -190,18 +167,18 @@ public class Antminer implements Miner {
             validateHeader(json);
             validatePools(json);
 
-            for (var pool : json.get("POOLS")) {
-                result.add(MinerMetrics.Pool.builder()
-                    .id(pool.get("POOL").asInt())
-                    .uri(pool.get("URL").asText())
-                    .user(pool.get("User").asText())
-                    .priority(pool.get("Priority").asInt())
-                    .alive(pool.get("Status").asText().toLowerCase().contains("alive"))
-                    .active(pool.get("Priority").asInt() == 0)
-                    .accepted(pool.get("Accepted").asInt())
-                    .rejected(pool.get("Rejected").asInt())
-                    .build()
-                );
+            for (var p : json.get("POOLS")) {
+                var pool = new MinerMetrics.Pool();
+                pool.setId(p.get("POOL").asInt());
+                pool.setUri(p.get("URL").asText());
+                pool.setUser(p.get("User").asText());
+                pool.setPriority(p.get("Priority").asInt());
+                pool.setAlive(p.get("Status").asText().toLowerCase().contains("alive"));
+                pool.setActive(p.get("Priority").asInt() == 0);
+                pool.setAccepted(p.get("Accepted").asInt());
+                pool.setRejected(p.get("Rejected").asInt());
+
+                result.add(pool);
             }
 
         } catch (IOException | ExecutionException | TimeoutException | InterruptedException e) {

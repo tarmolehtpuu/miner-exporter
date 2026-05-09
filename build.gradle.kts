@@ -40,10 +40,6 @@ dependencies {
     implementation("ch.qos.logback:logback-core:1.5.32")
     implementation("ch.qos.logback:logback-classic:1.5.32")
 
-    // lombok
-    compileOnly("org.projectlombok:lombok:1.18.46")
-    annotationProcessor("org.projectlombok:lombok:1.18.46")
-
     // ******************* TEST ******************* //
 
     // junit
@@ -51,10 +47,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:6.0.3")
     testImplementation("org.junit.jupiter:junit-jupiter-params:6.0.3")
     testImplementation("org.junit.platform:junit-platform-launcher:6.0.3")
-
-    // lombok
-    testCompileOnly("org.projectlombok:lombok:1.18.46")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
     // wiremock
     testImplementation("org.wiremock:wiremock-standalone:3.13.2")

@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,15 +36,15 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
-@Data
-@Slf4j
 public class MinerConfig {
 
-    private String id;
+    private static final Logger logger = LoggerFactory.getLogger(MinerConfig.class);
 
-    private MinerType type;
+    private final String id;
 
-    private URI uri;
+    private final MinerType type;
+
+    private final URI uri;
 
     private AuthMode auth = AuthMode.NONE;
 
@@ -115,7 +115,7 @@ public class MinerConfig {
         }
 
         if (readBufferSize < 1024) {
-            log.warn("Too low read buffer size: {} (miner={}). Defaulting to 1024", readBufferSize, id);
+            logger.warn("Too low read buffer size: {} (miner={}). Defaulting to 1024", readBufferSize, id);
         }
     }
 
@@ -197,6 +197,66 @@ public class MinerConfig {
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(WRITE_DATES_AS_TIMESTAMPS)
             .build();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public MinerType getType() {
+        return type;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public AuthMode getAuth() {
+        return auth;
+    }
+
+    public void setAuth(AuthMode auth) {
+        this.auth = auth;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Duration getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(Duration connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public Duration getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(Duration readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public int getReadBufferSize() {
+        return readBufferSize;
+    }
+
+    public void setReadBufferSize(int readBufferSize) {
+        this.readBufferSize = readBufferSize;
     }
 
     public enum AuthMode {

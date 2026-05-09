@@ -18,11 +18,8 @@ package ee.moo.miner.exporter.miner.avalon;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ee.moo.miner.exporter.miner.MinerMetrics;
-import ee.moo.miner.exporter.miner.Miner;
-import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.miner.MinerException;
-import ee.moo.miner.exporter.miner.MinerType;
+import ee.moo.miner.exporter.miner.*;
+import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,24 +105,12 @@ public class Avalon implements Miner {
 
         var matcher1 = pattern1.matcher(stats.get("MM ID0").asText());
         if (matcher1.find()) {
-            result.add(
-                MinerMetrics.Temperature.builder()
-                    .id(1)
-                    .type(MinerMetrics.Temperature.Type.CHIP)
-                    .value(Double.parseDouble(matcher1.group(1)))
-                    .build()
-            );
+            result.add(new MinerMetrics.Temperature(1, Type.CHIP, Double.parseDouble(matcher1.group(1))));
         }
 
         var matcher2 = pattern2.matcher(stats.get("MM ID0").asText());
         if (matcher2.find()) {
-            result.add(
-                MinerMetrics.Temperature.builder()
-                    .id(1)
-                    .type(MinerMetrics.Temperature.Type.PCB)
-                    .value(Double.parseDouble(matcher2.group(1)))
-                    .build()
-            );
+            result.add(new MinerMetrics.Temperature(1, Type.PCB, Double.parseDouble(matcher2.group(1))));
         }
 
         return result;
@@ -136,11 +121,7 @@ public class Avalon implements Miner {
         var matcher = pattern.matcher(stats.get("MM ID0").asText());
 
         if (matcher.find()) {
-            return List.of(MinerMetrics.Fan.builder()
-                .id(1)
-                .value((int) Double.parseDouble(matcher.group(1)))
-                .build()
-            );
+            return List.of(new MinerMetrics.Fan(1, (int) Double.parseDouble(matcher.group(1))));
         }
 
         return List.of();
@@ -156,18 +137,18 @@ public class Avalon implements Miner {
             validateHeader(json);
             validatePools(json);
 
-            for (var pool : json.get("POOLS")) {
-                result.add(MinerMetrics.Pool.builder()
-                    .id(pool.get("POOL").asInt())
-                    .uri(pool.get("URL").asText())
-                    .user(pool.get("User").asText())
-                    .priority(pool.get("Priority").asInt())
-                    .alive(pool.get("Status").asText().toLowerCase().contains("alive"))
-                    .active(pool.get("Priority").asInt() == 0)
-                    .accepted(pool.get("Accepted").asInt())
-                    .rejected(pool.get("Rejected").asInt())
-                    .build()
-                );
+            for (var p : json.get("POOLS")) {
+                var pool = new MinerMetrics.Pool();
+                pool.setId(p.get("POOL").asInt());
+                pool.setUri(p.get("URL").asText());
+                pool.setUser(p.get("User").asText());
+                pool.setPriority(p.get("Priority").asInt());
+                pool.setAlive(p.get("Status").asText().toLowerCase().contains("alive"));
+                pool.setActive(p.get("Priority").asInt() == 0);
+                pool.setAccepted(p.get("Accepted").asInt());
+                pool.setRejected(p.get("Rejected").asInt());
+
+                result.add(pool);
             }
 
         } catch (IOException e) {

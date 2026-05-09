@@ -19,17 +19,19 @@ package ee.moo.miner.exporter;
 import ee.moo.miner.exporter.api.*;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
 public class Application {
+
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     private final Map<String, String> env;
 
@@ -58,7 +60,7 @@ public class Application {
 
     private static Optional<Miner> miner(Map<String, String> env) throws URISyntaxException {
         if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
-            log.warn("No miners configured, skipping metrics");
+            logger.warn("No miners configured, skipping metrics");
             return Optional.empty();
         }
 
