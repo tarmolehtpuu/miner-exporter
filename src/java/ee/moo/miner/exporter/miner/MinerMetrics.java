@@ -16,13 +16,13 @@
  */
 package ee.moo.miner.exporter.miner;
 
-import ee.moo.miner.exporter.prometheus.*;
+import ee.moo.miner.exporter.dataformat.prometheus.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ee.moo.miner.exporter.prometheus.Metric.counter;
-import static ee.moo.miner.exporter.prometheus.Metric.gauge;
+import static ee.moo.miner.exporter.dataformat.prometheus.Metric.counter;
+import static ee.moo.miner.exporter.dataformat.prometheus.Metric.gauge;
 
 public class MinerMetrics {
 

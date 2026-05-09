@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.prometheus;
+package ee.moo.miner.exporter.dataformat.prometheus;
 
 public record Label(String name, String value) {
 

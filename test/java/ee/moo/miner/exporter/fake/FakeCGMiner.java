@@ -16,8 +16,9 @@
  */
 package ee.moo.miner.exporter.fake;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.moo.miner.exporter.dataformat.json.Json;
+import ee.moo.miner.exporter.dataformat.json.JsonArray;
+import ee.moo.miner.exporter.dataformat.json.JsonObject;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -34,8 +35,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class FakeCGMiner implements Runnable {
 
     private static final Logger logger = Logger.getLogger(FakeCGMiner.class.getName());
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Map<String, String> commands = new ConcurrentHashMap<>();
 
@@ -103,11 +102,14 @@ public class FakeCGMiner implements Runnable {
                         continue;
                     }
 
-                    var response = getResponse(
-                        objectMapper.readTree(buf)
-                            .get("command")
-                            .asText()
-                    );
+                    var bytes = new byte[len];
+                    System.arraycopy(buf, 0, bytes, 0, len);
+
+                    var json = new String(bytes, UTF_8);
+                    json = json.trim();
+                    System.out.println(String.format("'%s'", json));
+
+                    var response = getResponse(Json.readObject(json).get("command").asString());
 
                     client.getOutputStream().write(response);
                     client.getOutputStream().flush();
@@ -136,34 +138,33 @@ public class FakeCGMiner implements Runnable {
     }
 
     private byte[] getResponse(String command) {
-        try {
-            var response = commands.containsKey(command)
-                ? commands.get(command)
-                : objectMapper.writeValueAsString(Map.of(
-                "id", 1,
-                "STATUS", List.of(
-                    Map.of(
-                        "STATUS", "E",
-                        "When", 113585,
-                        "Code", 14,
-                        "Msg", "Invalid command"
-                    ))));
+        var response = commands.getOrDefault(command, getErrorResponse());
 
-            response = response.replace("\r", " ");
-            response = response.replace("\n", " ");
-            response = response.replaceAll("\\s+", " ");
+        response = response.replace("\r", " ");
+        response = response.replace("\n", " ");
+        response = response.replaceAll("\\s+", " ");
 
-            var bytes1 = response.getBytes(UTF_8);
-            var bytes2 = new byte[bytes1.length + 1];
+        var bytes1 = response.getBytes(UTF_8);
+        var bytes2 = new byte[bytes1.length + 1];
 
-            System.arraycopy(bytes1, 0, bytes2, 0, bytes1.length);
+        System.arraycopy(bytes1, 0, bytes2, 0, bytes1.length);
 
-            bytes2[bytes2.length - 1] = 0;
+        bytes2[bytes2.length - 1] = 0;
 
-            return bytes2;
+        return bytes2;
+    }
 
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
+    private String getErrorResponse() {
+        var body = new JsonObject();
+        body.put("STATUS", "E");
+        body.put("When", 113585);
+        body.put("Code", 14);
+        body.put("Msg", "Invalid command");
+
+        var json = new JsonObject();
+        json.put("id", 1);
+        json.put("STATUS", new JsonArray(List.of(body)));
+
+        return Json.write(json);
     }
 }

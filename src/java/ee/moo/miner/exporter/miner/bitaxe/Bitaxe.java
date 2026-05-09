@@ -16,14 +16,13 @@
  */
 package ee.moo.miner.exporter.miner.bitaxe;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.moo.miner.exporter.dataformat.json.Json;
+import ee.moo.miner.exporter.dataformat.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -34,14 +33,11 @@ public class Bitaxe implements Miner {
 
     private final MinerConfig config;
 
-    private final ObjectMapper objectMapper;
-
     private final HttpClient client;
 
     public Bitaxe(MinerConfig config) {
         this.config = config;
         this.client = config.createHttpClient();
-        this.objectMapper = config.createObjectMapper();
     }
 
     @Override
@@ -65,7 +61,7 @@ public class Bitaxe implements Miner {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=info)", response.getStatus(), config.getId());
             }
 
-            var json = objectMapper.readTree(response.getContent());
+            var json = Json.read(response.getContentAsString()).asObject();
 
             validate(json);
 
@@ -88,18 +84,18 @@ public class Bitaxe implements Miner {
 
             return metrics;
 
-        } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }
 
-    public List<MinerMetrics.Pool> getPools(JsonNode json) {
+    public List<MinerMetrics.Pool> getPools(JsonObject json) {
         var primary = json.get("isUsingFallbackStratum").asInt() == 0;
 
         var pool1 = new MinerMetrics.Pool();
         pool1.setId(0);
-        pool1.setStratumUri(json.get("stratumURL").asText(), json.get("stratumPort").asInt());
-        pool1.setUser(json.get("stratumUser").asText());
+        pool1.setStratumUri(json.get("stratumURL").asString(), json.get("stratumPort").asInt());
+        pool1.setUser(json.get("stratumUser").asString());
         pool1.setPriority(primary ? 0 : 1);
         pool1.setAlive(primary && json.get("hashRate").asDouble() > 0);
         pool1.setActive(primary);
@@ -108,8 +104,8 @@ public class Bitaxe implements Miner {
 
         var pool2 = new MinerMetrics.Pool();
         pool2.setId(1);
-        pool2.setStratumUri(json.get("fallbackStratumURL").asText(), json.get("fallbackStratumPort").asInt());
-        pool2.setUser(json.get("fallbackStratumUser").asText());
+        pool2.setStratumUri(json.get("fallbackStratumURL").asString(), json.get("fallbackStratumPort").asInt());
+        pool2.setUser(json.get("fallbackStratumUser").asString());
         pool2.setPriority(primary ? 1 : 0);
         pool2.setAlive(!primary && json.get("hashRate").asDouble() > 0);
         pool2.setActive(!primary);
@@ -119,7 +115,7 @@ public class Bitaxe implements Miner {
         return List.of(pool1, pool2);
     }
 
-    private void validate(JsonNode json) {
+    private void validate(JsonObject json) {
         // FIXME
     }
 }

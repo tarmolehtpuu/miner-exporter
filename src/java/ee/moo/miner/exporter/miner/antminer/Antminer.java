@@ -16,16 +16,13 @@
  */
 package ee.moo.miner.exporter.miner.antminer;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import ee.moo.miner.exporter.dataformat.json.Json;
+import ee.moo.miner.exporter.dataformat.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -35,14 +32,11 @@ public class Antminer implements Miner {
 
     private final MinerConfig config;
 
-    private final ObjectMapper objectMapper;
-
     private final HttpClient client;
 
     public Antminer(MinerConfig config) {
         this.config = config;
         this.client = config.createHttpClient();
-        this.objectMapper = config.createObjectMapper();
     }
 
     @Override
@@ -75,7 +69,7 @@ public class Antminer implements Miner {
         return metrics;
     }
 
-    private JsonNode getSummary() {
+    private JsonObject getSummary() {
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri()))
                 .method(HttpMethod.GET)
@@ -85,21 +79,19 @@ public class Antminer implements Miner {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=summary)", response.getStatus(), config.getId());
             }
 
-            var json = objectMapper.readTree(response.getContent());
+            var json = Json.readObject(response.getContent());
 
             validateHeader(json);
             validateSummary(json);
 
-            return json.get("SUMMARY").get(0);
+            return json.get("SUMMARY").asList().getFirst().asObject();
 
-        } catch (JsonMappingException e) {
-            throw new MinerException(e.getMessage(), e);
-        } catch (ExecutionException | InterruptedException | TimeoutException | IOException e) {
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }
 
-    private JsonNode getStats() {
+    private JsonObject getStats() {
         try {
             var response = client.newRequest(String.format("%s/cgi-bin/miner_stats.cgi", config.getUri()))
                 .method(HttpMethod.GET)
@@ -109,19 +101,19 @@ public class Antminer implements Miner {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
             }
 
-            var json = objectMapper.readTree(response.getContent());
+            var json = Json.readObject(response.getContent());
 
             validateHeader(json);
             validateStats(json);
 
-            return json.get("STATS").get(1);
+            return json.get("STATS").asList().get(1).asObject();
 
-        } catch (ExecutionException | IOException | TimeoutException | InterruptedException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }
 
-    private List<MinerMetrics.Temperature> getTemperatures(JsonNode json) {
+    private List<MinerMetrics.Temperature> getTemperatures(JsonObject json) {
         var result = new ArrayList<MinerMetrics.Temperature>();
 
         for (var i = 1; i <= json.get("temp_num").asInt(); i++) {
@@ -140,7 +132,7 @@ public class Antminer implements Miner {
         return result;
     }
 
-    private List<MinerMetrics.Fan> getFans(JsonNode json) {
+    private List<MinerMetrics.Fan> getFans(JsonObject json) {
         var result = new ArrayList<MinerMetrics.Fan>();
 
         for (int i = 1; i <= json.get("fan_num").asInt(); i++) {
@@ -162,18 +154,19 @@ public class Antminer implements Miner {
                 throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
             }
 
-            var json = objectMapper.readTree(response.getContent());
+            var json = Json.readObject(response.getContent());
 
             validateHeader(json);
             validatePools(json);
 
-            for (var p : json.get("POOLS")) {
+            for (var item : json.get("POOLS").asList()) {
+                var p = item.asObject();
                 var pool = new MinerMetrics.Pool();
-                pool.setId(p.get("POOL").asInt());
-                pool.setUri(p.get("URL").asText());
-                pool.setUser(p.get("User").asText());
+                pool.setId(p.asObject().get("POOL").asInt());
+                pool.setUri(p.get("URL").asString());
+                pool.setUser(p.get("User").asString());
                 pool.setPriority(p.get("Priority").asInt());
-                pool.setAlive(p.get("Status").asText().toLowerCase().contains("alive"));
+                pool.setAlive(p.get("Status").asString().toLowerCase().contains("alive"));
                 pool.setActive(p.get("Priority").asInt() == 0);
                 pool.setAccepted(p.get("Accepted").asInt());
                 pool.setRejected(p.get("Rejected").asInt());
@@ -181,34 +174,34 @@ public class Antminer implements Miner {
                 result.add(pool);
             }
 
-        } catch (IOException | ExecutionException | TimeoutException | InterruptedException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             throw new MinerException(e.getMessage(), e);
         }
 
         return result;
     }
 
-    private void validateHeader(JsonNode json) {
+    private void validateHeader(JsonObject json) {
     }
 
-    private void validateSummary(JsonNode json) {
-        if (json.get("SUMMARY").getNodeType() != JsonNodeType.ARRAY) {
+    private void validateSummary(JsonObject json) {
+        if (!json.get("SUMMARY").isArray()) {
             throw new MinerException("Expecting response to contain SUMMARY array (cmd=%s)", "summary");
         }
 
-        if (json.get("SUMMARY").size() != 1) {
+        if (json.get("SUMMARY").asList().size() != 1) {
             throw new MinerException("Expecting SUMMARY array to contain exactly one element (cmd=%s)", "summary");
         }
 
-        if (json.get("SUMMARY").get(0).getNodeType() != JsonNodeType.OBJECT) {
+        if (!json.get("SUMMARY").asList().getFirst().isObject()) {
             throw new MinerException("Expecting an object in SUMMARY array (cmd=%s)", "summary");
         }
     }
 
-    private void validateStats(JsonNode json) {
+    private void validateStats(JsonObject json) {
     }
 
-    private void validatePools(JsonNode json) {
+    private void validatePools(JsonObject json) {
 
     }
 }

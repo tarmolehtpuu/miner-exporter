@@ -16,7 +16,8 @@
  */
 package ee.moo.miner.exporter.cgminer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ee.moo.miner.exporter.dataformat.json.Json;
+import ee.moo.miner.exporter.dataformat.json.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,8 +28,6 @@ import java.time.Duration;
 import java.util.Map;
 
 public class CGMinerTcpClient {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final String host;
     private final int port;
@@ -51,7 +50,10 @@ public class CGMinerTcpClient {
             socket.setSoTimeout(readTimeout.toMillisPart());
 
             var out = new PrintWriter(socket.getOutputStream());
-            out.write(objectMapper.writeValueAsString(Map.of("command", command)));
+            var json = new JsonObject();
+            json.put("command", command);
+
+            out.write(Json.write(json));
             out.flush();
 
             var in = new InputStreamReader(socket.getInputStream());
@@ -75,7 +77,8 @@ public class CGMinerTcpClient {
 
             return sb.toString()
                 .replace("}{", "},{")
-                .replace("\0", "");
+                .replace("\0", "")
+                .trim();
         }
     }
 

@@ -27,11 +27,6 @@ repositories {
 dependencies {
     // ******************* JAVA ******************* //
 
-    // jackson
-    implementation("com.fasterxml.jackson.core:jackson-core:2.21.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.3")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.1.3")
-
     // jetty
     implementation("org.eclipse.jetty:jetty-client:12.1.8")
     implementation("org.eclipse.jetty:jetty-server:12.1.8")

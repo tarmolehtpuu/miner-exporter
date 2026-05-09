@@ -1,4 +1,4 @@
-package ee.moo.miner.exporter.prometheus;
+package ee.moo.miner.exporter.dataformat.prometheus;
 
 import java.util.List;
 

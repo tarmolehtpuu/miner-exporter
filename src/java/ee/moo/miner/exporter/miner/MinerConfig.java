@@ -16,10 +16,6 @@
  */
 package ee.moo.miner.exporter.miner;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 import org.eclipse.jetty.client.*;
@@ -31,10 +27,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 public class MinerConfig {
 
@@ -193,15 +185,6 @@ public class MinerConfig {
         } catch (Exception e) {
             throw new MinerException(e.getMessage(), e);
         }
-    }
-
-    public ObjectMapper createObjectMapper() {
-        return JsonMapper.builder()
-            .addModule(new JavaTimeModule())
-            .defaultPropertyInclusion(JsonInclude.Value.construct(NON_ABSENT, NON_ABSENT))
-            .disable(FAIL_ON_UNKNOWN_PROPERTIES)
-            .disable(WRITE_DATES_AS_TIMESTAMPS)
-            .build();
     }
 
     public String getId() {
