@@ -13,7 +13,7 @@ jobs:
       cleared: ${{ steps.check_release.outputs.cleared }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Check Version
         id: check_version

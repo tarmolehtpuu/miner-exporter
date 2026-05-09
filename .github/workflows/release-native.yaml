@@ -45,6 +45,11 @@ jobs:
           name: jar
           path: build/libs/miner-exporter-${{ inputs.version }}.jar
 
+      - name: Check artifacts
+        run: |
+          ls -lRa build/libs
+          ls -lRa build/bin
+          
       - name: Build
         run:
           native-image -jar build/libs/miner-exporter-${{ inputs.version }}.jar \
