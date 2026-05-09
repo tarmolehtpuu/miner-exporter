@@ -19,6 +19,10 @@ package ee.moo.miner.exporter.controller;
 import ee.moo.miner.exporter.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -28,12 +32,16 @@ public class ReadyzTest extends IntegrationTest {
     public void testReadyz() throws Exception {
         startApplication(APPLICATION_HOST, APPLICATION_PORT);
 
-        var response = http
-            .newRequest(applicationUri("/readyz"))
-            .send();
+        var request = HttpRequest.newBuilder()
+            .timeout(Duration.ofMillis(2000))
+            .uri(applicationUri("/readyz"))
+            .GET()
+            .build();
 
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain", response.getHeaders().get("Content-Type"));
-        assertEquals("Ready!", response.getContentAsString());
+        var response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode());
+        assertEquals("text/plain", response.headers().firstValue("Content-Type").orElseThrow());
+        assertEquals("Ready!", response.body());
     }
 }

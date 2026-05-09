@@ -18,8 +18,8 @@ package ee.moo.miner.exporter;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import ee.moo.miner.exporter.fake.FakeCGMiner;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.Request;
+import ee.moo.miner.exporter.miner.MinerException;
+import ee.moo.miner.exporter.util.StringUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,9 +29,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -114,21 +119,14 @@ public abstract class IntegrationTest {
         wiremock.resetAll();
         cgminer.resetAll();
 
-        http = new HttpClient();
-        http.setConnectTimeout(2000);
-        http.setResponseBufferSize(8192);
-        http.getRequestListeners().addListener(new Request.Listener() {
-            @Override
-            public void onQueued(Request request) {
-                request.timeout(2000, TimeUnit.MILLISECONDS);
-            }
-        });
-        http.start();
+        http = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofMillis(2000))
+            .build();
     }
 
     @AfterEach
     public void afterEach() throws Exception {
-        http.stop();
+        http.close();
         http = null;
 
         if (application != null) {

@@ -16,31 +16,24 @@
  */
 package ee.moo.miner.exporter.api;
 
-import ee.moo.miner.exporter.util.StringUtil;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.Callback;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
-
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class HealthzController implements Controller {
+public class HealthzController implements HttpHandler {
 
     @Override
-    public boolean matches(Request request) {
-        if (!StringUtil.equals("GET", request.getMethod())) {
-            return false;
+    public void handle(HttpExchange exchange) throws IOException {
+        String response = "Healthy!";
+
+        exchange.getResponseHeaders().set("Content-Type", "text/plain");
+        exchange.sendResponseHeaders(200, response.length());
+
+        try (var os = exchange.getResponseBody()) {
+            os.write(response.getBytes(UTF_8));
         }
-
-        return StringUtil.equals("/healthz", request.getHttpURI().getPath());
-    }
-
-    @Override
-    public void handle(Request request, Response response, Callback callback) {
-        response.setStatus(200);
-        response.getHeaders().put("Content-Type", "text/plain");
-        response.write(true, ByteBuffer.wrap("Healthy!".getBytes(UTF_8)), callback);
     }
 }

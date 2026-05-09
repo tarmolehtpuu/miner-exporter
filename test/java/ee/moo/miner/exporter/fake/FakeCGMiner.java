@@ -105,11 +105,7 @@ public class FakeCGMiner implements Runnable {
                     var bytes = new byte[len];
                     System.arraycopy(buf, 0, bytes, 0, len);
 
-                    var json = new String(bytes, UTF_8);
-                    json = json.trim();
-                    System.out.println(String.format("'%s'", json));
-
-                    var response = getResponse(Json.readObject(json).get("command").asString());
+                    var response = getResponse(Json.readObject(bytes).get("command").asString());
 
                     client.getOutputStream().write(response);
                     client.getOutputStream().flush();

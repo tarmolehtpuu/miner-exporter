@@ -16,23 +16,24 @@
  */
 package ee.moo.miner.exporter;
 
-import ee.moo.miner.exporter.api.*;
+import com.sun.net.httpserver.HttpServer;
+import ee.moo.miner.exporter.api.HealthzController;
+import ee.moo.miner.exporter.api.MetricsController;
+import ee.moo.miner.exporter.api.ReadyzController;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
 import ee.moo.miner.exporter.util.StringUtil;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.logging.*;
 
 public class Application {
@@ -53,13 +54,12 @@ public class Application {
 
     private final int port;
 
-    private final Server server;
+    private HttpServer server;
 
     public Application(Map<String, String> env, String host, int port) {
         this.env = env;
         this.host = host;
         this.port = port;
-        this.server = new Server();
     }
 
     static void main() throws Exception {
@@ -72,39 +72,48 @@ public class Application {
         new Application(env, host, port).start();
     }
 
-    private static Optional<Miner> miner(Map<String, String> env) throws URISyntaxException {
+    private static Miner miner(Map<String, String> env) throws URISyntaxException {
         if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
             logger.warning("No miners configured, skipping metrics");
-            return Optional.empty();
+            return null;
         }
 
         var config = new MinerConfig(env);
-        return Optional.of(config
+
+        return config
             .getType()
-            .create(config)
-        );
+            .create(config);
     }
 
     public void start() throws Exception {
-        var connector = new ServerConnector(server);
-        connector.setHost(host);
-        connector.setPort(port);
+        logger.info("HttpServer starting...");
 
-        var controllers = new ArrayList<Controller>();
-        controllers.add(new HealthzController());
-        controllers.add(new ReadyzController());
+        server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+
+        server.createContext("/healthz", new HealthzController());
+        logger.info("Context: /healthz -> HealthzController");
+
+        server.createContext("/readyz", new ReadyzController());
+        logger.info("Context: /readyz  -> ReadyzController");
 
         var miner = miner(env);
-        miner.ifPresent(m -> controllers.add(new MetricsController(m)));
+        if (miner != null) {
+            server.createContext("/metrics", new MetricsController(miner));
+            logger.info("Context: /metrics -> MetricsController");
+        }
 
-        server.addConnector(connector);
-        server.setDefaultHandler(new DefaultController(controllers));
         server.start();
+
+        logger.log(Level.INFO, "Started HttpServer on: %s:%d", new Object[]{host, port});
     }
 
     public void stop() throws Exception {
-        server.stop();
-        server.join();
+        if (server != null) {
+            logger.info("HttpServer shutting down...");
+            server.stop(1);
+            logger.info("HttpServer stopped");
+        }
     }
 
     public static class StdoutHandler extends StreamHandler {

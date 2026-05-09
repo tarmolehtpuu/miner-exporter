@@ -20,12 +20,14 @@ import ee.moo.miner.exporter.dataformat.json.Json;
 import ee.moo.miner.exporter.dataformat.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpMethod;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public class Bitaxe implements Miner {
 
@@ -53,15 +55,21 @@ public class Bitaxe implements Miner {
     @Override
     public MinerMetrics getMetrics() {
         try {
-            var response = client.newRequest(String.format("%s/api/system/info", config.getUri()))
-                .method(HttpMethod.GET)
-                .send();
+            var request = HttpRequest
+                .newBuilder()
+                .uri(new URI(String.format("%s/api/system/info", config.getUri())))
+                .timeout(config.getReadTimeout())
+                .header("User-Agent", "miner-exporter/0.0.1")
+                .GET()
+                .build();
 
-            if (response.getStatus() != 200) {
-                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=info)", response.getStatus(), config.getId());
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=info)", response.statusCode(), config.getId());
             }
 
-            var json = Json.read(response.getContentAsString()).asObject();
+            var json = Json.read(response.body()).asObject();
 
             validate(json);
 
@@ -84,7 +92,7 @@ public class Bitaxe implements Miner {
 
             return metrics;
 
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | IOException | URISyntaxException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }

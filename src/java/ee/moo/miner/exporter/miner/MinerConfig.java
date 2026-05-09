@@ -18,13 +18,15 @@ package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
-import org.eclipse.jetty.client.*;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -141,46 +143,22 @@ public class MinerConfig {
             throw new MinerException("Unable to create http client for URI=%s (miner=%s)", uri, id);
         }
 
-        if (!base.endsWith("/")) {
-            base = String.format("%s/", base);
-        }
-
         try {
-            var client = new HttpClient();
+            var builder = HttpClient.newBuilder();
+            builder.connectTimeout(connectTimeout);
+            builder.executor(Executors.newVirtualThreadPerTaskExecutor());
+            builder.followRedirects(HttpClient.Redirect.NORMAL);
 
-            client.setConnectTimeout(connectTimeout.toMillis());
-            client.getRequestListeners().addListener(new Request.Listener() {
-                @Override
-                public void onQueued(Request request) {
-                    request.timeout(readTimeout.toMillis(), TimeUnit.MILLISECONDS);
-                }
-            });
-            client.setResponseBufferSize(readBufferSize);
-            client.start();
-
-            if (auth == MinerConfig.AuthMode.BASIC) {
-                client
-                    .getAuthenticationStore()
-                    .addAuthentication(new BasicAuthentication(
-                        new URI(base),
-                        Authentication.ANY_REALM,
-                        getUsername(),
-                        getPassword()
-                    ));
+            if (!StringUtil.isEmpty(username) && !StringUtil.isEmpty(password)) {
+                builder.authenticator(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password.toCharArray());
+                    }
+                });
             }
 
-            if (auth == MinerConfig.AuthMode.DIGEST) {
-                client
-                    .getAuthenticationStore()
-                    .addAuthentication(new DigestAuthentication(
-                        new URI(base),
-                        Authentication.ANY_REALM,
-                        username,
-                        password
-                    ));
-            }
-
-            return client;
+            return builder.build();
 
         } catch (Exception e) {
             throw new MinerException(e.getMessage(), e);

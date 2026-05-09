@@ -13,7 +13,7 @@ public final class Json {
         if (json == null) {
             throw new JsonException("Cannot parse null JSON string");
         }
-        return new JsonParser(json).parse();
+        return new JsonParser(json.trim()).parse();
     }
 
 

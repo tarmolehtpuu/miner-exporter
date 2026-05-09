@@ -24,6 +24,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +35,7 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MinerMetricsTest extends IntegrationTest {
+public class MetricsTest extends IntegrationTest {
 
     public static Stream<TestConfig> configProvider() throws URISyntaxException {
         var miner01 = new TestConfig("miner01", MinerType.BITAXE, wiremockUri())
@@ -77,10 +80,19 @@ public class MinerMetricsTest extends IntegrationTest {
             cgminer.stub(cmd, config.getCgminerReply(cmd));
         }
 
-        var response = http.newRequest(applicationUri("/metrics")).send();
+        var request = HttpRequest.newBuilder()
+            .timeout(Duration.ofMillis(2000))
+            .uri(applicationUri("/metrics"))
+            .GET()
+            .build();
 
-        assertEquals(200, response.getStatus());
-        assertEquals("text/plain; version=0.0.4; charset=utf-8", response.getHeaders().get("Content-Type"));
+        var response = http.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(200, response.statusCode());
+        assertEquals(
+            "text/plain; version=0.0.4; charset=utf-8",
+            response.headers().firstValue("Content-Type").orElseThrow()
+        );
 
         var lines1 = config
             .getResponse()
@@ -88,7 +100,7 @@ public class MinerMetricsTest extends IntegrationTest {
             .toList();
 
         var lines2 = response
-            .getContentAsString()
+            .body()
             .lines()
             .toList();
 

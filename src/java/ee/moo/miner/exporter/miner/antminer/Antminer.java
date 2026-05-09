@@ -20,13 +20,15 @@ import ee.moo.miner.exporter.dataformat.json.Json;
 import ee.moo.miner.exporter.dataformat.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.http.HttpMethod;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public class Antminer implements Miner {
 
@@ -71,44 +73,56 @@ public class Antminer implements Miner {
 
     private JsonObject getSummary() {
         try {
-            var response = client.newRequest(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri()))
-                .method(HttpMethod.GET)
-                .send();
+            var request = HttpRequest
+                .newBuilder()
+                .uri(new URI(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri())))
+                .timeout(config.getReadTimeout())
+                .header("User-Agent", "miner-exporter/0.0.1")
+                .GET()
+                .build();
 
-            if (response.getStatus() != 200) {
-                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=summary)", response.getStatus(), config.getId());
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=summary)", response.statusCode(), config.getId());
             }
 
-            var json = Json.readObject(response.getContent());
+            var json = Json.readObject(response.body());
 
             validateHeader(json);
             validateSummary(json);
 
             return json.get("SUMMARY").asList().getFirst().asObject();
 
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (InterruptedException | URISyntaxException | IOException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }
 
     private JsonObject getStats() {
         try {
-            var response = client.newRequest(String.format("%s/cgi-bin/miner_stats.cgi", config.getUri()))
-                .method(HttpMethod.GET)
-                .send();
+            var request = HttpRequest
+                .newBuilder()
+                .uri(new URI(String.format("%s/cgi-bin/miner_stats.cgi", config.getUri())))
+                .timeout(config.getReadTimeout())
+                .header("User-Agent", "miner-exporter/0.0.1")
+                .GET()
+                .build();
 
-            if (response.getStatus() != 200) {
-                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.statusCode(), config.getId());
             }
 
-            var json = Json.readObject(response.getContent());
+            var json = Json.readObject(response.body());
 
             validateHeader(json);
             validateStats(json);
 
             return json.get("STATS").asList().get(1).asObject();
 
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+        } catch (InterruptedException | URISyntaxException | IOException e) {
             throw new MinerException(e.getMessage(), e);
         }
     }
@@ -146,15 +160,21 @@ public class Antminer implements Miner {
         var result = new ArrayList<MinerMetrics.Pool>();
 
         try {
-            var response = client.newRequest(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri()))
-                .method(HttpMethod.GET)
-                .send();
+            var request = HttpRequest
+                .newBuilder()
+                .uri(new URI(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri())))
+                .timeout(config.getReadTimeout())
+                .header("User-Agent", "miner-exporter/0.0.1")
+                .GET()
+                .build();
 
-            if (response.getStatus() != 200) {
-                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.getStatus(), config.getId());
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                throw new MinerException("Unexpected http status code: %s (miner=%s, cmd=stats)", response.statusCode(), config.getId());
             }
 
-            var json = Json.readObject(response.getContent());
+            var json = Json.readObject(response.body());
 
             validateHeader(json);
             validatePools(json);
@@ -174,7 +194,7 @@ public class Antminer implements Miner {
                 result.add(pool);
             }
 
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+        } catch (InterruptedException | IOException | URISyntaxException e) {
             throw new MinerException(e.getMessage(), e);
         }
 

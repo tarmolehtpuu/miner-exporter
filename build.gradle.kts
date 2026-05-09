@@ -26,11 +26,7 @@ repositories {
 
 dependencies {
     // ******************* JAVA ******************* //
-
-    // jetty
-    implementation("org.eclipse.jetty:jetty-client:12.1.8")
-    implementation("org.eclipse.jetty:jetty-server:12.1.8")
-
+    
     // ******************* TEST ******************* //
 
     // junit
