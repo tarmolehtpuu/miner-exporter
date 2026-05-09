@@ -14,10 +14,11 @@ jobs:
     uses: ./.github/workflows/release-001-preflight.yaml
 
   jar:
-    uses: ./.github/workflows/release-002-jar.yaml
-    if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
+    uses: ./.github/workflows/release-002-jar.yaml
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+
 
   native:
     uses: ./.github/workflows/release-003-native.yaml
