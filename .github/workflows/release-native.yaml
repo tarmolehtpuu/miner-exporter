@@ -6,6 +6,9 @@ env:
   JAVA_VERSION: 25
   JAVA_DIST: graalvm
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest

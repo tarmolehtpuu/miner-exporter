@@ -7,6 +7,9 @@ env:
   JAVA_DIST: zulu
   JAVA_ARCH: x64
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
