@@ -171,7 +171,7 @@ public class MinerMetrics {
                 .toList()
         ));
 
-        return new Exporter(items).export();
+        return new PrometheusExporter(items).export();
     }
 
     public String getMiner() {

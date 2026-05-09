@@ -3,11 +3,11 @@ package ee.moo.miner.exporter.dataformat.prometheus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Exporter {
+public class PrometheusExporter {
 
     private final List<MetricWithSamples> metrics;
 
-    public Exporter(List<MetricWithSamples> metrics) {
+    public PrometheusExporter(List<MetricWithSamples> metrics) {
         this.metrics = new ArrayList<>(metrics);
     }
 
