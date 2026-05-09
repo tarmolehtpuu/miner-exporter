@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+permissions:
+  packages: write
+  contents: write
+
 jobs:
   preflight:
     uses: ./.github/workflows/release-001-preflight.yaml
