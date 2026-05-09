@@ -43,13 +43,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jar
-          path: build/libs/miner-exporter-${{ inputs.version }}.jar
+          path: build/libs
 
       - name: Check artifacts
         run: |
           ls -lRa build/libs
           ls -lRa build/bin
-          
+
       - name: Build
         run:
           native-image -jar build/libs/miner-exporter-${{ inputs.version }}.jar \
@@ -58,5 +58,6 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: miner-exporter-${{ inputs.version }}-linux-amd64
+          name: bin
           path: build/bin/miner-exporter-${{ inputs.version }}-linux-amd64
+          archive: false

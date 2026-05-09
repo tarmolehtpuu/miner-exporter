@@ -32,10 +32,11 @@ jobs:
 
       - name: Build versioned JAR
         run:
-          mv build/libs/app.jar build/libs/miner-exporter-${{ inputs.version }}
+          mv build/libs/app.jar build/libs/miner-exporter-${{ inputs.version }}.jar
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jar
-          path: build/libs/miner-exporter-${{ inputs.version }}
+          path: build/libs/miner-exporter-${{ inputs.version }}.jar
+          archive: false
