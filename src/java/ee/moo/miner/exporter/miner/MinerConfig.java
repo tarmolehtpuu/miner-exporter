@@ -23,14 +23,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 import org.eclipse.jetty.client.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_ABSENT;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -38,7 +38,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 
 public class MinerConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(MinerConfig.class);
+    private static final Logger logger = Logger.getLogger(MinerConfig.class.getName());
 
     private final String id;
 
@@ -115,7 +115,12 @@ public class MinerConfig {
         }
 
         if (readBufferSize < 1024) {
-            logger.warn("Too low read buffer size: {} (miner={}). Defaulting to 1024", readBufferSize, id);
+            logger.log(
+                Level.WARNING,
+                "Too low read buffer size: %d (miner=%s). Defaulting to 1024",
+                new Object[]{readBufferSize, id}
+            );
+            readBufferSize = 1024;
         }
     }
 

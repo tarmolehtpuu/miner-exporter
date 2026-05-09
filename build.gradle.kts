@@ -36,10 +36,6 @@ dependencies {
     implementation("org.eclipse.jetty:jetty-client:12.1.8")
     implementation("org.eclipse.jetty:jetty-server:12.1.8")
 
-    // logback
-    implementation("ch.qos.logback:logback-core:1.5.32")
-    implementation("ch.qos.logback:logback-classic:1.5.32")
-
     // ******************* TEST ******************* //
 
     // junit

@@ -19,19 +19,33 @@ package ee.moo.miner.exporter;
 import ee.moo.miner.exporter.api.*;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
+import ee.moo.miner.exporter.util.StringUtil;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.*;
 
 public class Application {
 
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+    static {
+        LogManager.getLogManager().reset();
+
+        var root = Logger.getLogger("");
+        root.addHandler(new StdoutHandler());
+        root.setLevel(Level.INFO);
+    }
+
+    private static final Logger logger = Logger.getLogger(Application.class.getName());
 
     private final Map<String, String> env;
 
@@ -60,7 +74,7 @@ public class Application {
 
     private static Optional<Miner> miner(Map<String, String> env) throws URISyntaxException {
         if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
-            logger.warn("No miners configured, skipping metrics");
+            logger.warning("No miners configured, skipping metrics");
             return Optional.empty();
         }
 
@@ -91,5 +105,79 @@ public class Application {
     public void stop() throws Exception {
         server.stop();
         server.join();
+    }
+
+    public static class StdoutHandler extends StreamHandler {
+
+        public StdoutHandler() {
+            setOutputStream(System.out);
+            setFormatter(new StdoutFormatter());
+            setLevel(Level.INFO);
+        }
+
+        @Override
+        public void publish(LogRecord record) {
+            super.publish(record);
+            flush();
+        }
+    }
+
+    public static class StdoutFormatter extends Formatter {
+
+        private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+        @Override
+        public String format(LogRecord record) {
+            var sb = new StringBuilder(String.format(
+                "[%s][%s][%s][%s]: %s%n",
+                formatTime(record.getInstant()),
+                Thread.currentThread().getName(),
+                formatLevel(record.getLevel().getLocalizedName()),
+                formatClass(record.getSourceClassName()),
+                formatMessage(record)
+            ));
+
+            if (record.getThrown() != null) {
+                try {
+                    var sw = new StringWriter();
+                    var pw = new PrintWriter(sw);
+                    record.getThrown().printStackTrace(pw);
+                    sb.append(sw);
+                } catch (Exception e) {
+                    //noinspection CallToPrintStackTrace
+                    e.printStackTrace();
+                }
+            }
+
+            return sb.toString();
+        }
+
+        private String formatTime(Instant instant) {
+            return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(timeFormatter);
+        }
+
+        private String formatLevel(String level) {
+            if (level.length() > 4) {
+                level = level.substring(0, 4);
+            }
+            if (level.length() < 4) {
+                level = StringUtil.rpad(level, ' ', 4);
+            }
+
+            return level;
+        }
+
+        private String formatClass(String name) {
+            return name.substring(name.lastIndexOf('.') + 1);
+        }
+
+        @Override
+        public String formatMessage(LogRecord record) {
+            if (record.getParameters() == null || record.getParameters().length == 0) {
+                return record.getMessage();
+            }
+
+            return String.format(record.getMessage(), record.getParameters());
+        }
     }
 }

@@ -50,4 +50,30 @@ public final class StringUtil {
     public static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
+
+    public static String lpad(String s, char pad, int length) {
+        if (s == null) {
+            s = "";
+        }
+
+        var sb = new StringBuilder(s);
+        while (sb.length() < length) {
+            sb.insert(0, pad);
+        }
+
+        return sb.toString();
+    }
+
+    public static String rpad(String s, char pad, int length) {
+        if (s == null) {
+            s = "";
+        }
+
+        var sb = new StringBuilder(s);
+        while (sb.length() < length) {
+            sb.append(pad);
+        }
+
+        return sb.toString();
+    }
 }
