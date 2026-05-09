@@ -7,7 +7,7 @@ permissions:
   packages: read
 
 jobs:
-  check:
+  preflight:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.check_version.outputs.version }}
