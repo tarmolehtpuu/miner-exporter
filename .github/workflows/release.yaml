@@ -97,6 +97,8 @@ jobs:
           mv app.jar miner-exporter-$VERSION.jar
           mv miner-exporter-linux-amd64 miner-exporter-$VERSION-linux-amd64
           
+          chmod +x miner-exporter-$VERSION-linux-amd64
+          
           tar -czvf miner-exporter-$VERSION-linux-amd64.tar.gz miner-exporter-$VERSION-linux-amd64
           
           echo "Release prepared"

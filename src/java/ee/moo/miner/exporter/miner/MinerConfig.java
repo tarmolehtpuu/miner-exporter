@@ -40,8 +40,6 @@ public class MinerConfig {
 
     private final URI uri;
 
-    private AuthMode auth = AuthMode.NONE;
-
     private String username;
 
     private String password;
@@ -56,10 +54,6 @@ public class MinerConfig {
         this.id = env.get("MINER_ID");
         this.type = MinerType.valueOf(env.get("MINER_TYPE"));
         this.uri = new URI(env.get("MINER_URI"));
-
-        if (env.containsKey("MINER_AUTH")) {
-            this.auth = AuthMode.valueOf(env.get("MINER_AUTH"));
-        }
 
         if (env.containsKey("MINER_USERNAME")) {
             this.username = env.get("MINER_USERNAME");
@@ -94,20 +88,6 @@ public class MinerConfig {
             throw new MinerException("Miner URL is required (miner=%s)", id);
         }
 
-        if (auth == AuthMode.BASIC || auth == AuthMode.DIGEST) {
-            if (!uri.toString().startsWith("http://") && !uri.toString().startsWith("https://")) {
-                throw new MinerException("AuthMode.%s is only supported for http|https URL-s (miner=%s)", auth, id);
-            }
-
-            if (StringUtil.isEmpty(username)) {
-                throw new MinerException("Miner username is required for AuthMode.%s (miner=%s)", auth, id);
-            }
-
-            if (StringUtil.isEmpty(password)) {
-                throw new MinerException("Password is required for AuthMode.%s (miner=%s)", auth, id);
-            }
-        }
-
         if (readBufferSize < 1024) {
             logger.log(
                 Level.WARNING,
@@ -122,10 +102,6 @@ public class MinerConfig {
         var base = uri.toString();
         if (!base.startsWith("tcp://")) {
             throw new MinerException("Unable to create TCP client for URI=%s (miner=%s)", uri, id);
-        }
-
-        if (auth != AuthMode.NONE) {
-            throw new MinerException("Authentication mode (auth=%s) not supported for TCP client (miner=%s)", auth, id);
         }
 
         var client = new CGMinerTcpClient(uri.getHost(), uri.getPort());
@@ -145,6 +121,7 @@ public class MinerConfig {
 
         try {
             var builder = HttpClient.newBuilder();
+            builder.version(HttpClient.Version.HTTP_1_1);
             builder.connectTimeout(connectTimeout);
             builder.executor(Executors.newVirtualThreadPerTaskExecutor());
             builder.followRedirects(HttpClient.Redirect.NORMAL);
@@ -175,14 +152,6 @@ public class MinerConfig {
 
     public URI getUri() {
         return uri;
-    }
-
-    public AuthMode getAuth() {
-        return auth;
-    }
-
-    public void setAuth(AuthMode auth) {
-        this.auth = auth;
     }
 
     public String getUsername() {
@@ -223,11 +192,5 @@ public class MinerConfig {
 
     public void setReadBufferSize(int readBufferSize) {
         this.readBufferSize = readBufferSize;
-    }
-
-    public enum AuthMode {
-        NONE,
-        BASIC,
-        DIGEST
     }
 }

@@ -224,4 +224,9 @@ public class Antminer implements Miner {
     private void validatePools(JsonObject json) {
 
     }
+
+    @Override
+    public String toString() {
+        return String.format("Miner: id=%s, type=%s, uri=%s", getId(), getType(), getConfig().getUri());
+    }
 }

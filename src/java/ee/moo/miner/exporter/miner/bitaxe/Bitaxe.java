@@ -60,7 +60,6 @@ public class Bitaxe implements Miner {
                 .uri(new URI(String.format("%s/api/system/info", config.getUri())))
                 .timeout(config.getReadTimeout())
                 .header("User-Agent", "miner-exporter/0.0.1")
-                .GET()
                 .build();
 
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -125,5 +124,10 @@ public class Bitaxe implements Miner {
 
     private void validate(JsonObject json) {
         // FIXME
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Miner: id=%s, type=%s, uri=%s", getId(), getType(), getConfig().getUri());
     }
 }

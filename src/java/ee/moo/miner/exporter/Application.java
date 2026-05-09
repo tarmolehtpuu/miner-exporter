@@ -101,6 +101,7 @@ public class Application {
         if (miner != null) {
             server.createContext("/metrics", new MetricsController(miner));
             logger.info("Context: /metrics -> MetricsController");
+            logger.info(miner.toString());
         }
 
         server.start();

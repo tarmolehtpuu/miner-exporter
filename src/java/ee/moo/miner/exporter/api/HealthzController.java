@@ -19,21 +19,28 @@ package ee.moo.miner.exporter.api;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HealthzController implements HttpHandler {
 
+    private static final Logger logger = Logger.getLogger(HealthzController.class.getName());
+
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        String response = "Healthy!";
+    public void handle(HttpExchange exchange) {
+        try {
+            String response = "Healthy!";
 
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        exchange.sendResponseHeaders(200, response.length());
+            exchange.getResponseHeaders().set("Content-Type", "text/plain");
+            exchange.sendResponseHeaders(200, response.length());
 
-        try (var os = exchange.getResponseBody()) {
-            os.write(response.getBytes(UTF_8));
+            try (var os = exchange.getResponseBody()) {
+                os.write(response.getBytes(UTF_8));
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 }
