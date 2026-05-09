@@ -52,7 +52,7 @@ jobs:
 
       - name: Check build
         run: |
-          ls -lh build/bin4
+          ls -lh build/bin
           file build/bin/miner-exporter-linux-amd64
 
       - name: Upload
