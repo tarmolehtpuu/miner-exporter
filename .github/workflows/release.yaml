@@ -39,26 +39,34 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  jar:
+  build-java:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-    uses: ./.github/workflows/release-jar.yaml
+    uses: ./.github/workflows/release-build-java.yaml
 
-  native:
+  build-native:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-      - jar
-    uses: ./.github/workflows/release-native.yaml
+      - build-java
+    uses: ./.github/workflows/release-build-native.yaml
 
-  docker:
+  docker-java:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-      - jar
-      - native
-    uses: ./.github/workflows/release-docker.yaml
+      - build-java
+    uses: ./.github/workflows/release-docker-java.yaml
+    with:
+      version: ${{ needs.preflight.outputs.version }}
+
+  docker-native:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    needs:
+      - preflight
+      - build-native
+    uses: ./.github/workflows/release-docker-java.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 
@@ -67,8 +75,9 @@ jobs:
     uses: ./.github/workflows/release-finalize.yaml
     needs:
       - preflight
-      - jar
-      - native
-      - docker
+      - build-java
+      - build-native
+      - docker-java
+      - docker-native
     with:
       version: ${{ needs.preflight.outputs.version }}

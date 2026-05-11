@@ -1,4 +1,4 @@
-name: Release (JAR)
+name: Build Java
 on:
   workflow_call:
 
