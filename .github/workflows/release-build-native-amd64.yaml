@@ -12,7 +12,9 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      os: ubuntu-latest
+      target: amd64
     steps:
 
       - name: Checkout
