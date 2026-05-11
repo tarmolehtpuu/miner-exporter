@@ -35,7 +35,7 @@ jobs:
 
       - name: Release
         run: |
-          VERSION="${{ needs.preflight.outputs.version }}"
+          VERSION="${{ inputs.version }}"
           echo "Preparing release: $VERSION"
           ls -la .
           
