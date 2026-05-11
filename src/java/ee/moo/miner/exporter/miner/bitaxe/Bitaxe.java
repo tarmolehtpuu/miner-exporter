@@ -16,8 +16,8 @@
  */
 package ee.moo.miner.exporter.miner.bitaxe;
 
-import ee.moo.miner.exporter.dataformat.json.Json;
-import ee.moo.miner.exporter.dataformat.json.JsonObject;
+import ee.moo.tiny.json.Json;
+import ee.moo.tiny.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 

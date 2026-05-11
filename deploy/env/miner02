@@ -1,4 +1,4 @@
-# Example env file - /etc/default/miner-exporter/miner02
+# Example env file: /etc/default/miner-exporter/miner02
 MINER_ID=miner02
 MINER_TYPE=BITAXE
 MINER_URI=tcp://10.10.10.42:4028

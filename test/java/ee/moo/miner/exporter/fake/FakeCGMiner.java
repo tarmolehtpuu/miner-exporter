@@ -16,9 +16,9 @@
  */
 package ee.moo.miner.exporter.fake;
 
-import ee.moo.miner.exporter.dataformat.json.Json;
-import ee.moo.miner.exporter.dataformat.json.JsonArray;
-import ee.moo.miner.exporter.dataformat.json.JsonObject;
+import ee.moo.tiny.json.Json;
+import ee.moo.tiny.json.JsonArray;
+import ee.moo.tiny.json.JsonObject;
 
 import java.io.IOException;
 import java.net.ServerSocket;

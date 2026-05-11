@@ -16,7 +16,7 @@
  */
 package ee.moo.miner.exporter.miner;
 
-import ee.moo.miner.exporter.cgminer.CGMinerTcpClient;
+import ee.moo.miner.exporter.client.cgminer.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 
 import java.net.Authenticator;
