@@ -43,22 +43,22 @@ jobs:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-    uses: ./.github/workflows/release-build-java.yaml
+    uses: ./.github/workflows/release-java.yaml
 
-  build-native-amd64:
+  build-amd64:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
       - build-java
-    uses: ./.github/workflows/release-build-amd64.yaml
+    uses: ./.github/workflows/release-amd64.yaml
 
-  build-native-arm64:
+  build-arm64:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
       - build-java
-    uses: ./.github/workflows/release-build-arm64.yaml
-    
+    uses: ./.github/workflows/release-arm64.yaml
+
   docker-java:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
@@ -72,8 +72,8 @@ jobs:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
-      - build-native-amd64
-      - build-native-arm64
+      - build-arm64
+      - build-amd64
     uses: ./.github/workflows/release-docker-native.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
@@ -84,7 +84,7 @@ jobs:
     needs:
       - preflight
       - build-java
-      - build-native-amd64
-      - build-native-arm64
+      - build-amd64
+      - build-arm64
     with:
       version: ${{ needs.preflight.outputs.version }}
