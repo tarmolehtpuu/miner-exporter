@@ -59,22 +59,12 @@ jobs:
       - build-java
     uses: ./.github/workflows/release-build-arm64.yaml
 
-  docker-java:
+  docker:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
       - build-java
-    uses: ./.github/workflows/release-docker-java.yaml
-    with:
-      version: ${{ needs.preflight.outputs.version }}
-
-  docker-native:
-    if: ${{ needs.preflight.outputs.cleared == 'true' }}
-    needs:
-      - preflight
-      - build-arm64
-      - build-amd64
-    uses: ./.github/workflows/release-docker-native.yaml
+    uses: ./.github/workflows/release-docker.yaml
     with:
       version: ${{ needs.preflight.outputs.version }}
 

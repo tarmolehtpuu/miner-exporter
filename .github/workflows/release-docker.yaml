@@ -1,4 +1,4 @@
-name: Release Docker (Native)
+name: Release Docker
 on:
   workflow_call:
     inputs:
@@ -22,20 +22,14 @@ jobs:
       - name: Create directories
         run: |
           mkdir build
-          mkdir build/bin
+          mkdir build/libs
 
-      - name: Download native (amd64)
+      - name: Download JAR
         uses: actions/download-artifact@v8
         with:
-          name: miner-exporter-linux-amd64
-          path: build/bin/miner-exporter-linux-amd64
+          name: app.jar
+          path: build/libs
           skip-decompress: true
-
-      - name: Download native (arm64)
-        uses: actions/download-artifact@v8
-        with:
-          name: miner-exporter-linux-arm64
-          path: build/bin/miner-exporter-linux-arm64
 
       - name: Login to Docker registry
         uses: docker/login-action@v4
@@ -44,13 +38,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release Docker (Native)
+      - name: Release Docker (Java)
         run: |
-          cp deploy/docker/native/Dockerfile .
           echo "Docker: $IMAGE_ID:$IMAGE_TAG"
           docker build --tag $IMAGE_ID:$IMAGE_TAG .
           docker push $IMAGE_ID:$IMAGE_TAG
-          rm Dockerfile
         env:
           IMAGE_ID: ghcr.io/tarmolehtpuu/miner-exporter
           IMAGE_TAG: ${{ inputs.version }}
