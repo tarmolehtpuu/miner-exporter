@@ -22,10 +22,14 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/tarmolehtpuu/tiny-json")
+    }
 }
 
 dependencies {
     // ******************* JAVA ******************* //
+    implementation("ee.moo:tiny-json:0.0.3")
 
     // ******************* TEST ******************* //
 
