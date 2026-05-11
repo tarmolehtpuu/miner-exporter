@@ -18,8 +18,6 @@ package ee.moo.miner.exporter;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import ee.moo.miner.exporter.fake.FakeCGMiner;
-import ee.moo.miner.exporter.miner.MinerException;
-import ee.moo.miner.exporter.util.StringUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,8 +34,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
