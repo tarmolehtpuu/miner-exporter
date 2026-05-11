@@ -1,10 +1,11 @@
-FROM azul/zulu-openjdk-alpine:25-latest
+FROM alpine:3.23.4
 
+RUN mkdir /app
 WORKDIR /app
 
-COPY build/libs/app.jar app.jar
+COPY build/libs/miner-exporter-linux-amd64 /app/miner-exporter
 
 ENV LISTEN_ADDRESS="0.0.0.0"
 ENV LISTEN_PORT="9041"
 
-ENTRYPOINT ["java", "-server", "-XX:InitialRAMPercentage=50.0", "-XX:MaxRAMPercentage=80.0", "-jar", "app.jar"]
+ENTRYPOINT ["/app/miner-exporter"]

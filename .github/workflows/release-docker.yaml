@@ -38,11 +38,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release Docker
+      - name: Release Docker (Java)
         run: |
+          cp deploy/docker/java/Dockerfile .
           echo "Docker: $IMAGE_ID:$IMAGE_TAG"
           docker build --tag $IMAGE_ID:$IMAGE_TAG .
           docker push $IMAGE_ID:$IMAGE_TAG
+          rm Dockerfile
+        env:
+          IMAGE_ID: ghcr.io/tarmolehtpuu/miner-exporter
+          IMAGE_TAG: ${{ inputs.version }}-java
+
+      - name: Release Docker (Native)
+        run: |
+          cp deploy/docker/native/Dockerfile .
+          echo "Docker: $IMAGE_ID:$IMAGE_TAG"
+          docker build --tag $IMAGE_ID:$IMAGE_TAG .
+          docker push $IMAGE_ID:$IMAGE_TAG
+          rm Dockerfile
         env:
           IMAGE_ID: ghcr.io/tarmolehtpuu/miner-exporter
           IMAGE_TAG: ${{ inputs.version }}

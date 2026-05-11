@@ -1,5 +1,6 @@
+
 [Unit]
-Description=Prometheus Miner Exporter (miner02)
+Description=Prometheus Miner Exporter
 Documentation=https://github.com/tarmolehtpuu/miner-exporter
 
 [Service]
@@ -9,7 +10,7 @@ Restart=on-failure
 User=prometheus
 Group=prometheus
 
-EnvironmentFile=/etc/default/miner-exporter/miner02
+EnvironmentFile=/etc/default/miner-exporter/miner01
 ExecStart=/usr/bin/java \
     -server \
     -Xms128m \
@@ -17,8 +18,8 @@ ExecStart=/usr/bin/java \
     -jar /opt/miner-exporter/miner-exporter.jar
 ExecStop=/bin/kill -15 $MAINPID
 
-StandardOutput=append:/var/log/prometheus/miner02.log
-StandardError=append:/var/log/prometheus/miner02.log
+StandardOutput=append:/var/log/prometheus/miner01.log
+StandardError=append:/var/log/prometheus/miner01.log
 
 SuccessExitStatus=143
 TimeoutStopSec=20s
@@ -26,3 +27,4 @@ SendSIGKILL=no
 
 [Install]
 WantedBy=multi-user.target⏎
+

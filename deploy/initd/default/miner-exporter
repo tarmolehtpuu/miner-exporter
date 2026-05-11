@@ -1,0 +1,5 @@
+export MINER_ID=miner01
+export MINER_TYPE=AVALON
+export MINER_URI=tcp://10.10.10.41:4028
+export LISTEN_HOST=0.0.0.0
+export LISTEN_PORT=9041

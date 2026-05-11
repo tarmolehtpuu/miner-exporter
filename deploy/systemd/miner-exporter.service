@@ -1,0 +1,25 @@
+[Unit]
+Description=Prometheus Miner Exporter
+Documentation=https://github.com/tarmolehtpuu/miner-exporter
+
+[Service]
+Type=simple
+Restart=on-failure
+
+User=prometheus
+Group=prometheus
+
+EnvironmentFile=/etc/default/miner-exporter
+ExecStart=/usr/local/bin/miner-exporter
+ExecStop=/bin/kill 15 $MAINPID
+
+StandardOutput=append:/var/log/prometheus/miner-exporter.log
+StandardError=append:/var/log/prometheus/miner-exporter.log
+
+SuccessExitStatus=143
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target⏎
+
