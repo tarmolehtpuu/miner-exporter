@@ -22,13 +22,13 @@ jobs:
       - name: Create directories
         run: |
           mkdir build
-          mkdir build/libs
+          mkdir build/bin
 
-      - name: Download JAR
+      - name: Download native
         uses: actions/download-artifact@v8
         with:
           name: app.jar
-          path: build/libs
+          path: build/bin/miner-exporter-linux-amd64
           skip-decompress: true
 
       - name: Login to Docker registry
