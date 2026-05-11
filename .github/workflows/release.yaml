@@ -50,15 +50,15 @@ jobs:
     needs:
       - preflight
       - build-java
-    uses: ./.github/workflows/release-build-native-amd64.yaml
+    uses: ./.github/workflows/release-build-amd64.yaml
 
   build-native-arm64:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:
       - preflight
       - build-java
-    uses: ./.github/workflows/release-build-native-arm64.yaml
-
+    uses: ./.github/workflows/release-build-arm64.yaml
+    
   docker-java:
     if: ${{ needs.preflight.outputs.cleared == 'true' }}
     needs:

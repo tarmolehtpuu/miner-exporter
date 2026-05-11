@@ -1,4 +1,4 @@
-name: Build Native)
+name: Build amd64
 on:
   workflow_call:
 
