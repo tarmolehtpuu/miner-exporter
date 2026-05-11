@@ -12,8 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on:
-      os: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04-arm
     steps:
 
       - name: Checkout
