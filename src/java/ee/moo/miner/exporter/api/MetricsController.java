@@ -19,7 +19,9 @@ package ee.moo.miner.exporter.api;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ee.moo.miner.exporter.miner.Miner;
+import ee.moo.miner.exporter.util.StringUtil;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,19 +39,31 @@ public class MetricsController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
+        var body = "";
+        var code = 200;
+
+        exchange.getResponseHeaders()
+            .set("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
+
         try {
-            var response = miner
-                .getMetrics()
-                .export();
-
-            exchange.getResponseHeaders().set("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
-            exchange.sendResponseHeaders(200, response.length());
-
-            try (var os = exchange.getResponseBody()) {
-                os.write(response.getBytes(UTF_8));
-            }
+            body = miner.getMetrics().export();
         } catch (Exception e) {
+            exchange.getResponseHeaders()
+                .set("Content-Type", "text/plain");
+
+            body = "ERROR: 500";
+            code = 500;
+
             logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+
+        try {
+            exchange.sendResponseHeaders(code, body.length());
+            try (var os = exchange.getResponseBody()) {
+                os.write(body.getBytes(UTF_8));
+            }
+        } catch (IOException e) {
+            logger.log(Level.FINE, "Error while sending response", e);
         }
     }
 }

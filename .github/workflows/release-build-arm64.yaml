@@ -52,7 +52,7 @@ jobs:
 
       - name: Build
         run: |
-          native-image -jar build/libs/app.jar build/bin/miner-exporter-linux-arm64
+          native-image -jar build/libs/app.jar -march=compatibility build/bin/miner-exporter-linux-arm64
 
       - name: Check build
         run: |

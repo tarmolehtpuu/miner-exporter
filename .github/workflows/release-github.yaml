@@ -50,7 +50,7 @@ jobs:
           tar -czvf miner-exporter-$VERSION-linux-arm64.tar.gz miner-exporter-$VERSION-linux-arm64
           
           echo "Release prepared"
-          ls -la
+          ls -la .
           
           echo "Releasing..."
           gh release create v$VERSION \
