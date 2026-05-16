@@ -16,11 +16,11 @@
  */
 package ee.moo.miner.exporter.miner.antminer;
 
+import ee.moo.miner.exporter.miner.*;
+import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import ee.moo.miner.exporter.util.StringUtil;
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonObject;
-import ee.moo.miner.exporter.miner.*;
-import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import org.eclipse.jetty.client.HttpClient;
 
 import java.net.URI;
@@ -77,7 +77,6 @@ public class Antminer implements Miner {
         try {
             var response = client
                 .newRequest(new URI(String.format("%s/cgi-bin/miner_summary.cgi", config.getUri())))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .send();
 
             if (response.getStatus() != 200) {
@@ -100,7 +99,6 @@ public class Antminer implements Miner {
         try {
             var response = client
                 .newRequest(new URI(String.format("%s/cgi-bin/miner_stats.cgi", config.getUri())))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .send();
 
             if (response.getStatus() != 200) {
@@ -154,7 +152,6 @@ public class Antminer implements Miner {
         try {
             var response = client
                 .newRequest(new URI(String.format("%s/cgi-bin/miner_pools.cgi", config.getUri())))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .send();
 
             if (response.getStatus() != 200) {

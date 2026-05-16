@@ -22,21 +22,17 @@ import ee.moo.miner.exporter.api.MetricsController;
 import ee.moo.miner.exporter.api.ReadyzController;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.logging.*;
 
 public class Application {
 
-    static {
-        Log.configure();
-    }
-
-    private static final Logger logger = Logger.getLogger(Application.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     private final Map<String, String> env;
 
@@ -64,7 +60,7 @@ public class Application {
 
     private static Miner miner(Map<String, String> env) throws URISyntaxException {
         if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
-            logger.warning("No miners configured, skipping metrics");
+            log.warn("No miners configured, skipping metrics");
             return null;
         }
 
@@ -76,34 +72,34 @@ public class Application {
     }
 
     public void start() throws Exception {
-        logger.info("HttpServer starting...");
+        log.info("HttpServer starting...");
 
         server = HttpServer.create(new InetSocketAddress(host, port), 0);
         server.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
 
         server.createContext("/healthz", new HealthzController());
-        logger.info("Context: /healthz -> HealthzController");
+        log.info("Context: /healthz -> HealthzController");
 
         server.createContext("/readyz", new ReadyzController());
-        logger.info("Context: /readyz  -> ReadyzController");
+        log.info("Context: /readyz  -> ReadyzController");
 
         var miner = miner(env);
         if (miner != null) {
             server.createContext("/metrics", new MetricsController(miner));
-            logger.info("Context: /metrics -> MetricsController");
-            logger.info(miner.toString());
+            log.info("Context: /metrics -> MetricsController");
+            log.info(miner.toString());
         }
 
         server.start();
 
-        logger.log(Level.INFO, "Started HttpServer on: %s:%d", new Object[]{host, port});
+        log.info("Started HttpServer on: {}:{}", host, port);
     }
 
     public void stop() throws Exception {
         if (server != null) {
-            logger.info("HttpServer shutting down...");
+            log.info("HttpServer shutting down...");
             server.stop(5);
-            logger.info("HttpServer stopped");
+            log.info("HttpServer stopped");
         }
     }
 }

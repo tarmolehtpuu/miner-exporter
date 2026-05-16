@@ -20,6 +20,8 @@ import ee.moo.miner.exporter.client.CGMinerTcpClient;
 import ee.moo.miner.exporter.util.StringUtil;
 import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.http.HttpHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,12 +29,10 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MinerConfig {
 
-    private static final Logger logger = Logger.getLogger(MinerConfig.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(MinerConfig.class);
 
     private final String id;
 
@@ -104,19 +104,15 @@ public class MinerConfig {
 
         if (mode == AuthMode.NONE) {
             if (!StringUtil.isEmpty(username)) {
-                logger.warning("Username specified but AUTH_MODE is set to NONE, ignoring...");
+                log.warn("Username specified but AUTH_MODE is set to NONE, ignoring...");
             }
             if (!StringUtil.isEmpty(password)) {
-                logger.warning("Password specified but AUTH_MODE is set to NONE, ignoring...");
+                log.warn("Password specified but AUTH_MODE is set to NONE, ignoring...");
             }
         }
 
         if (readBufferSize < 1024) {
-            logger.log(
-                Level.WARNING,
-                "Too low read buffer size: %d (miner=%s). Defaulting to 1024",
-                new Object[]{readBufferSize, id}
-            );
+            log.warn("Too low read buffer size: %d (miner=%s). Defaulting to 1024");
             readBufferSize = 1024;
         }
     }
@@ -197,46 +193,6 @@ public class MinerConfig {
 
     public URI getUri() {
         return uri;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Duration getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public void setConnectTimeout(Duration connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
-    public Duration getReadTimeout() {
-        return readTimeout;
-    }
-
-    public void setReadTimeout(Duration readTimeout) {
-        this.readTimeout = readTimeout;
-    }
-
-    public int getReadBufferSize() {
-        return readBufferSize;
-    }
-
-    public void setReadBufferSize(int readBufferSize) {
-        this.readBufferSize = readBufferSize;
     }
 
     public enum AuthMode {

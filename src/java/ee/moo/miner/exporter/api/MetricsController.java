@@ -19,16 +19,16 @@ package ee.moo.miner.exporter.api;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ee.moo.miner.exporter.miner.Miner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MetricsController implements HttpHandler {
 
-    private static final Logger logger = Logger.getLogger(MetricsController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(MetricsController.class);
 
     private final Miner miner;
 
@@ -47,9 +47,7 @@ public class MetricsController implements HttpHandler {
 
         try {
             body = miner.getMetrics().export();
-            logger.log(Level.INFO, "Metrics exported - %s (%d ms)", new Object[]{
-                miner.toString(), System.currentTimeMillis() - time
-            });
+            log.info("Metrics exported - {} ({} ms)", miner, System.currentTimeMillis() - time);
         } catch (Exception e) {
             exchange.getResponseHeaders()
                 .set("Content-Type", "text/plain");
@@ -57,7 +55,7 @@ public class MetricsController implements HttpHandler {
             body = "ERROR: 500";
             code = 500;
 
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         try {
@@ -66,7 +64,7 @@ public class MetricsController implements HttpHandler {
                 os.write(body.getBytes(UTF_8));
             }
         } catch (IOException e) {
-            logger.log(Level.FINE, "Error while sending response", e);
+            log.debug("Error while sending response", e);
         }
     }
 }

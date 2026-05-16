@@ -16,11 +16,11 @@
  */
 package ee.moo.miner.exporter.miner.avalon;
 
+import ee.moo.miner.exporter.miner.*;
+import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 import ee.moo.miner.exporter.util.StringUtil;
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonObject;
-import ee.moo.miner.exporter.miner.*;
-import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
 
 import java.io.IOException;
 import java.util.ArrayList;

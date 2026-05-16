@@ -18,15 +18,15 @@ package ee.moo.miner.exporter.api;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HealthzController implements HttpHandler {
 
-    private static final Logger logger = Logger.getLogger(HealthzController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HealthzController.class);
 
     @Override
     public void handle(HttpExchange exchange) {
@@ -40,7 +40,7 @@ public class HealthzController implements HttpHandler {
                 os.write(response.getBytes(UTF_8));
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 }

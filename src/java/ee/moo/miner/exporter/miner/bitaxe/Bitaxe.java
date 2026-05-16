@@ -16,10 +16,10 @@
  */
 package ee.moo.miner.exporter.miner.bitaxe;
 
-import ee.moo.tiny.json.Json;
-import ee.moo.tiny.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
 import ee.moo.miner.exporter.miner.MinerMetrics.Temperature.Type;
+import ee.moo.tiny.json.Json;
+import ee.moo.tiny.json.JsonObject;
 import org.eclipse.jetty.client.HttpClient;
 
 import java.net.URI;
@@ -57,7 +57,6 @@ public class Bitaxe implements Miner {
         try {
             var response = client
                 .newRequest(new URI(String.format("%s/api/system/info", config.getUri())))
-                .timeout(config.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)
                 .send();
 
             if (response.getStatus() != 200) {

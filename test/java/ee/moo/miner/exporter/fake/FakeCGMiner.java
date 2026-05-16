@@ -19,6 +19,8 @@ package ee.moo.miner.exporter.fake;
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonArray;
 import ee.moo.tiny.json.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -27,14 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FakeCGMiner implements Runnable {
 
-    private static final Logger logger = Logger.getLogger(FakeCGMiner.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(FakeCGMiner.class);
 
     private final Map<String, String> commands = new ConcurrentHashMap<>();
 
@@ -73,7 +73,7 @@ public class FakeCGMiner implements Runnable {
             }
         }
 
-        logger.log(Level.INFO, "Started FakeCGMiner on port %d", port);
+        log.info("Started FakeCGMiner on port {}", port);
     }
 
     public void stop() {
@@ -114,7 +114,7 @@ public class FakeCGMiner implements Runnable {
                     // probably server.accept() timeout
                 } catch (Exception e) {
                     if (running.get()) {
-                        logger.log(Level.SEVERE, String.format("Client error: %s", e.getMessage()), e);
+                        log.error("Client error: {}", e.getMessage(), e);
                     }
                 }
             }
