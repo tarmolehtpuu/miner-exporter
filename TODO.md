@@ -1,3 +1,4 @@
-1. Update README.md
-2. slf4j
-3. Grafana Dashboard
+1. Add logback + slf4j
+2. Remove java.util.logging
+3. Update README
+4. Grafana Dashboard
