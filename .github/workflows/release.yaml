@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check_version.outputs.version }}
+      cleared: ${{ steps.check_release.outputs.cleared }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Version
+        id: check_version
+        run: |
+          echo "version=$(cat VERSION | xargs)" >> $GITHUB_OUTPUT
+          echo "Detected version: v{$VERSION}"
+
+      - name: Check Release
+        id: check_release
+        run: |
+          VERSION=${{ steps.check_version.outputs.version }}
+          if gh release view v${VERSION} > /dev/null 2>&1; then
+            echo "cleared=false" >> $GITHUB_OUTPUT
+            echo "Release v${VERSION} already exists. Skipping."
+          else
+            echo "cleared=true" >> $GITHUB_OUTPUT
+            echo "Creating release: v${VERSION}"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-java:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    needs:
+      - preflight
+    uses: ./.github/workflows/release-build-java.yaml
+
+  build-amd64:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    needs:
+      - preflight
+      - build-java
+    uses: ./.github/workflows/release-build-amd64.yaml
+
+  build-arm64:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    needs:
+      - preflight
+      - build-java
+    uses: ./.github/workflows/release-build-arm64.yaml
+
+  github:
+    if: ${{ needs.preflight.outputs.cleared == 'true' }}
+    uses: ./.github/workflows/release-github.yaml
+    needs:
+      - preflight
+      - build-java
+      - build-amd64
+      - build-arm64
+    with:
+      version: ${{ needs.preflight.outputs.version }}

@@ -1,0 +1,64 @@
+name: Release (Finalize)
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version
+        type: string
+        required: true
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Create directories
+        run: |
+          mkdir -p release
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          merge-multiple: true
+          path: release
+
+      - name: List artifacts
+        run:
+          ls -la release
+
+      - name: Release
+        run: |
+          VERSION="${{ inputs.version }}"
+          echo "Preparing release: $VERSION"
+          ls -la .
+          
+          mv app.jar miner-exporter-$VERSION.jar
+          mv miner-exporter-linux-amd64 miner-exporter-$VERSION-linux-amd64
+          mv miner-exporter-linux-arm64 miner-exporter-$VERSION-linux-arm64
+          
+          chmod +x miner-exporter-$VERSION-linux-amd64
+          chmod +x miner-exporter-$VERSION-linux-arm64
+          
+          tar -czvf miner-exporter-$VERSION-linux-amd64.tar.gz miner-exporter-$VERSION-linux-amd64
+          tar -czvf miner-exporter-$VERSION-linux-arm64.tar.gz miner-exporter-$VERSION-linux-arm64
+          
+          echo "Release prepared"
+          ls -la .
+          
+          echo "Releasing..."
+          gh release create v$VERSION \
+            --repo tarmolehtpuu/miner-exporter \
+            --title miner-exporter-$VERSION \
+            --generate-notes *.jar *.tar.gz
+          
+          echo "Release $VERSION - DONE"
+        working-directory: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

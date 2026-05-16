@@ -1,0 +1,40 @@
+name: Build Java
+on:
+  workflow_call:
+
+env:
+  JAVA_VERSION: 25
+  JAVA_DIST: zulu
+  JAVA_ARCH: x64
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DIST }}
+          architecture: ${{ env.JAVA_ARCH }}
+
+      - name: Build
+        run: ./gradlew check jar
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: app.jar
+          path: build/libs/app.jar
+          archive: false

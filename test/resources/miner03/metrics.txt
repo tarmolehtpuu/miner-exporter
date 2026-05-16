@@ -1,0 +1,47 @@
+# HELP miner_uptime_total Time since last boot in seconds
+# TYPE miner_uptime_total counter
+miner_uptime_total{miner="miner03",type="ANTMINER"} 542.0
+# HELP miner_accepted_total Total number of shares accepted
+# TYPE miner_accepted_total counter
+miner_accepted_total{miner="miner03",type="ANTMINER"} 50.0
+# HELP miner_rejected_total Total number of shares rejected
+# TYPE miner_rejected_total counter
+miner_rejected_total{miner="miner03",type="ANTMINER"} 0.0
+# HELP miner_found_total Total number of blocks found
+# TYPE miner_found_total counter
+miner_found_total{miner="miner03",type="ANTMINER"} 0.0
+# HELP miner_hashrate Current miner hashrate in TH/s
+# TYPE miner_hashrate gauge
+miner_hashrate{miner="miner03",type="ANTMINER"} 0.354
+# HELP miner_temperature Current miner temperature in C
+# TYPE miner_temperature gauge
+miner_temperature{miner="miner03",type="ANTMINER",board="1",temperature_type="PCB"} 51.0
+miner_temperature{miner="miner03",type="ANTMINER",board="1",temperature_type="CHIP"} 60.0
+miner_temperature{miner="miner03",type="ANTMINER",board="2",temperature_type="PCB"} 52.0
+miner_temperature{miner="miner03",type="ANTMINER",board="2",temperature_type="CHIP"} 61.0
+miner_temperature{miner="miner03",type="ANTMINER",board="4",temperature_type="PCB"} 50.0
+miner_temperature{miner="miner03",type="ANTMINER",board="4",temperature_type="CHIP"} 58.0
+# HELP miner_fan_rpm Current fan RPM
+# TYPE miner_fan_rpm gauge
+miner_fan_rpm{miner="miner03",type="ANTMINER",fan="1"} 5130.0
+miner_fan_rpm{miner="miner03",type="ANTMINER",fan="2"} 4500.0
+# HELP miner_pool_alive Current pool liveness
+# TYPE miner_pool_alive gauge
+miner_pool_alive{miner="miner03",type="ANTMINER",pool="0",pool_priority="0",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 1.0
+miner_pool_alive{miner="miner03",type="ANTMINER",pool="1",pool_priority="1",pool_uri="stratum+tcp://ltc.viabtc.io:443",pool_user="miner03"} 1.0
+miner_pool_alive{miner="miner03",type="ANTMINER",pool="2",pool_priority="2",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 1.0
+# HELP miner_pool_active If pool is currently active
+# TYPE miner_pool_active gauge
+miner_pool_active{miner="miner03",type="ANTMINER",pool="0",pool_priority="0",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 1.0
+miner_pool_active{miner="miner03",type="ANTMINER",pool="1",pool_priority="1",pool_uri="stratum+tcp://ltc.viabtc.io:443",pool_user="miner03"} 0.0
+miner_pool_active{miner="miner03",type="ANTMINER",pool="2",pool_priority="2",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 0.0
+# HELP miner_pool_accepted_total Total number of shares accepted for the pool
+# TYPE miner_pool_accepted_total counter
+miner_pool_accepted_total{miner="miner03",type="ANTMINER",pool="0",pool_priority="0",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 50.0
+miner_pool_accepted_total{miner="miner03",type="ANTMINER",pool="1",pool_priority="1",pool_uri="stratum+tcp://ltc.viabtc.io:443",pool_user="miner03"} 0.0
+miner_pool_accepted_total{miner="miner03",type="ANTMINER",pool="2",pool_priority="2",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 0.0
+# HELP miner_pool_rejected_total Total number of shares rejected for the pool
+# TYPE miner_pool_rejected_total counter
+miner_pool_rejected_total{miner="miner03",type="ANTMINER",pool="0",pool_priority="0",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 0.0
+miner_pool_rejected_total{miner="miner03",type="ANTMINER",pool="1",pool_priority="1",pool_uri="stratum+tcp://ltc.viabtc.io:443",pool_user="miner03"} 0.0
+miner_pool_rejected_total{miner="miner03",type="ANTMINER",pool="2",pool_priority="2",pool_uri="stratum+tcp://ltc.viabtc.io:3333",pool_user="miner03"} 0.0

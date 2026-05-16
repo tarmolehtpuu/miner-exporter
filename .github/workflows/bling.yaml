@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  JAVA_VERSION: 25
+  JAVA_DIST: zulu
+  JAVA_ARCH: x64
+
+jobs:
+  bling:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DIST }}
+          architecture: ${{ env.JAVA_ARCH }}
+
+      - name: Build
+        run: ./gradlew check jar
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Badges
+        uses: gaelgirodon/ci-badges-action@v1
+        with:
+          gist-id: a5debb67ba982255c7f79caec03d734c
+          token: ${{ secrets.GIST_TOKEN }}

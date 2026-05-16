@@ -1,0 +1,38 @@
+# HELP miner_uptime_total Time since last boot in seconds
+# TYPE miner_uptime_total counter
+miner_uptime_total{miner="miner01",type="BITAXE"} 95431.0
+# HELP miner_accepted_total Total number of shares accepted
+# TYPE miner_accepted_total counter
+miner_accepted_total{miner="miner01",type="BITAXE"} 18688.0
+# HELP miner_rejected_total Total number of shares rejected
+# TYPE miner_rejected_total counter
+miner_rejected_total{miner="miner01",type="BITAXE"} 23.0
+# HELP miner_found_total Total number of blocks found
+# TYPE miner_found_total counter
+miner_found_total{miner="miner01",type="BITAXE"} 0.0
+# HELP miner_hashrate Current miner hashrate in TH/s
+# TYPE miner_hashrate gauge
+miner_hashrate{miner="miner01",type="BITAXE"} 0.901
+# HELP miner_temperature Current miner temperature in C
+# TYPE miner_temperature gauge
+miner_temperature{miner="miner01",type="BITAXE",board="1",temperature_type="CHIP"} 60.75
+miner_temperature{miner="miner01",type="BITAXE",board="2",temperature_type="PCB"} 51.0
+# HELP miner_fan_rpm Current fan RPM
+# TYPE miner_fan_rpm gauge
+miner_fan_rpm{miner="miner01",type="BITAXE",fan="1"} 7000.0
+# HELP miner_pool_alive Current pool liveness
+# TYPE miner_pool_alive gauge
+miner_pool_alive{miner="miner01",type="BITAXE",pool="0",pool_priority="0",pool_uri="stratum+tcp://bch.viabtc.io:3333",pool_user="miner01"} 1.0
+miner_pool_alive{miner="miner01",type="BITAXE",pool="1",pool_priority="1",pool_uri="stratum+tcp://btc.viabtc.io:3333",pool_user="miner01"} 0.0
+# HELP miner_pool_active If pool is currently active
+# TYPE miner_pool_active gauge
+miner_pool_active{miner="miner01",type="BITAXE",pool="0",pool_priority="0",pool_uri="stratum+tcp://bch.viabtc.io:3333",pool_user="miner01"} 1.0
+miner_pool_active{miner="miner01",type="BITAXE",pool="1",pool_priority="1",pool_uri="stratum+tcp://btc.viabtc.io:3333",pool_user="miner01"} 0.0
+# HELP miner_pool_accepted_total Total number of shares accepted for the pool
+# TYPE miner_pool_accepted_total counter
+miner_pool_accepted_total{miner="miner01",type="BITAXE",pool="0",pool_priority="0",pool_uri="stratum+tcp://bch.viabtc.io:3333",pool_user="miner01"} 0.0
+miner_pool_accepted_total{miner="miner01",type="BITAXE",pool="1",pool_priority="1",pool_uri="stratum+tcp://btc.viabtc.io:3333",pool_user="miner01"} 0.0
+# HELP miner_pool_rejected_total Total number of shares rejected for the pool
+# TYPE miner_pool_rejected_total counter
+miner_pool_rejected_total{miner="miner01",type="BITAXE",pool="0",pool_priority="0",pool_uri="stratum+tcp://bch.viabtc.io:3333",pool_user="miner01"} 0.0
+miner_pool_rejected_total{miner="miner01",type="BITAXE",pool="1",pool_priority="1",pool_uri="stratum+tcp://btc.viabtc.io:3333",pool_user="miner01"} 0.0

@@ -1,0 +1,67 @@
+name: Build arm64
+on:
+  workflow_call:
+
+env:
+  JAVA_VERSION: 25
+  JAVA_DIST: graalvm
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DIST }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Java
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+
+      - name: Create directories
+        run: |
+          mkdir -p build
+          mkdir -p build/libs
+          mkdir -p build/bin
+
+      - name: Download JAR
+        uses: actions/download-artifact@v8
+        with:
+          name: app.jar
+          path: build/libs
+          skip-decompress: true
+
+      - name: Check artifacts
+        run: |
+          ls -lRa build/libs
+          ls -lRa build/bin
+
+      - name: Build
+        run: |
+          native-image -jar build/libs/app.jar -march=compatibility build/bin/miner-exporter-linux-arm64
+
+      - name: Check build
+        run: |
+          ls -lh build/bin
+          file build/bin/miner-exporter-linux-arm64
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: miner-exporter-linux-arm64
+          path: build/bin/miner-exporter-linux-arm64
+          archive: false
