@@ -30,7 +30,7 @@ dependencies {
 
     // moo
     implementation("ee.moo:tiny-json:0.0.4")
-    implementation("ee.moo:tiny-prometheus:0.0.3")
+    implementation("ee.moo:tiny-prometheus:0.0.4")
 
     // jetty
     implementation("org.eclipse.jetty:jetty-client:12.1.9")
