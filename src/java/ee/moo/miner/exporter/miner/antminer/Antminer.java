@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@SuppressWarnings("DuplicatedCode")
 public class Antminer implements Miner {
 
     private final MinerConfig config;

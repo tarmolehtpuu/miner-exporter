@@ -1,7 +1,3 @@
-1. JSON validation
-    - [x] bitaxe 
-    - [x] antminer
-    - [ ] avalon
-2. Update README.md
-3. slf4j
-4. Grafana Dashboard
+1. Update README.md
+2. slf4j
+3. Grafana Dashboard

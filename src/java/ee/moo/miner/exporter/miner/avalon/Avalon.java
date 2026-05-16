@@ -16,6 +16,7 @@
  */
 package ee.moo.miner.exporter.miner.avalon;
 
+import ee.moo.miner.exporter.util.StringUtil;
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonObject;
 import ee.moo.miner.exporter.miner.*;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"DuplicatedCode", "ClassCanBeRecord"})
 public class Avalon implements Miner {
 
     private final MinerConfig config;
@@ -86,6 +88,9 @@ public class Avalon implements Miner {
         try {
             var body = client.execute("stats");
             var json = Json.readObject(body);
+
+            validateHeader(json);
+            validateStats(json);
 
             return json.get("STATS").asList().getFirst().asObject();
 
@@ -157,15 +162,70 @@ public class Avalon implements Miner {
     }
 
     private void validateHeader(JsonObject json) {
-        // FIXME
+        if (json.get("STATUS") == null) {
+            throw new MinerException("Expecting response to contain field: STATUS");
+        }
+
+        if (!json.get("STATUS").isArray()) {
+            throw new MinerException("Expecting response STATUS to be an array");
+        }
+
+        if (json.get("STATUS").asList().size() != 1) {
+            throw new MinerException("Expecting response STATUS to contain exactly one element");
+        }
+
+        var status = json.get("STATUS")
+            .asList()
+            .getFirst()
+            .asObject()
+            .get("STATUS")
+            .asString();
+
+        if (!StringUtil.equals("S", status)) {
+            throw new MinerException("Expecting response status to equal S, found: %s", status);
+        }
     }
 
     private void validateSummary(JsonObject json) {
-        // FIXME
+        if (json.get("SUMMARY") == null) {
+            throw new MinerException("Expecting response to contain field: SUMMARY (cmd=summary)");
+        }
+
+        if (!json.get("SUMMARY").isArray()) {
+            throw new MinerException("Expecting response to contain SUMMARY array (cmd=summary)");
+        }
+
+        if (json.get("SUMMARY").asList().size() != 1) {
+            throw new MinerException("Expecting SUMMARY array to contain exactly one element (cmd=summary)");
+        }
+
+        if (!json.get("SUMMARY").asList().getFirst().isObject()) {
+            throw new MinerException("Expecting an object in SUMMARY array (cmd=summary)");
+        }
+    }
+
+    private void validateStats(JsonObject json) {
+        if (json.get("STATS") == null) {
+            throw new MinerException("Expecting response to contain field: STATS (cmd=stats)");
+        }
+
+        if (!json.get("STATS").isArray()) {
+            throw new MinerException("Expecting response to contain STATS array (cmd=stats");
+        }
+
+        if (json.get("STATS").asList().size() < 2) {
+            throw new MinerException("Expecting stats array to contain more than one element (cmd=stats)");
+        }
     }
 
     private void validatePools(JsonObject json) {
-        // FIXME
+        if (json.get("POOLS") == null) {
+            throw new MinerException("Expecting response to contain field: POOLS (cmd=pools)");
+        }
+
+        if (!json.get("POOLS").isArray()) {
+            throw new MinerException("Expecting response to contain POOLS array (cmd=pools)");
+        }
     }
 
     @Override
