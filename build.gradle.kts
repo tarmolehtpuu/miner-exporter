@@ -29,7 +29,7 @@ dependencies {
     // ******************* JAVA ******************* //
 
     // moo
-    implementation("ee.moo:tiny-json:0.0.4")
+    implementation("ee.moo:tiny-json:0.0.5")
     implementation("ee.moo:tiny-prometheus:0.0.4")
 
     // jetty

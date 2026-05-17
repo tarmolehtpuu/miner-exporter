@@ -2,6 +2,7 @@ package ee.moo.miner.exporter.util;
 
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonObject;
+import ee.moo.tiny.json.JsonWriteMode;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -194,7 +195,7 @@ public class Logger {
                 json.put("stacktrace", sw.toString().replace("\n", "\\n"));
             }
 
-            return Json.write(json);
+            return Json.write(json, JsonWriteMode.NORMAL);
         }
     }
 
