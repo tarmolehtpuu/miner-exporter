@@ -122,10 +122,10 @@ Type=simple
 Restart=on-failure
 User=prometheus
 Group=prometheus
-EnvironmentFile=/etc/default/miner-exporter-miner01
+EnvironmentFile=/etc/default/miner-exporter-miner02
 ExecStart=/usr/local/bin/miner-exporter
-StandardOutput=append:/var/log/prometheus/miner01.log
-StandardError=append:/var/log/prometheus/miner01.log
+StandardOutput=append:/var/log/prometheus/miner02.log
+StandardError=append:/var/log/prometheus/miner02.log
 TimeoutStopSec=20s
 SendSIGKILL=no
 
