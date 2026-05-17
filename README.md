@@ -64,3 +64,95 @@ Miners are configured via the following environment variables.
 | **LOG_FORMAT**       | -        | TEXT    | TEXT, JSONL                    |
 
 
+## Running
+
+### Java
+
+```bash
+
+# Example 1: BITAXE 
+MINER_ID=miner01 MINER_TYPE=BITAXE MINER_URI=http://10.10.10.1 \
+  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
+
+# Example 2: AVALON
+MINER_ID=miner02 MINER_TYPE=AVALON MINER_URI=tcp://10.10.10.2:4028 \
+  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
+  
+# Example 3: ANTMINER
+MINER_ID=miner03 MINER_TYPE=ANTMINER MINER_URI=http://10.10.10.3 \
+  MINER_AUTH=DIGEST MINER_USERNAME=username MINER_PASSWORD=password \
+  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
+```
+
+### Systemd (JAR)
+
+```systemd
+[Unit]
+Description=Prometheus Miner Exporter
+Documentation=https://github.com/tarmolehtpuu/miner-exporter
+
+[Service]
+Type=simple
+Restart=on-failure
+User=prometheus
+Group=prometheus
+EnvironmentFile=/etc/default/miner-exporter-miner01
+SuccessExitStatus=143
+ExecStart=/usr/bin/java -Xms128m -Xmx256m -server \
+    -jar /opt/miner-exporter/miner-exporter.jar
+ExecStop=/bin/kill -15 $MAINPID
+StandardOutput=append:/var/log/prometheus/miner01.log
+StandardError=append:/var/log/prometheus/miner01.log
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Systemd (Native)
+
+```systemd
+[Unit]
+Description=Prometheus Miner Exporter
+Documentation=https://github.com/tarmolehtpuu/miner-exporter
+
+[Service]
+Type=simple
+Restart=on-failure
+User=prometheus
+Group=prometheus
+EnvironmentFile=/etc/default/miner-exporter-miner01
+ExecStart=/usr/local/bin/miner-exporter
+StandardOutput=append:/var/log/prometheus/miner01.log
+StandardError=append:/var/log/prometheus/miner01.log
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Docker
+
+- **TODO**
+
+## Prometheus
+
+Add one static config for all of the miner-exporters. If running all of them on localhost then run them on separate ports so configuring Prometheus is less of a hassle.
+
+```yaml
+- job_name: miner-exporter
+  static_configs:
+    - targets:
+        - localhost:9041
+        - localhost:9042
+        - localhost:9043
+        - localhost:9044
+        - ...
+
+```
+
+## Grafana
+
+- **TODO**
