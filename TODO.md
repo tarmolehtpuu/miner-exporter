@@ -1,9 +1,0 @@
-- config examples
-    - antminer
-    - avalon
-    - bitaxe
-- systemd example (java)
-- systemd example (bin)
-- initd example (bin)
-- docker example (java)
-- grafana screenshots
