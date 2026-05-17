@@ -46,10 +46,9 @@ public class MetricsController implements HttpHandler {
 
         try {
             body = miner.getMetrics().export();
-            log.info("Metrics exported - {} ({} ms)", miner, System.currentTimeMillis() - time);
+            log.info("Metrics exported - %s (%d ms)", miner, System.currentTimeMillis() - time);
         } catch (Exception e) {
-            exchange.getResponseHeaders()
-                .set("Content-Type", "text/plain");
+            exchange.getResponseHeaders().set("Content-Type", "text/plain");
 
             body = "ERROR: 500";
             code = 500;
