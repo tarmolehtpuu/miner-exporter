@@ -22,7 +22,8 @@ import ee.moo.miner.exporter.api.MetricsController;
 import ee.moo.miner.exporter.api.ReadyzController;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
-import org.slf4j.Logger;
+import ee.moo.miner.exporter.util.Logger;
+import ee.moo.miner.exporter.util.Silence;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
@@ -32,7 +33,13 @@ import java.util.concurrent.Executors;
 
 public class Application {
 
-    private static final Logger log = LoggerFactory.getLogger(Application.class);
+    static {
+        try (var _ = Silence.err()) {
+            LoggerFactory.getLogger("");
+        }
+    }
+
+    private static final Logger log = new Logger(Application.class);
 
     private final Map<String, String> env;
 
@@ -51,9 +58,7 @@ public class Application {
     static void main() throws Exception {
         var env = System.getenv();
         var host = env.getOrDefault("LISTEN_HOST", "0.0.0.0");
-        var port = env.containsKey("LISTEN_PORT")
-            ? Integer.parseInt(env.get("LISTEN_PORT"))
-            : 8080;
+        var port = env.containsKey("LISTEN_PORT") ? Integer.parseInt(env.get("LISTEN_PORT")) : 8080;
 
         new Application(env, host, port).start();
     }
@@ -66,9 +71,7 @@ public class Application {
 
         var config = new MinerConfig(env);
 
-        return config
-            .getType()
-            .create(config);
+        return config.getType().create(config);
     }
 
     public void start() throws Exception {
@@ -92,13 +95,13 @@ public class Application {
 
         server.start();
 
-        log.info("Started HttpServer on: {}:{}", host, port);
+        log.info("Started HttpServer on: %s:%d", host, port);
     }
 
     public void stop() throws Exception {
         if (server != null) {
             log.info("HttpServer shutting down...");
-            server.stop(5);
+            server.stop(1);
             log.info("HttpServer stopped");
         }
     }

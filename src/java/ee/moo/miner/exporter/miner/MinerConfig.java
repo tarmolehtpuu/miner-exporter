@@ -17,11 +17,10 @@
 package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.client.CGMinerTcpClient;
+import ee.moo.miner.exporter.util.Logger;
 import ee.moo.miner.exporter.util.StringUtil;
 import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.http.HttpHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MinerConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(MinerConfig.class);
+    private static final Logger log = new Logger(MinerConfig.class);
 
     private final String id;
 

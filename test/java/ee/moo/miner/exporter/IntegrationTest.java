@@ -18,10 +18,12 @@ package ee.moo.miner.exporter;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import ee.moo.miner.exporter.fake.FakeCGMiner;
+import ee.moo.miner.exporter.util.Silence;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -39,6 +41,12 @@ import java.util.stream.Collectors;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public abstract class IntegrationTest {
+
+    static {
+        try (var _ = Silence.err()) {
+            LoggerFactory.getLogger("");
+        }
+    }
 
     public static final String APPLICATION_HOST = "127.0.0.1";
     public static final int APPLICATION_PORT = 8081;

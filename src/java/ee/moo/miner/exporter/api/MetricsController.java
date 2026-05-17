@@ -19,8 +19,7 @@ package ee.moo.miner.exporter.api;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ee.moo.miner.exporter.miner.Miner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ee.moo.miner.exporter.util.Logger;
 
 import java.io.IOException;
 
@@ -28,7 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MetricsController implements HttpHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(MetricsController.class);
+    private static final Logger log = new Logger(MetricsController.class);
 
     private final Miner miner;
 

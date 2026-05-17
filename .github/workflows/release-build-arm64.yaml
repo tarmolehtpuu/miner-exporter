@@ -52,10 +52,7 @@ jobs:
 
       - name: Build
         run: |
-          native-image -jar build/libs/app.jar -march=compatibility \
-            -Dslf4j.provider=qh.qos.logback.classic.spi.LogbackServiceProvider \
-            --initialize-at-build-time=org.slf4j \
-            build/bin/miner-exporter-linux-arm64
+          native-image -jar build/libs/app.jar -march=compatibility build/bin/miner-exporter-linux-arm64
 
       - name: Check build
         run: |
