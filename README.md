@@ -10,8 +10,7 @@ The following miners are currently supported:
 - BITAXE
 
 Each miner-exporter instance is designed to monitor a single miner. If possible install it directly on the miner, but
-since that
-can be a bit complicated it is also alright to run the exporters on a single Raspberry PI or similar.
+since that can be a bit complicated it is also alright to run the exporters on a single Raspberry Pi or similar.
 
 ### Metrics
 
@@ -139,7 +138,7 @@ WantedBy=multi-user.target
 
 ## Prometheus
 
-Add one static config for all of the miner-exporters. If running all of them on localhost then run them on separate ports so configuring Prometheus is less of a hassle.
+Add one static config for all the miner-exporters. If running all of them on localhost then run them on separate ports so configuring Prometheus is less of a hassle.
 
 ```yaml
 - job_name: miner-exporter
