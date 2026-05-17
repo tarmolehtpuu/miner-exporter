@@ -144,16 +144,6 @@ tasks.register("copyright") {
 
 
 tasks.jar {
-
-    doFirst {
-        File("build/generated").mkdirs()
-        File("build/generated/services").mkdirs()
-
-        var file = File("build/generated/services/org.slf4j.spi.SLF4JServiceProvider")
-        file.createNewFile()
-        file.writeText("qh.cos.logback.classic.spi.LogbackServiceProvider")
-    }
-
     dependsOn("copyright")
 
     archiveBaseName.set("app")
@@ -167,11 +157,6 @@ tasks.jar {
         include("LICENSE")
         include("NOTICE")
         into("META-INF")
-    }
-
-    // slf4j
-    from ("build/generated/services") {
-        into("META-INF/services")
     }
 
     // 3rd party LICENSE files

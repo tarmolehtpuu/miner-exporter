@@ -155,7 +155,7 @@ public class MinerConfig {
 
                     request.headers(httpFields -> {
                         if (!httpFields.contains(HttpHeader.USER_AGENT)) {
-                            httpFields.add(HttpHeader.USER_AGENT, "miner-exporter/0.1.2");
+                            httpFields.add(HttpHeader.USER_AGENT, "miner-exporter/0.1.3");
                         }
                     });
                 }
