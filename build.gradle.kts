@@ -144,7 +144,8 @@ tasks.register("version") {
     group = "release"
 
     val r = Regex("""(?<!\d\.)\b\d+\.\d+\.\d+\b(?!\.\d)""")
-    val v = project.findProperty("v") as String? ?: throw GradleException("Property v is missing. Usage: ./gradlew version -Pv=X.Y.Z")
+    val v = project.findProperty("v") as String?
+        ?: throw GradleException("Property v is missing. Usage: ./gradlew version -Pv=X.Y.Z")
 
     doLast {
         listOf(
@@ -152,7 +153,7 @@ tasks.register("version") {
             file("README.md"),
             file("src/java/ee/moo/miner/exporter/miner/MinerConfig.java")
         ).forEach { file ->
-            file.writeText(file.readText().replace(r, v ))
+            file.writeText(file.readText().replace(r, v))
             println("Updated to version: $v (${file.name})")
         }
     }
