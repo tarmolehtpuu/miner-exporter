@@ -9,6 +9,11 @@ Prometheus exporters for various crypto miners. The following miners are current
 Each miner-exporter instance is designed to monitor a single miner. If possible install it directly on the miner, but
 since that can be a bit complicated it is also alright to run the exporters on a single Raspberry Pi or similar.
 
+See Grafana folder for example dashboard.
+
+![Overview](grafana/miners01.png)
+![Details](grafana/miners02.png)
+
 ### Metrics
 
 | Metric                        | Type    | Description                                  |
@@ -189,7 +194,4 @@ Add one static config for all the miner-exporters. If running all of them on loc
         - ...
 
 ```
-
-## Grafana
-
-- **TODO**
+git 
