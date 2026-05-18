@@ -35,15 +35,15 @@ public class Logger {
     }
 
     public void debug(String message) {
-        log(Level.INFO, message);
+        log(Level.DEBUG, message);
     }
 
     public void debug(String message, Object... args) {
-        log(Level.INFO, message, args);
+        log(Level.DEBUG, message, args);
     }
 
     public void debug(String message, Throwable cause, Object... args) {
-        log(Level.INFO, message, cause, args);
+        log(Level.DEBUG, message, cause, args);
     }
 
     public void info(String message) {
@@ -63,23 +63,23 @@ public class Logger {
     }
 
     public void warn(String message, Object... args) {
-        log(Level.INFO, message, args);
+        log(Level.WARN, message, args);
     }
 
     public void warn(String message, Throwable cause, Object... args) {
-        log(Level.INFO, message, cause, args);
+        log(Level.WARN, message, cause, args);
     }
 
     public void error(String message) {
-        log(Level.INFO, message);
+        log(Level.ERROR, message);
     }
 
     public void error(String message, Object... args) {
-        log(Level.INFO, message, args);
+        log(Level.ERROR, message, args);
     }
 
     public void error(String message, Throwable cause, Object... args) {
-        log(Level.INFO, message, cause, args);
+        log(Level.ERROR, message, cause, args);
     }
 
     public void log(Level level, String message) {
@@ -203,19 +203,19 @@ public class Logger {
         DEBUG {
             @Override
             public boolean isEnabled(Level level) {
-                return level == DEBUG || level == INFO || level == WARNING || level == ERROR;
+                return level == DEBUG || level == INFO || level == WARN || level == ERROR;
             }
         },
         INFO {
             @Override
             public boolean isEnabled(Level level) {
-                return level == INFO || level == WARNING || level == ERROR;
+                return level == INFO || level == WARN || level == ERROR;
             }
         },
-        WARNING {
+        WARN {
             @Override
             public boolean isEnabled(Level level) {
-                return level == WARNING || level == ERROR;
+                return level == WARN || level == ERROR;
             }
         },
         ERROR {
