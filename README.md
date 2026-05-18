@@ -48,12 +48,12 @@ Miners are configured via the following environment variables.
 
 | NAME                 | REQUIRED | DEFAULT | COMMENT                        |
 |----------------------|----------|---------|--------------------------------|
-| **MINER_ID**         | Y        | NULL    | Example: miner01               |
-| **MINER_TYPE**       | Y        | NULL    | ANTMINER, AVALON, BITAXE       |
-| **MINER_URI**        | Y        | NULL    | Example: tcp://10.10.10.1:4028 |
+| **MINER_ID**         | Y        | -       | Example: miner01               |
+| **MINER_TYPE**       | Y        | -       | ANTMINER, AVALON, BITAXE       |
+| **MINER_URI**        | Y        | -       | Example: tcp://10.10.10.1:4028 |
 | **MINER_AUTH**       | -        | NONE    | NONE, BASIC, DIGEST            |
-| **MINER_USERNAME**   | -        | NULL    |                                |
-| **MINER_PASSWORD**   | -        | NULL    |                                |
+| **MINER_USERNAME**   | -        | -       |                                |
+| **MINER_PASSWORD**   | -        | -       |                                |
 | **CONNECT_TIMEOUT**  | -        | 1s      |                                |
 | **READ_TIMEOUT**     | -        | 4s      |                                |
 | **READ_BUFFER_SIZE** | -        | 8192    |                                |
