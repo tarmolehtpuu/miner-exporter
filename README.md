@@ -194,4 +194,3 @@ Add one static config for all the miner-exporters. If running all of them on loc
         - ...
 
 ```
-git 
