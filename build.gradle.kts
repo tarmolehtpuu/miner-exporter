@@ -82,6 +82,7 @@ tasks.withType<Test> {
 
 tasks.register("copyright") {
     description = "Generates LICENSE and NOTICE files for 3rd party dependencies"
+    group = "release"
 
     val cp = configurations.runtimeClasspath.get()
     val out = layout.buildDirectory.dir("generated")
@@ -138,6 +139,24 @@ tasks.register("copyright") {
     }
 }
 
+tasks.register("version") {
+    description = "Update project version"
+    group = "release"
+
+    val r = Regex("""(?<!\d\.)\b\d+\.\d+\.\d+\b(?!\.\d)""")
+    val v = project.findProperty("v") as String? ?: throw GradleException("Property v is missing. Usage: ./gradlew version -Pv=X.Y.Z")
+
+    doLast {
+        listOf(
+            file("VERSION"),
+            file("README.md"),
+            file("src/java/ee/moo/miner/exporter/miner/MinerConfig.java")
+        ).forEach { file ->
+            file.writeText(file.readText().replace(r, v ))
+            println("Updated to version: $v (${file.name})")
+        }
+    }
+}
 
 tasks.jar {
     dependsOn("copyright")
@@ -184,4 +203,3 @@ tasks.jar {
         )
     }
 }
-
