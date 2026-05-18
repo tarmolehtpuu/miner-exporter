@@ -1,9 +1,6 @@
 # miner-exporter ![Static Badge](https://img.shields.io/badge/version-0.1.8-blue) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-junit-tests.json) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-jacoco-coverage.json)
 
-Prometheus exporters for various crypto miners. Only implemented the ones I am currently using, but feel free to send
-PR-s for others.
-
-The following miners are currently supported:
+Prometheus exporters for various crypto miners. The following miners are currently supported:
 
 - **ANTMINER**
 - **AVALON**
