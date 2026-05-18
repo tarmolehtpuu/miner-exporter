@@ -5,9 +5,9 @@ PR-s for others.
 
 The following miners are currently supported:
 
-- ANTMINER
-- AVALON
-- BITAXE
+- **ANTMINER**
+- **AVALON**
+- **BITAXE**
 
 Each miner-exporter instance is designed to monitor a single miner. If possible install it directly on the miner, but
 since that can be a bit complicated it is also alright to run the exporters on a single Raspberry Pi or similar.
@@ -68,24 +68,34 @@ Miners are configured via the following environment variables.
 ### Java
 
 ```bash
+# Example 1: BITAXE
+export MINER_ID=miner01
+export MINER_TYPE=BITAXE
+export MINER_URI=http://10.10.10.1
 
-# Example 1: BITAXE 
-MINER_ID=miner01 MINER_TYPE=BITAXE MINER_URI=http://10.10.10.1 \
-  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
+java -Xms128m -Xms256m -server -jar miner-exporter.jar
 
 # Example 2: AVALON
-MINER_ID=miner02 MINER_TYPE=AVALON MINER_URI=tcp://10.10.10.2:4028 \
-  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
-  
+export MINER_ID=miner02
+export MINER_TYPE=AVALON
+export MINER_URI=tcp://10.10.10.2:4028
+
+java -Xms128m -Xms256m -server -jar miner-exporter.jar
+
 # Example 3: ANTMINER
-MINER_ID=miner03 MINER_TYPE=ANTMINER MINER_URI=http://10.10.10.3 \
-  MINER_AUTH=DIGEST MINER_USERNAME=username MINER_PASSWORD=password \
-  java -Xms128m -Xmx256m -server -jar miner-exporter.jar
+export MINER_ID=miner03
+export MINER_TYPE=ANTMINER
+export MINER_URI=http://10.10.10.3
+export MINER_AUTH=DIGEST
+export MINER_USERNAME=username
+export MINER_PASSWORD=password
+
+java -Xms128m -Xms256m -server -jar miner-exporter.jar
 ```
 
 ### Systemd (JAR)
 
-```systemd
+```ini
 [Unit]
 Description=Prometheus Miner Exporter
 Documentation=https://github.com/tarmolehtpuu/miner-exporter
@@ -111,7 +121,7 @@ WantedBy=multi-user.target
 
 ### Systemd (Native)
 
-```systemd
+```ini
 [Unit]
 Description=Prometheus Miner Exporter
 Documentation=https://github.com/tarmolehtpuu/miner-exporter
@@ -134,7 +144,38 @@ WantedBy=multi-user.target
 
 ### Docker
 
-- **TODO**
+Docker images are published for the following os/arch combinations:
+- **linux/amd64**
+- **linux/arm64**
+
+```bash
+# Example 1: BITAXE
+docker run \
+  -p 8080:8080 \
+  -e MINER_ID=miner01 \
+  -e MINER_TYPE=BITAXE \
+  -e MINER_URI=http://10.10.10.1 \
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.7
+
+# Example 2: AVALON
+docker run \
+  -p 8080:8080 \
+  -e MINER_ID=miner02 \
+  -e MINER_TYPE=AVALON \
+  -e MINER_URI=tcp://10.10.10.2:4028 \
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.7
+
+# Example 3: ANTMINER
+docker run \
+  -p 8080:8080 \
+  -e MINER_ID=miner03 \
+  -e MINER_TYPE=ANTMINER \
+  -e MINER_URI=http://10.10.10.3 \
+  -e MINER_AUTH=DIGEST \
+  -e MINER_USERNAME=username \
+  -e MINER_PASSWORD=password \
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.7
+```
 
 ## Prometheus
 
