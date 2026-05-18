@@ -49,4 +49,4 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 -t $IMAGE_ID:$IMAGE_TAG --push .
         env:
           IMAGE_ID: ghcr.io/tarmolehtpuu/miner-exporter
-          IMAGE_TAG: ${{ inputs.VERSION
+          IMAGE_TAG: ${{ inputs.VERSION }}
