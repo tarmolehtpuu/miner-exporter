@@ -23,6 +23,13 @@ repositories {
             password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
         }
     }
+    maven {
+        url = uri("https://maven.pkg.github.com/tarmolehtpuu/tiny-prometheus")
+        credentials {
+            username = project.findProperty("github.user") as String? ?: System.getenv("GITHUB_USER")
+            password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
