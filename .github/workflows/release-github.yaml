@@ -1,4 +1,4 @@
-name: Release (Finalize)
+name: Release (Github)
 on:
   workflow_call:
     inputs:
