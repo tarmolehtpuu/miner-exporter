@@ -1,4 +1,4 @@
-# miner-exporter ![Static Badge](https://img.shields.io/badge/version-0.1.8-blue) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-junit-tests.json) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-jacoco-coverage.json)
+# miner-exporter ![Static Badge](https://img.shields.io/badge/version-0.1.9-blue) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-junit-tests.json) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ftarmolehtpuu%2Fa5debb67ba982255c7f79caec03d734c%2Fraw%2F869c2650d5a66ea12e11d27d7b5b52096702f50b%2Fminer-exporter-jacoco-coverage.json)
 
 Prometheus exporters for various crypto miners. The following miners are currently supported:
 
@@ -157,7 +157,7 @@ docker run \
   -e MINER_ID=miner01 \
   -e MINER_TYPE=BITAXE \
   -e MINER_URI=http://10.10.10.1 \
-  ghcr.io/tarmolehtpuu/miner-exporter:0.1.8
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.9
 
 # Example 2: AVALON
 docker run \
@@ -165,7 +165,7 @@ docker run \
   -e MINER_ID=miner02 \
   -e MINER_TYPE=AVALON \
   -e MINER_URI=tcp://10.10.10.2:4028 \
-  ghcr.io/tarmolehtpuu/miner-exporter:0.1.8
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.9
 
 # Example 3: ANTMINER
 docker run \
@@ -176,7 +176,7 @@ docker run \
   -e MINER_AUTH=DIGEST \
   -e MINER_USERNAME=username \
   -e MINER_PASSWORD=password \
-  ghcr.io/tarmolehtpuu/miner-exporter:0.1.8
+  ghcr.io/tarmolehtpuu/miner-exporter:0.1.9
 ```
 
 ## Prometheus

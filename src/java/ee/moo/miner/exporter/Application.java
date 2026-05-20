@@ -22,8 +22,8 @@ import ee.moo.miner.exporter.api.MetricsController;
 import ee.moo.miner.exporter.api.ReadyzController;
 import ee.moo.miner.exporter.miner.Miner;
 import ee.moo.miner.exporter.miner.MinerConfig;
-import ee.moo.miner.exporter.util.Logger;
-import ee.moo.miner.exporter.util.Silence;
+import ee.moo.tiny.common.log.Logger;
+import ee.moo.tiny.common.util.SystemUtil;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
@@ -34,9 +34,7 @@ import java.util.concurrent.Executors;
 public class Application {
 
     static {
-        try (var _ = Silence.err()) {
-            LoggerFactory.getLogger("");
-        }
+        SystemUtil.silenceStderr(() -> LoggerFactory.getLogger(""));
     }
 
     private static final Logger log = new Logger(Application.class);
@@ -61,17 +59,6 @@ public class Application {
         var port = env.containsKey("LISTEN_PORT") ? Integer.parseInt(env.get("LISTEN_PORT")) : 8080;
 
         new Application(env, host, port).start();
-    }
-
-    private static Miner miner(Map<String, String> env) throws URISyntaxException {
-        if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
-            log.warn("No miners configured, skipping metrics");
-            return null;
-        }
-
-        var config = new MinerConfig(env);
-
-        return config.getType().create(config);
     }
 
     public void start() throws Exception {
@@ -104,5 +91,16 @@ public class Application {
             server.stop(1);
             log.info("HttpServer stopped");
         }
+    }
+
+    private Miner miner(Map<String, String> env) throws URISyntaxException {
+        if (!env.containsKey("MINER_ID") || !env.containsKey("MINER_TYPE") || !env.containsKey("MINER_URI")) {
+            log.warn("No miners configured, skipping metrics");
+            return null;
+        }
+
+        var config = new MinerConfig(env);
+
+        return config.getType().create(config);
     }
 }

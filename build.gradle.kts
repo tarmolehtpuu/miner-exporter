@@ -17,6 +17,13 @@ java {
 repositories {
     mavenCentral()
     maven {
+        url = uri("https://maven.pkg.github.com/tarmolehtpuu/tiny-common")
+        credentials {
+            username = project.findProperty("github.user") as String? ?: System.getenv("GITHUB_USER")
+            password = project.findProperty("github.token") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+    maven {
         url = uri("https://maven.pkg.github.com/tarmolehtpuu/tiny-json")
         credentials {
             username = project.findProperty("github.user") as String? ?: System.getenv("GITHUB_USER")
@@ -36,6 +43,7 @@ dependencies {
     // ******************* JAVA ******************* //
 
     // moo
+    implementation("ee.moo:tiny-common:0.0.1")
     implementation("ee.moo:tiny-json:0.0.6")
     implementation("ee.moo:tiny-prometheus:0.0.5")
 
@@ -48,7 +56,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:6.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:6.1.0")
-    testImplementation("org.junit.platform:junit-platform-launcher:6.0.3")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.1.0")
 
     // wiremock
     testImplementation("org.wiremock:wiremock-standalone:3.13.2")

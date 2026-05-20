@@ -17,8 +17,8 @@
 package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.client.CGMinerTcpClient;
-import ee.moo.miner.exporter.util.Logger;
-import ee.moo.miner.exporter.util.StringUtil;
+import ee.moo.tiny.common.log.Logger;
+import ee.moo.tiny.common.util.StringUtil;
 import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.http.HttpHeader;
 
@@ -154,7 +154,7 @@ public class MinerConfig {
 
                     request.headers(httpFields -> {
                         if (!httpFields.contains(HttpHeader.USER_AGENT)) {
-                            httpFields.add(HttpHeader.USER_AGENT, "miner-exporter/0.1.8");
+                            httpFields.add(HttpHeader.USER_AGENT, "miner-exporter/0.1.9");
                         }
                     });
                 }
