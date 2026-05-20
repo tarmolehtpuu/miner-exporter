@@ -17,8 +17,8 @@
 package ee.moo.miner.exporter.miner;
 
 import ee.moo.miner.exporter.client.CGMinerTcpClient;
-import ee.moo.miner.exporter.util.Logger;
-import ee.moo.miner.exporter.util.StringUtil;
+import ee.moo.tiny.common.log.Logger;
+import ee.moo.tiny.common.util.StringUtil;
 import org.eclipse.jetty.client.*;
 import org.eclipse.jetty.http.HttpHeader;
 

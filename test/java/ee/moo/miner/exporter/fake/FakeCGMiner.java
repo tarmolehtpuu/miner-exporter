@@ -16,7 +16,7 @@
  */
 package ee.moo.miner.exporter.fake;
 
-import ee.moo.miner.exporter.util.Logger;
+import ee.moo.tiny.common.log.Logger;
 import ee.moo.tiny.json.Json;
 import ee.moo.tiny.json.JsonArray;
 import ee.moo.tiny.json.JsonObject;

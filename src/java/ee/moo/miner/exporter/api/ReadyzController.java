@@ -18,7 +18,7 @@ package ee.moo.miner.exporter.api;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import ee.moo.miner.exporter.util.Logger;
+import ee.moo.tiny.common.log.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

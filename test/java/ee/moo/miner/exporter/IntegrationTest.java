@@ -18,7 +18,7 @@ package ee.moo.miner.exporter;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import ee.moo.miner.exporter.fake.FakeCGMiner;
-import ee.moo.miner.exporter.util.Silence;
+import ee.moo.tiny.common.util.SystemUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,8 +29,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -43,9 +41,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public abstract class IntegrationTest {
 
     static {
-        try (var _ = Silence.err()) {
-            LoggerFactory.getLogger("");
-        }
+        SystemUtil.silenceStderr(() -> LoggerFactory.getLogger(""));
     }
 
     public static final String APPLICATION_HOST = "127.0.0.1";
