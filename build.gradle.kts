@@ -62,26 +62,6 @@ dependencies {
     testImplementation("org.wiremock:wiremock-standalone:3.13.2")
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir("src/java")
-        }
-        resources {
-            srcDir("src/resources")
-        }
-
-    }
-    test {
-        java {
-            srcDir("test/java")
-        }
-        resources {
-            srcDir("test/resources")
-        }
-    }
-}
-
 tasks.jacocoTestReport {
     dependsOn(tasks.withType<Test>())
     reports {
