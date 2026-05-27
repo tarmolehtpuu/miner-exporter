@@ -9,10 +9,16 @@ Prometheus exporters for various crypto miners. The following miners are current
 Each miner-exporter instance is designed to monitor a single miner. If possible install it directly on the miner, but
 since that can be a bit complicated it is also alright to run the exporters on a single Raspberry Pi or similar.
 
-See Grafana folder for example dashboard.
+### Examples
 
-![Overview](grafana/miners01.png)
-![Details](grafana/miners02.png)
+#### Miners: Overview ([overview.json)](grafana/dashboards/overview.json)
+![Overview](grafana/screenshots/overview.png)
+
+#### Miners: BTC ([details01.json)](grafana/dashboards/details01.json)
+![Details 1](grafana/screenshots/details01.png)
+
+#### Miners: LTC & Doge ([details02.json)](grafana/dashboards/details02.json)
+![Details 2](grafana/screenshots/details02.png)
 
 ### Metrics
 
