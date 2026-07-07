@@ -26,8 +26,9 @@ dependencies {
     // ******************* JAVA ******************* //
 
     // moo
-    implementation("ee.moo:tiny-common:0.0.3")
-    implementation("ee.moo:tiny-json:0.0.7")
+
+    implementation("ee.moo:tiny-common:0.0.7")
+    implementation("ee.moo:tiny-json:0.0.10")
     implementation("ee.moo:tiny-prometheus:0.0.6")
 
     // jetty
@@ -39,7 +40,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.1")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:6.1.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:6.1.1")
-    testImplementation("org.junit.platform:junit-platform-launcher:6.1.0")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.1.1")
 
     // wiremock
     testImplementation("org.wiremock:wiremock-standalone:3.13.2")
