@@ -40,7 +40,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:6.1.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:6.1.0")
-    testImplementation("org.junit.platform:junit-platform-launcher:6.1.0")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.1.1")
 
     // wiremock
     testImplementation("org.wiremock:wiremock-standalone:3.13.2")
