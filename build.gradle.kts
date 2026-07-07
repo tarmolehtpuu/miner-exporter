@@ -26,7 +26,8 @@ dependencies {
     // ******************* JAVA ******************* //
 
     // moo
-    implementation("ee.moo:tiny-common:0.0.3")
+
+    implementation("ee.moo:tiny-common:0.0.7")
     implementation("ee.moo:tiny-json:0.0.10")
     implementation("ee.moo:tiny-prometheus:0.0.6")
 
