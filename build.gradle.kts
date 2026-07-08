@@ -32,7 +32,7 @@ dependencies {
     implementation("ee.moo:tiny-prometheus:0.0.6")
 
     // jetty
-    implementation("org.eclipse.jetty:jetty-client:12.1.10")
+    implementation("org.eclipse.jetty:jetty-client:12.1.11")
 
     // ******************* TEST ******************* //
 
